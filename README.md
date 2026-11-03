@@ -1,12 +1,27 @@
 # SDG Interlinkages
 
-Pacote Python para reconstruir redes de interdependência entre metas dos ODS a partir de duas bases. O motor analítico deriva da revisão publicada do projeto `2c6632f2e265f8172d0e8de7752fed1a8d26828f`. O lançador, a organização dos resultados e a exportação de figuras são locais.
+Explore directed networks of collaboration and neglect among Sustainable Development Goal (SDG) targets using IGES/JRC relationships and UNSD observations, or annual SDGIndex indicator scores.
 
-## Aplicativo Gradio
+The Gradio application and command-line interface use the same Python analysis service. Local SDGIndex inputs cover 169 countries and 14 regions or aggregates. Each execution exports workbooks, node and edge tables, and three network images.
 
-**No Windows**, extraia o ZIP completo do GitHub ou clone o repositório. Abra a pasta que contém este README e dê dois cliques em `launch_app.bat`. O lançador usa Python 3.10+ e cria ou reutiliza `.venv`. Na primeira vez, aguarde a instalação. O aplicativo abre no navegador local. Mantenha a janela do terminal aberta durante as análises. Se o navegador não abrir, copie a URL local exibida no terminal. Para encerrar, pressione Ctrl+C.
+## Windows application
 
-**No Linux ou macOS**, execute a partir da raiz do repositório:
+Install Python 3.10 or later with the `py` launcher or `python` available on PATH. Download and extract the complete repository or clone it, then double-click `launch_app.bat` in the repository root.
+
+The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and opens the application in your browser. The first installation needs access to the Python package index. Keep the terminal open while using the app. If the browser does not open automatically, copy the local URL shown in the terminal. Press Ctrl+C to stop the server.
+
+| Tab | Input | Correlation |
+| --- | --- | --- |
+| IGES/JRC | Select a UNSD region or country. Optionally upload a previously collected UNSD CSV for the selected area. | Pearson |
+| SDGIndex | Select a region, aggregate, or country from the supplied annual-score workbooks. | Pearson, Spearman, or both |
+
+Choose the scope and area, then select **Run analysis**. The application displays the first five rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, and trade-offs. Download individual files or the complete execution ZIP.
+
+The two tabs share a calculation queue. Choosing **Both** produces separate results for each method. Completed runs remain in `output/`; Gradio also keeps temporary copies of files served to the browser.
+
+## Linux and macOS application
+
+Run these commands from the repository root:
 
 ```bash
 python3 -m venv .venv
@@ -15,99 +30,111 @@ python -m pip install -r requirements-app.txt
 python app.py
 ```
 
-| Aba | Entrada | Escolha do método |
-| --- | --- | --- |
-| IGES/JRC | Região ou país da árvore da UNSD. Opcionalmente, envie um CSV já coletado para essa área. | Pearson |
-| SDGIndex | Região, agregado ou país das planilhas incluídas no repositório. | Pearson, Spearman ou ambos |
+## Command line
 
-Escolha o recorte e a área e clique em **Executar análise**. A tela mostra as cinco primeiras linhas de cada ranking por método e, separadamente, os quatro grupos de destaque quando houver metas elegíveis. Clique numa linha do ranking para ver o indicador. A galeria apresenta as redes completa, de sinergias e de trade-offs. Baixe a planilha `_full.xlsx` isoladamente ou o ZIP com toda a execução. A seleção **Ambos** produz resultados separados por método, inclusive no ZIP.
+On Windows, double-click `launch.bat` to open the interactive terminal menu. It asks for the dataset, region/country scope, and area, in that order. SDGIndex runs both correlation methods by default.
 
-As duas abas compartilham uma fila de cálculo. As execuções terminadas permanecem em `output/`. O Gradio guarda também cópias temporárias dos arquivos disponibilizados ao navegador.
-
-## Executar pelo terminal
-
-Extraia o ZIP inteiro. No Windows, instale Python 3.10 ou superior com o lançador `py` ou o executável `python` disponível. Abra `launch.bat`. Na primeira execução, ele cria o ambiente virtual e instala as dependências. É necessário acesso ao índice de pacotes nessa instalação. A escolha é feita em três etapas.
-
-1. IGES/JRC ou SDGIndex.
-2. Região ou país.
-3. Código ou nome da área exibida.
-
-O SDGIndex executa Pearson e Spearman, cada um na sua subpasta. Para executar somente um, use a linha de comando. No Linux ou macOS, a partir da pasta do README:
+With your virtual environment active, examples include:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m ods
+python -m sdg --version IGES_JRC --scope country --area 76
+python -m sdg --version IGES_JRC --scope region --area 1
+python -m sdg --version IGES_JRC --scope country --area 76 --csv brazil_collection.csv
+python -m sdg --version SDGIndex --scope country --area BRA --method pearson
+python -m sdg --version SDGIndex --scope region --area World --method both
 ```
 
-Exemplos para o terminal, com o ambiente virtual ativo:
+Use `--output PATH` to choose another results root. Pass the same options to `launch.bat` on Windows. Terminal-only installations need `requirements.txt`.
 
-```bash
-python -m ods --versao IGES_JRC --tipo pais --area 76
-python -m ods --versao IGES_JRC --tipo regiao --area 1
-python -m ods --versao IGES_JRC --tipo pais --area 76 --csv coleta_brasil.csv
-python -m ods --versao SDGIndex --tipo pais --area BRA --metodo pearson
-python -m ods --versao SDGIndex --tipo regiao --area World --metodo ambos
-```
+Previous `python -m ods` commands remain available through a compatibility entry point. The previous option names are accepted as aliases and produce English outputs. New integrations should import `sdg.service`.
 
-Use `--saida PASTA` para trocar a raiz das saídas. No Windows, os mesmos argumentos podem ser passados a `launch.bat`.
+## Results
 
-## Fontes e processamento
-
-**IGES/JRC.** O catálogo geográfico local usa os códigos M49 e a árvore continental da UNSD. A coleta consulta a API por indicador, em lotes paginados. Um CSV já coletado, no formato achatado dessa API e com o código da área selecionada, permite executar offline. O motor seleciona séries, trata lacunas conforme as regras de cada série, consolida medidas compartilhadas e usa normatividade por indicador. Calcula Pearson para as séries elegíveis, cruza as relações com as decisões IGES/JRC e aplica a classificação temporal antes de calcular os graus e rankings.
-
-**SDGIndex.** Inclui as planilhas anuais utilizadas pelo site para 169 países e 14 regiões ou agregados e o mapeamento editorial de 101 indicadores para metas. O programa lê a aba `Observacoes_componentes` da área selecionada e recalcula os pares entre objetivos a partir dos níveis dos escores de 2000 a 2025. Exclui pares do mesmo ODS ou da mesma meta antes dos testes. O limiar de inclusão é p nominal < 0,10 com pelo menos oito observações pareadas e coeficiente não nulo. Os testes defasados e condicionais informam a orientação exploratória. No caso indeterminado, o motor representa o par com dois arcos e registra a evidência de direção. As planilhas de origem são identificáveis por arquivo em `data/SDGIndex/`. A proveniência dos arquivos compactados originais está em `provenance.json`.
-
-Nos dois modos, uma relação inicialmente divergente dos sentidos do progresso é excluída quando algum R² temporal é inferior a 0,1, ou quando algum R² é inferior a 0,2 e o módulo do coeficiente é inferior a 0,4. As demais divergentes com direção definida mudam de tipo. O coeficiente observado é preservado. A aba **Casos adversos** registra as decisões. Colab é a soma ponderada das sinergias enviadas menos os trade-offs enviados. Neglect soma os trade-offs recebidos e as sinergias recebidas de origens em retrocesso. Os quatro grupos de destaque seguem as regras de direção, ambição e cruzamento de rankings da versão publicada, incluindo empates na quinta posição.
-
-## Resultados
-
-Cada execução cria uma pasta datada com identificador próprio. As duas pastas principais ficam em `output/`. Exemplos de caminhos relativos:
+The area directory uses its name rather than its geographic code. Names are normalized to portable ASCII filenames. Each run receives a UTC timestamp and unique suffix.
 
 ```text
-output/IGES_JRC/pais/76/<execução>/
-output/SDGIndex/regiao/World/<execução>/pearson/
-output/SDGIndex/regiao/World/<execução>/spearman/
+output/IGES_JRC/country/Brazil/<run>/
+output/IGES_JRC/region/World/<run>/
+output/SDGIndex/country/Brazil/<run>/pearson/
+output/SDGIndex/region/World/<run>/spearman/
 ```
 
-| Arquivo | Conteúdo |
+The numeric/ISO code remains the selection identifier and is recorded in the underlying data. Existing execution directories are preserved. The `.gitignore` excludes generated results while tracking the two top-level output placeholders.
+
+| File | Contents |
 | --- | --- |
-| `*_full.xlsx` | Dados, cálculos, atributos, destaques e auditoria do método escolhido |
-| `*_interlinkages.xlsx` | Rankings, destaques e casos adversos |
-| `*_network.csv` e `*_nodes.csv` | Tabelas de arestas e nós para análise externa |
-| `*_full.png`, `*_synergy.png`, `*_trade-off.png` | Rede completa e recortes de sinergias e trade-offs |
+| `*_full.xlsx` | Source observations, calculations, metrics, highlights, and method-specific audit evidence |
+| `*_interlinkages.xlsx` | Rankings, highlights, diagnostics, and adverse cases |
+| `*_network.csv` | Directed edges, final interaction types, and weights |
+| `*_nodes.csv` | Nodes, target identities, and attributes |
+| `*_full.png` | Complete network |
+| `*_synergy.png` | Synergy network |
+| `*_trade-off.png` | Trade-off network |
 
-Os PNGs usam disposição por forças com semente fixa. As coordenadas podem diferir das do navegador. As metas aparecem pelos seus números. Nos CSVs do SDGIndex, o identificador composto distingue indicadores associados à mesma meta. Na figura completa, branco e cinza distinguem os grupos a e c, amarelo e vermelho os grupos b e d. Sinergias de origens em retrocesso aparecem em vinho claro e trade-offs dessas origens, em cinza claro. As figuras resumem a rede; as planilhas conservam a evidência de cada arco.
+The figure layout uses forces and a fixed random seed. Labels show target numbers. Distinct SDGIndex indicators mapped to the same target retain distinct composite node IDs in the tables. In the complete network, groups a/c have white/gray borders and groups b/d have yellow/red borders. Synergies from backward-moving sources use translucent burgundy; trade-offs from those sources use translucent gray.
 
-## Estrutura e integração em Python
+## Analytical procedure
 
-| Caminho | Função |
-| --- | --- |
-| `app.py` | Interface Gradio, seleção de área, apresentação de resultados e geração do ZIP |
-| `launch_app.bat` e `launch.bat` | Lançadores Windows para navegador e terminal |
-| `ods/service.py` | Catálogo de áreas e execução compartilhada pelas duas interfaces |
-| `ods/engine/` | Motores analíticos, regras, normatividade e tabelas auxiliares |
-| `ods/render.py` | Exportação das três redes em PNG |
-| `data/` | Catálogos, ícones, mapeamento indicador–meta e planilhas de escores |
-| `tests/` | Testes de regressão e dados de verificação |
+### IGES/JRC
 
-Para integrar o motor a outra aplicação ou automatizar um recorte:
+The local area catalog uses UNSD M49 codes and the continental tree. Collection queries the UNSD API by indicator in paginated batches. A saved CSV in the flattened API format can be reused offline for its matching geographic code.
+
+The pipeline selects series, fills eligible gaps using series-specific CAGR rules, consolidates shared measures, and resolves the desired direction for the actual indicator series. It computes Pearson correlations for eligible series pairs and applies the directed IGES/JRC evidence rules. Temporal classification precedes degree calculations and rankings.
+
+Series selection uses the greatest number of distinct original numeric years during 2000–2025, breaking ties by IGES order. CAGR uses positive endpoint pairs, or a constant zero for two zero endpoints. Bounds apply to generated values. Shared API series/dimensions/units enter calculations through one representative target and are documented in `Target_representation`.
+
+### SDGIndex
+
+The supplied workbooks contain annual observations for 169 countries and 14 regions/aggregates. The editorial mapping associates 101 component indicators with SDG targets. The analysis reads `Component_observations` and correlates annual score levels over 2000–2025. It excludes all pairs within the same SDG or target before tests and degree calculations.
+
+Pairs require at least eight matched observations, a nonzero coefficient, and nominal p < 0.10. Lagged and conditional tests provide exploratory orientation. Pairs without a uniquely supported direction receive two arcs with their direction evidence recorded. Benjamini–Hochberg q-values are available for sensitivity analysis.
+
+### Temporal classification and metrics
+
+The desired direction and local linear slope determine whether each node moves forward, backward, is stable, or has undetermined direction. An initially discordant relationship is excluded if either time R² is below 0.1, or if either time R² is below 0.2 and the absolute association coefficient is below 0.4. Other discordant pairs with defined directions change interaction type. Original coefficients are preserved; weights use their absolute value. `Adverse cases` records excluded and reclassified arcs.
+
+- **Colab** equals outgoing weighted synergies minus outgoing weighted trade-offs.
+- **Neglect** equals incoming weighted trade-offs plus incoming weighted synergies from backward-moving sources.
+
+The four highlight groups use the published direction, ambition, and ranking-intersection rules, including ties at the fifth position. Group a selects forward-moving top collaborators with ambition > 0.6 outside the top receivers of trade-offs from regression. Group b identifies their intersection with those top receivers. Group c selects backward-moving top neglected targets with ambition < 0.6 outside the top senders of backward synergies. Group d identifies the intersection with those top senders.
+
+These associations and their exploratory orientations do not establish causality. Nominal p-values do not correct for autocorrelation. Supplied normalized series may contain carried/interpolated observations. These methodological conventions are preserved in the English migration.
+
+## Official terminology and documentation
+
+`data/un_sdg_catalogue.json` stores the official English wording of all 17 goals, 169 targets, and indicator entries in the UNSD 2026-refinement framework, with its source URL. `sdg_descriptions.xlsx` provides the runtime reference table. SDGIndex component descriptions and IGES proxy descriptions retain the definitions of their actual measures.
+
+[Official UN Sustainable Development Goals](https://sdgs.un.org/goals) · [UNSD global indicator framework](https://unstats.un.org/sdgs/indicators/indicators-list/)
+
+The `docs/` directory is reserved for revised methodological PDFs and supporting documentation. See its README and the English migration notes for schema changes and provenance.
+
+## Python integration and structure
 
 ```python
-from ods.service import list_areas, run_analysis
+from sdg.service import list_areas, run_analysis
 
-paises = list_areas("SDGIndex", "pais")
-pasta = run_analysis("SDGIndex", "pais", "BRA", method="pearson")
-print(paises["BRA"], pasta)
+countries = list_areas("SDGIndex", "country")
+folder = run_analysis("SDGIndex", "country", "BRA", method="pearson")
+print(countries["BRA"], folder)
 ```
 
-O parâmetro `output_dir` permite escolher outra raiz gravável. Para o IGES/JRC, `csv_path` recebe o caminho do CSV opcional. O terminal usa `requirements.txt`; o navegador usa `requirements-app.txt`, que inclui as dependências do cálculo.
+`output_dir` sets the writable results root. For IGES/JRC, `csv_path` supplies an existing collection. The service returns the results folder after all requested methods and exports finish.
 
-## Testes
+| Path | Purpose |
+| --- | --- |
+| `app.py` | Gradio tabs, area selection, result display, and ZIP downloads |
+| `sdg/service.py` | Shared area catalog and analysis orchestration |
+| `sdg/engine/modules/` | Collection, preparation, correlations, directionality, trends, and rankings |
+| `sdg/engine/bases/` | IGES/JRC rules and supporting reference tables |
+| `sdg/render.py` | PNG network export |
+| `data/SDGIndex/` | Country/region workbooks and indicator-to-target mapping |
+| `data/icons/` | English SDG icons |
+| `tests/` | Regression tests and synthetic verification data |
+
+## Tests
 
 ```bash
 python -m unittest discover -s tests
 ```
 
-O conjunto inclui regressões de consolidação de séries, normatividade, limites de reclassificação, rankings e cálculos nacionais comparados ao SciPy. A coleta sintética de teste permite validar o IGES/JRC sem acesso à UNSD.
+Tests cover measure identity, indicator directionality, temporal reclassification boundaries, highlight rules, and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
