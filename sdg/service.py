@@ -66,17 +66,21 @@ def sdg_run(folder, code, title, scope, method):
     export_csv(folder / f"{prefix}_nodes.csv", graph['nodes'], ['id', 'target', 'indicator'])
     export_csv(folder / f"{prefix}_network.csv", graph['edges'], ['source', 'target', 'interaction', 'weight'])
     book = load_workbook(full, read_only=True, data_only=True)
-    summary = Workbook(write_only=True)
+    summary = Workbook()
+    summary.remove(summary.active)
     try:
         for name, metric in [('TopCollaborators', 'colab'), ('TopNeglected', 'neglect')]:
             tab = summary.create_sheet(name)
-            tab.append(['Target', 'Indicator', 'Value', 'Direction', 'Ambition'])
-            for n in sorted(graph['nodes'], key=lambda n: -n[metric]):
-                tab.append([n['target'], n['indicator'], n[metric], n['direction'], n['ambition']])
-        for name in ['Highlights', 'Dependence_diagnostics', 'Adverse cases']:
+            tab.append(['Target', 'Indicator', 'Value', 'Direction', 'years_to_target', 'years_to_zero', 'latest_score', 'latest_year', 'slope', 'colab_rank', 'neglect_rank', 'target_time_rank', 'zero_time_rank', 'receiver_rank', 'sender_rank'])
+            for n in sorted(graph['nodes'], key=lambda n: (-n[metric], n['id'])):
+                tab.append([n['target'], n['indicator'], n[metric], n['direction'], *[n[k] for k in ('years_to_target', 'years_to_zero', 'latest_score', 'latest_year', 'slope', 'colab_rank', 'neglect_rank', 'target_time_rank', 'zero_time_rank', 'receiver_rank', 'sender_rank')]])
+        for name in ['Target_time_ranking', 'Zero_time_ranking', 'Highlights', 'Dependence_diagnostics', 'Adverse cases']:
             tab = summary.create_sheet(name)
             for row in book[name].values:
                 tab.append(row)
+        from performance_ranking import format_years
+        # Formatting needs editable cells, so use a regular workbook.
+        format_years(summary)
         summary.save(folder / f"{prefix}_interlinkages.xlsx")
     finally:
         book.close()

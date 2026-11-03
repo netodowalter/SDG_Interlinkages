@@ -69,7 +69,7 @@ def render_networks(folder, prefix, title, graph, groups, icons):
             else:
                 direction = 'forward' if mode == 'synergy' else 'backward'
                 eligible = sorted((scores[i] for i in ids if nodes[i]['direction'] == direction), reverse=True)
-                cutoff = eligible[min(4, len(eligible)-1)] if eligible else float('inf')
+                cutoff = eligible[min(9, len(eligible)-1)] if eligible else float('inf')
                 tiers = {i: 4 if nodes[i]['direction'] == direction and scores[i] >= cutoff else -1 for i in ids}
             extent = defaultdict(list)
             for i in ids:

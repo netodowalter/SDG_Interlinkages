@@ -121,7 +121,7 @@ def highlight_groups(metrics,details,edges=()):
     def top(items,score):
         ordered=sorted((t for t in items if score(t)>0),key=lambda t:(-score(t),(int(t.split('.')[0]),not t.split('.')[1].isdigit(),int(t.split('.')[1]) if t.split('.')[1].isdigit() else t.split('.')[1])))
         if not ordered:return set()
-        cutoff=score(ordered[min(4,len(ordered)-1)])
+        cutoff=score(ordered[min(9,len(ordered)-1)])
         return {t for t in ordered if score(t)>=cutoff}
     good=[t for t in metrics if direction(t)=='forward'];bad=[t for t in metrics if direction(t)=='backward']
     cg=top(good,lambda t:metrics[t]['Colab']);ng=top(bad,lambda t:metrics[t]['Neglect'])
@@ -135,7 +135,7 @@ def highlight_groups(metrics,details,edges=()):
     for i,((slug,title,metric),selected) in enumerate(zip(definitions,sets)):
         if i in (0,2):selected={t for t in selected if finite(details[t][4]) and (details[t][4]>.6 if i==0 else details[t][4]<.6)}
         rows=[r for r in ranked_rows(metrics,details,metric) if r[1] in selected]
-        groups.append(dict(id=slug,title=title,metric=metric,rows=rows,base='top five by direction before filters; ties at fifth place included'))
+        groups.append(dict(id=slug,title=title,metric=metric,rows=rows,base='top ten by direction before filters; ties at tenth place included'))
     return groups
 
 def workbook_edges(path):
@@ -203,7 +203,7 @@ def read_cases(path):
 
 
 def dependence_diagnostics(metrics, details, edges):
-    'Continuous diagnostic; top five is a highlight criterion, not an independence test.'
+    'Continuous diagnostic; top ten is a highlight criterion, not an independence test.'
     values = {t:dict(TargetCode=t, Colab=metrics[t]['Colab'], synergy_out=0.0,
         synergy_out_correct=0.0, tradeoff_from_opposite=0.0,
         received_unique_direction=0.0, received_bidirectional=0.0,
@@ -227,6 +227,6 @@ def dependence_diagnostics(metrics, details, edges):
     cr,rr=ranks('Colab'),ranks('tradeoff_from_opposite')
     for t,v in values.items():
         v.update(colab_rank=cr.get(t),receiver_rank=rr.get(t),
-            strict_highlight=bool(cr.get(t,999)<=5 and rr.get(t,999)<=5),
+            strict_highlight=bool(cr.get(t,999)<=10 and rr.get(t,999)<=10),
             exploratory_candidate=v['tradeoff_from_opposite']>0 and v['synergy_out']>0)
     return sorted(values.values(),key=lambda v:(-v['tradeoff_from_opposite'],v['TargetCode']))

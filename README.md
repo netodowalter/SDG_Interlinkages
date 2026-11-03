@@ -15,7 +15,7 @@ The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and ope
 | IGES/JRC | Select a UNSD region or country. Optionally upload a previously collected UNSD CSV for the selected area. | Pearson |
 | SDGIndex | Select a region, aggregate, or country from the supplied annual-score workbooks. | Pearson, Spearman, or both |
 
-Choose the scope and area, then select **Run analysis**. The application displays the first five rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, and trade-offs. Download individual files or the complete execution ZIP.
+Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, and trade-offs. Download individual files or the complete execution ZIP.
 
 The two tabs share a calculation queue. Choosing **Both** produces separate results for each method. Completed runs remain in `output/`; Gradio also keeps temporary copies of files served to the browser.
 
@@ -96,7 +96,20 @@ The desired direction and local linear slope determine whether each node moves f
 - **Colab** equals outgoing weighted synergies minus outgoing weighted trade-offs.
 - **Neglect** equals incoming weighted trade-offs plus incoming weighted synergies from backward-moving sources.
 
-The four highlight groups use the published direction, ambition, and ranking-intersection rules, including ties at the fifth position. Group a selects forward-moving top collaborators with ambition > 0.6 outside the top receivers of trade-offs from regression. Group b identifies their intersection with those top receivers. Group c selects backward-moving top neglected targets with ambition < 0.6 outside the top senders of backward synergies. Group d identifies the intersection with those top senders.
+**SDGIndex: performance-time rankings (no semantic ambition).** For each connected indicator, use its latest finite score S and the existing 2000–2025 slope v (score points/year). Forward indicators have `years_to_target = max(0, 100-S)/v`; backward indicators have `years_to_zero = max(0, S)/abs(v)`. Scores already at the relevant boundary have zero remaining years. Stable/undetermined trends have no finite time and are excluded from time rankings. Times are conditional linear extrapolations, not forecasts, with no fixed deadline. Excel retains numeric precision and displays ordinary decimal years to three places; Gradio does likewise.
+
+Rank within progress direction, using all connected indicators. Colab/Neglect and receipt/sending rankings require positive weights or metric values. Each ranking has at most 10 entries; exact ties are resolved by stable node ID. Intersections are not refilled:
+
+| Group | Intersection and exclusions |
+|---|---|
+| a · Collaborators with short target times | Top 10 forward Colab ∩ 10 shortest target times, excluding the top 10 receivers in group b |
+| b · Dependent collaborators | Top 10 forward Colab ∩ top 10 forward recipients of total weighted trade-offs from backward sources |
+| c · Resilient neglected indicators | Top 10 backward Neglect ∩ 10 longest times to zero, excluding the top 10 backward synergy senders in group d |
+| d · Propagating neglected indicators | Top 10 backward Neglect ∩ top 10 backward synergy senders, irrespective of time to zero |
+
+“Dependent” is an exploratory network label, not evidence of a causal mechanism. Group membership, input scores/slopes, times, all six rank positions, and weighted receipts/sending are exported. The complete network highlights the four groups; the synergy and trade-off views highlight their top ten by the existing view metrics.
+
+**IGES/JRC:** retain the current semantic-ambition criteria (>0.6 for group a; <0.6 for group c), direction filters, receiver/sender exclusions, and intersections. Only widen the ranking cutoffs from five to ten, retaining ties at the tenth position. No SDGIndex performance-time criterion is applied to IGES/JRC.
 
 These associations and their exploratory orientations do not establish causality. Nominal p-values do not correct for autocorrelation. Supplied normalized series may contain carried/interpolated observations. These methodological conventions are preserved in the English migration.
 

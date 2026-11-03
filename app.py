@@ -27,21 +27,23 @@ def results(folder):
                 rows = iter(book[sheet].values)
                 headers = next(rows)
                 for pos, values in enumerate(rows, 1):
-                    if pos > 5:
+                    if pos > 10:
                         break
                     row = dict(zip(headers, values))
                     rankings.append([method, metric, row.get('Ranking', pos),
                                      str(row.get('TargetCode', row.get('Target'))),
                                      row.get(metric, row.get('Value')),
                                      row.get('progress_direction', row.get('Direction')),
-                                     row.get('IndicatorCode', row.get('Indicator'))])
+                                     row.get('IndicatorCode', row.get('Indicator')),
+                                     format(row['years_to_target'], '.3f') if row.get('years_to_target') is not None else '',
+                                     format(row['years_to_zero'], '.3f') if row.get('years_to_zero') is not None else ''])
             rows = iter(book['Highlights'].values)
             headers = next(rows)
             for values in rows:
                 row = dict(zip(headers, values))
                 target = row.get('TargetCode') or row.get('Indicator')
                 if target:
-                    highlights.append([method, row['Group'], str(target).split('::')[0], row['Score']])
+                    highlights.append([method, row['Group'], str(target), row['Score'], format(row['Years'], '.3f') if row.get('Years') is not None else ''])
         finally:
             book.close()
     archive = folder / 'results.zip'
@@ -67,15 +69,15 @@ def tab(version, title):
                               value='both', label='Correlation')
         button = gr.Button('Run analysis', variant='primary')
         status = gr.Markdown()
-        gr.Markdown("""### First five in each ranking
+        gr.Markdown("""### First ten in each ranking
 Select a row to see the indicator.""")
-        headers = ['Method', 'Ranking', 'Position', 'Target', 'Score', 'Direction']
+        headers = ['Method', 'Ranking', 'Position', 'Target', 'Score', 'Direction', 'Years to target', 'Years to zero']
         grid = gr.Dataframe(headers=headers, interactive=False)
         indicators = gr.State([])
         indicator = gr.Textbox(label='Selected indicator', interactive=False)
         gr.Markdown("""### Highlights by progress direction
-Groups a–d with eligible targets, including ties at the cutoff.""")
-        groups = gr.Dataframe(headers=['Method', 'Group', 'Target', 'Score'], interactive=False)
+Groups a–d from top 10 intersections. SDGIndex uses performance times; IGES/JRC retains ambition criteria.""")
+        groups = gr.Dataframe(headers=['Method', 'Group', 'Target / indicator', 'Score', 'Years'], interactive=False)
         gallery = gr.Gallery(label='Networks', columns=3, height='auto')
         bundle = gr.File(label='Download all results as ZIP')
         files = gr.File(label='Individual files', file_count='multiple')
@@ -91,7 +93,7 @@ Groups a–d with eligible targets, including ties at the cutoff.""")
                 ranked, highlighted, previews, paths, archive = results(folder)
                 name = list_areas(version, kind)[code]
                 return (f"**{name} ({code})** · {title} · {len(paths)} files generated.",
-                        [r[:6] for r in ranked], [r[6] for r in ranked], '', highlighted,
+                        [r[:6] + r[7:] for r in ranked], [r[6] for r in ranked], '', highlighted,
                         previews, archive, paths)
             except Exception as exc:
                 logging.exception('Analysis failed for %s/%s', version, code)

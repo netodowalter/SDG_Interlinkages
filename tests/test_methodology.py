@@ -69,7 +69,7 @@ class Methodology(unittest.TestCase):
         details['2.1'][5]='backward'
         details['3.1'][4]=None
         groups={g['id']:g['rows'] for g in highlight_groups(metrics,details)}
-        self.assertEqual([r[1] for r in groups['autonomous_collaborators']],['4.1','5.1','6.1'])
+        self.assertEqual([r[1] for r in groups['autonomous_collaborators']],['4.1','5.1','6.1','7.1','8.1'])
         self.assertFalse(groups['contextual_collaborators'])
         self.assertFalse(groups['low_ambition_neglected'])
         self.assertFalse(groups['propagating_neglected'])
