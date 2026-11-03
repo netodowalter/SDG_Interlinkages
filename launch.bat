@@ -12,11 +12,11 @@ if not exist ".venv\Scripts\python.exe" (
 )
 ".venv\Scripts\python.exe" -m pip install --disable-pip-version-check -r requirements.txt
 if errorlevel 1 goto fail
-".venv\Scripts\python.exe" -X utf8 -m ods %*
+".venv\Scripts\python.exe" -X utf8 -m sdg %*
 if errorlevel 1 goto fail
 if "%~1"=="" pause
 exit /b 0
 :fail
-echo Falha na instalacao ou execucao. Veja a mensagem acima.
+echo Installation or execution failed. See the message above.
 if "%~1"=="" pause
 exit /b 1

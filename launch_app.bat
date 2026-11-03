@@ -17,6 +17,6 @@ if errorlevel 1 goto fail
 pause
 exit /b 0
 :fail
-echo Falha na instalacao ou execucao. Veja a mensagem acima.
+echo Installation or execution failed. See the message above.
 pause
 exit /b 1

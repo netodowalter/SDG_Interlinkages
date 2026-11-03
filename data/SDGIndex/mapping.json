@@ -4,7 +4,7 @@
     "target": "1.2",
     "goal": 1,
     "description": "Poverty headcount ratio at $4.20/day (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -12,7 +12,7 @@
     "target": "1.1",
     "goal": 1,
     "description": "Poverty headcount ratio at $3.00/day (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -20,7 +20,7 @@
     "target": "2.3",
     "goal": 2,
     "description": "Cereal yield (tonnes per hectare of harvested land)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -28,7 +28,7 @@
     "target": "2.2",
     "goal": 2,
     "description": "Minimum dietary diversity among children aged 6-23 months (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.969
   },
   {
@@ -36,7 +36,7 @@
     "target": "2.2",
     "goal": 2,
     "description": "Prevalence of obesity, BMI ≥ 30 (% of adult population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.969
   },
   {
@@ -44,7 +44,7 @@
     "target": "2.4",
     "goal": 2,
     "description": "Exports of hazardous pesticides (tonnes per million population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.656
   },
   {
@@ -52,7 +52,7 @@
     "target": "2.2",
     "goal": 2,
     "description": "Prevalence of stunting in children under 5 years of age (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.969
   },
   {
@@ -60,7 +60,7 @@
     "target": "2.4",
     "goal": 2,
     "description": "Progress towards productive and sustainable agriculture (worst 1-5 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.656
   },
   {
@@ -68,7 +68,7 @@
     "target": "2.4",
     "goal": 2,
     "description": "Human Trophic Level (best 2-3 worst)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.656
   },
   {
@@ -76,7 +76,7 @@
     "target": "2.1",
     "goal": 2,
     "description": "Prevalence of undernourishment (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -84,7 +84,7 @@
     "target": "2.2",
     "goal": 2,
     "description": "Prevalence of wasting in children under 5 years of age (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.969
   },
   {
@@ -92,7 +92,7 @@
     "target": "3.1",
     "goal": 3,
     "description": "Births attended by skilled health personnel (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -100,7 +100,7 @@
     "target": "3.7",
     "goal": 3,
     "description": "Adolescent fertility rate (births per 1,000 females aged 15 to 19)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -108,7 +108,7 @@
     "target": "3.3",
     "goal": 3,
     "description": "New HIV infections (per 1,000 uninfected population, all ages)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -116,7 +116,7 @@
     "target": "3.8",
     "goal": 3,
     "description": "Life expectancy at birth (years)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -124,7 +124,7 @@
     "target": "3.1",
     "goal": 3,
     "description": "Maternal mortality ratio (per 100,000 live births) ",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -132,7 +132,7 @@
     "target": "3.4",
     "goal": 3,
     "description": "Age-standardized death rate due to cardiovascular disease, cancer, diabetes, or chronic respiratory disease in adults aged 30 to 70 years (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -140,7 +140,7 @@
     "target": "3.2",
     "goal": 3,
     "description": "Neonatal mortality rate (per 1,000 live births)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -148,7 +148,7 @@
     "target": "3.9",
     "goal": 3,
     "description": "Age-standardized death rate due to air pollution (per 100,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -156,7 +156,7 @@
     "target": "3.4",
     "goal": 3,
     "description": "Subjective well-being (average ladder score, worst 0-10 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -164,7 +164,7 @@
     "target": "3.3",
     "goal": 3,
     "description": "Incidence of tuberculosis (per 100,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -172,7 +172,7 @@
     "target": "3.6",
     "goal": 3,
     "description": "Traffic deaths (per 100,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.625
   },
   {
@@ -180,7 +180,7 @@
     "target": "3.2",
     "goal": 3,
     "description": "Mortality rate, under-5 (per 1,000 live births)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -188,7 +188,7 @@
     "target": "3.8",
     "goal": 3,
     "description": "Universal health coverage (UHC) index of service coverage (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -196,7 +196,7 @@
     "target": "3.b",
     "goal": 3,
     "description": "Surviving infants who received 2 WHO-recommended vaccines (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -204,7 +204,7 @@
     "target": "4.6",
     "goal": 4,
     "description": "Literacy rate (% of population aged 15 to 24)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.844
   },
   {
@@ -212,7 +212,7 @@
     "target": "4.2",
     "goal": 4,
     "description": "Participation rate in pre-primary organized learning (% of children aged 4 to 6)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -220,7 +220,7 @@
     "target": "4.1",
     "goal": 4,
     "description": "Net primary enrollment rate (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -228,7 +228,7 @@
     "target": "4.1",
     "goal": 4,
     "description": "Lower secondary completion rate (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -236,7 +236,7 @@
     "target": "5.1",
     "goal": 5,
     "description": "Ratio of female-to-male mean years of education received (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -244,7 +244,7 @@
     "target": "5.6",
     "goal": 5,
     "description": "Demand for family planning satisfied by modern methods (% of females aged 15 to 49)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -252,7 +252,7 @@
     "target": "5.1",
     "goal": 5,
     "description": "Ratio of female-to-male labor force participation rate (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -260,7 +260,7 @@
     "target": "5.5",
     "goal": 5,
     "description": "Seats held by women in national parliament (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -268,7 +268,7 @@
     "target": "6.4",
     "goal": 6,
     "description": "Freshwater withdrawal (% of available freshwater resources)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.688
   },
   {
@@ -276,7 +276,7 @@
     "target": "6.2",
     "goal": 6,
     "description": "Population using at least basic sanitation services (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.844
   },
   {
@@ -284,7 +284,7 @@
     "target": "6.4",
     "goal": 6,
     "description": "Scarce water consumption embodied in imports (m³ H₂Oeq/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.688
   },
   {
@@ -292,7 +292,7 @@
     "target": "6.1",
     "goal": 6,
     "description": "Population using at least basic drinking water services (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -300,7 +300,7 @@
     "target": "7.1",
     "goal": 7,
     "description": "Population with access to clean fuels and technology for cooking (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -308,7 +308,7 @@
     "target": "7.3",
     "goal": 7,
     "description": "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -316,7 +316,7 @@
     "target": "7.1",
     "goal": 7,
     "description": "Population with access to electricity (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -324,7 +324,7 @@
     "target": "7.2",
     "goal": 7,
     "description": "Renewable energy share in total final energy consumption (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -332,7 +332,7 @@
     "target": "8.10",
     "goal": 8,
     "description": "Adults with an account at a bank or other financial institution (% of population aged 15 or over)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.188
   },
   {
@@ -340,7 +340,7 @@
     "target": "8.1",
     "goal": 8,
     "description": "Adjusted GDP growth index (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.281
   },
   {
@@ -348,7 +348,7 @@
     "target": "8.8",
     "goal": 8,
     "description": "Fundamental labor rights are effectively guaranteed (worst 0-1 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -356,7 +356,7 @@
     "target": "8.7",
     "goal": 8,
     "description": "Victims of modern slavery (per 1,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -364,7 +364,7 @@
     "target": "8.5",
     "goal": 8,
     "description": "Unemployment rate (% of total labor force, ages 15+)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -372,7 +372,7 @@
     "target": "9.5",
     "goal": 9,
     "description": "Articles published in academic journals (per 1,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.328
   },
   {
@@ -380,7 +380,7 @@
     "target": "9.c",
     "goal": 9,
     "description": "E-government: Online Services Index (worst 0-1 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.313
   },
   {
@@ -388,7 +388,7 @@
     "target": "9.c",
     "goal": 9,
     "description": "Population using the internet (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.313
   },
   {
@@ -396,7 +396,7 @@
     "target": "9.1",
     "goal": 9,
     "description": "Logistics Performance Index: Infrastructure Score (worst 1-5 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -404,7 +404,7 @@
     "target": "9.c",
     "goal": 9,
     "description": "Mobile broadband subscriptions (per 100 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.313
   },
   {
@@ -412,7 +412,7 @@
     "target": "9.5",
     "goal": 9,
     "description": "Total patent applications by applicant's origin (per million population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.328
   },
   {
@@ -420,7 +420,7 @@
     "target": "9.5",
     "goal": 9,
     "description": "Expenditure on research and development (% of GDP)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.328
   },
   {
@@ -428,7 +428,7 @@
     "target": "9.1",
     "goal": 9,
     "description": "Rural population with access to all-season roads (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -436,7 +436,7 @@
     "target": "9.5",
     "goal": 9,
     "description": "Score of top 3 universities in Times Higher Education (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.328
   },
   {
@@ -444,7 +444,7 @@
     "target": "10.1",
     "goal": 10,
     "description": "Gini coefficient",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -452,7 +452,7 @@
     "target": "10.1",
     "goal": 10,
     "description": "Palma ratio",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -460,7 +460,7 @@
     "target": "11.1",
     "goal": 11,
     "description": "Access to improved water source, piped (% of urban population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -468,7 +468,7 @@
     "target": "11.6",
     "goal": 11,
     "description": "Annual mean concentration of PM2.5 (μg/m³)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.375
   },
   {
@@ -476,7 +476,7 @@
     "target": "11.1",
     "goal": 11,
     "description": "Proportion of urban population living in slums (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -484,7 +484,7 @@
     "target": "11.2",
     "goal": 11,
     "description": "Population with convenient access to public transport in cities (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -492,7 +492,7 @@
     "target": "12.5",
     "goal": 12,
     "description": "Electronic waste that is not recollected (kg/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -500,7 +500,7 @@
     "target": "12.4",
     "goal": 12,
     "description": "Exports of plastic waste (kg/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.813
   },
   {
@@ -508,7 +508,7 @@
     "target": "12.5",
     "goal": 12,
     "description": "Municipal solid waste (kg/capita/day)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.563
   },
   {
@@ -516,7 +516,7 @@
     "target": "12.4",
     "goal": 12,
     "description": "Nitrogen emissions associated with imports (kg/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.813
   },
   {
@@ -524,7 +524,7 @@
     "target": "12.4",
     "goal": 12,
     "description": "Production-based nitrogen emissions (kg/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.813
   },
   {
@@ -532,7 +532,7 @@
     "target": "12.4",
     "goal": 12,
     "description": "Air pollution associated with imports (DALYs per 1,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.813
   },
   {
@@ -540,7 +540,7 @@
     "target": "12.4",
     "goal": 12,
     "description": "Production-based air pollution (DALYs per 1,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.813
   },
   {
@@ -548,7 +548,7 @@
     "target": "13.2",
     "goal": 13,
     "description": "CO₂ emissions embodied in fossil fuel exports (tonnes/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -556,7 +556,7 @@
     "target": "13.2",
     "goal": 13,
     "description": "CO₂ emissions from fossil fuel combustion and cement production (tCO₂/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -564,7 +564,7 @@
     "target": "13.2",
     "goal": 13,
     "description": "GHG emissions embodied in imports (tCO₂equiv/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -572,7 +572,7 @@
     "target": "14.2",
     "goal": 14,
     "description": "Marine biodiversity threats embodied in imports (per million population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -580,7 +580,7 @@
     "target": "14.1",
     "goal": 14,
     "description": "Ocean Health Index: Clean Waters score (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.813
   },
   {
@@ -588,7 +588,7 @@
     "target": "14.5",
     "goal": 14,
     "description": "Mean area that is protected in marine sites important to biodiversity (%) ",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.625
   },
   {
@@ -596,7 +596,7 @@
     "target": "14.4",
     "goal": 14,
     "description": "Fish caught that are then discarded (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -604,7 +604,7 @@
     "target": "14.4",
     "goal": 14,
     "description": "Fish caught from overexploited or collapsed stocks (% of total catch)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -612,7 +612,7 @@
     "target": "14.2",
     "goal": 14,
     "description": "Fish caught by trawling or dredging (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -620,7 +620,7 @@
     "target": "15.1",
     "goal": 15,
     "description": "Mean area that is protected in freshwater sites important to biodiversity (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -628,7 +628,7 @@
     "target": "15.1",
     "goal": 15,
     "description": "Mean area that is protected in terrestrial sites important to biodiversity (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 1.0
   },
   {
@@ -636,7 +636,7 @@
     "target": "15.2",
     "goal": 15,
     "description": "Permanent deforestation (% of forest area, 3-year average)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.438
   },
   {
@@ -644,7 +644,7 @@
     "target": "15.2",
     "goal": 15,
     "description": "Imported deforestation (m²/capita)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.438
   },
   {
@@ -652,7 +652,7 @@
     "target": "15.5",
     "goal": 15,
     "description": "Red List Index of species survival (worst 0-1 best) ",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.708
   },
   {
@@ -660,7 +660,7 @@
     "target": "16.6",
     "goal": 16,
     "description": "Timeliness of administrative proceedings (worst 0-1 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -668,7 +668,7 @@
     "target": "16.2",
     "goal": 16,
     "description": "Children involved in child labor (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -676,7 +676,7 @@
     "target": "16.5",
     "goal": 16,
     "description": "Corruption Perceptions Index (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.375
   },
   {
@@ -684,7 +684,7 @@
     "target": "16.3",
     "goal": 16,
     "description": "Unsentenced detainees (% of prison population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -692,7 +692,7 @@
     "target": "16.3",
     "goal": 16,
     "description": "Expropriations are lawful and adequately compensated (worst 0-1 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -700,7 +700,7 @@
     "target": "16.1",
     "goal": 16,
     "description": "Homicides (per 100,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.375
   },
   {
@@ -708,7 +708,7 @@
     "target": "16.3",
     "goal": 16,
     "description": "Access to and affordability of justice (worst 0-1 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -716,7 +716,7 @@
     "target": "16.10",
     "goal": 16,
     "description": "Press Freedom Index (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -724,7 +724,7 @@
     "target": "16.1",
     "goal": 16,
     "description": "Crime is effectively controlled (worst 0-1 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.375
   },
   {
@@ -732,7 +732,7 @@
     "target": "16.9",
     "goal": 16,
     "description": "Birth registrations with civil authority (% of children under age 5)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.938
   },
   {
@@ -740,7 +740,7 @@
     "target": "16.4",
     "goal": 16,
     "description": "Exports of major conventional weapons (TIV per 100,000 population)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.438
   },
   {
@@ -748,7 +748,7 @@
     "target": "17.1",
     "goal": 17,
     "description": "Government spending on health and education (% of GDP)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.188
   },
   {
@@ -756,7 +756,7 @@
     "target": "17.1",
     "goal": 17,
     "description": "Other countries: Government revenue excluding grants (% of GDP)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.188
   },
   {
@@ -764,7 +764,7 @@
     "target": "17.16",
     "goal": 17,
     "description": "Index of countries' support to UN-based multilateralism (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.188
   },
   {
@@ -772,7 +772,7 @@
     "target": "17.1",
     "goal": 17,
     "description": "Shifted profits of multinationals (US$ billion)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.188
   },
   {
@@ -780,7 +780,7 @@
     "target": "17.18",
     "goal": 17,
     "description": "Statistical Performance Index (worst 0-100 best)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.625
   },
   {
@@ -788,7 +788,7 @@
     "target": "6.3",
     "goal": 6,
     "description": "Anthropogenic wastewater that receives treatment (%)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.469
   },
   {
@@ -796,7 +796,7 @@
     "target": "17.2",
     "goal": 17,
     "description": "For high-income and all OECD DAC countries: International concessional public finance, including official development assistance (% of GNI)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.75
   },
   {
@@ -804,7 +804,7 @@
     "target": "17.1",
     "goal": 17,
     "description": "Corporate Tax Haven Score (best 0-100 worst)",
-    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "rule": "Editorial thematic association within the same SDG; distinct nodes with no within-SDG edges.",
     "ambition": 0.188
   }
 ]
