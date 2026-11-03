@@ -15,7 +15,7 @@ The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and ope
 | IGES/JRC | Select a UNSD region or country. Optionally upload a previously collected UNSD CSV for the selected area. | Pearson |
 | SDGIndex | Select a region, aggregate, or country from the supplied annual-score workbooks. | Pearson, Spearman, or both |
 
-Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, and trade-offs. Download individual files or the complete execution ZIP.
+Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, and trade-offs. All three PNGs use the same four highlight groups, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
 
 The two tabs share a calculation queue. Choosing **Both** produces separate results for each method. Completed runs remain in `output/`; Gradio also keeps temporary copies of files served to the browser.
 
@@ -46,7 +46,7 @@ python -m sdg --version SDGIndex --scope region --area World --method both
 
 Use `--output PATH` to choose another results root. Pass the same options to `launch.bat` on Windows. Terminal-only installations need `requirements.txt`.
 
-Previous `python -m ods` commands remain available through a compatibility entry point. The previous option names are accepted as aliases and produce English outputs. New integrations should import `sdg.service`.
+Use `python -m sdg` for terminal commands and `sdg.service` for Python integrations. The previous option names remain accepted as aliases and produce English outputs.
 
 ## Results
 
@@ -107,7 +107,7 @@ Rank within progress direction, using all connected indicators. Colab/Neglect an
 | c · Resilient neglected indicators | Top 10 backward Neglect ∩ 10 longest times to zero, excluding the top 10 backward synergy senders in group d |
 | d · Propagating neglected indicators | Top 10 backward Neglect ∩ top 10 backward synergy senders, irrespective of time to zero |
 
-“Dependent” is an exploratory network label, not evidence of a causal mechanism. Group membership, input scores/slopes, times, all six rank positions, and weighted receipts/sending are exported. The complete network highlights the four groups; the synergy and trade-off views highlight their top ten by the existing view metrics.
+“Dependent” is an exploratory network label, not evidence of a causal mechanism. Group membership, input scores/slopes, times, all six rank positions, and weighted receipts/sending are exported. The complete network highlights the four groups; the synergy and trade-off views retain those same category borders for highlighted nodes present in each view.
 
 **IGES/JRC:** retain the current semantic-ambition criteria (>0.6 for group a; <0.6 for group c), direction filters, receiver/sender exclusions, and intersections. Only widen the ranking cutoffs from five to ten, retaining ties at the tenth position. No SDGIndex performance-time criterion is applied to IGES/JRC.
 

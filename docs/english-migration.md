@@ -1,6 +1,6 @@
 # English migration
 
-The Python package, Gradio controls, terminal messages, workbook filenames, worksheet titles, column names, categorical values, JSON metadata, CSV exports and PNG annotations use English. The primary Python package is `sdg`; `ods` retains the previous command entry point.
+The Python package, Gradio controls, terminal messages, workbook filenames, worksheet titles, column names, categorical values, JSON metadata, CSV exports and PNG annotations use English. The Python package and command entry point are `sdg`.
 
 ## Official terminology
 

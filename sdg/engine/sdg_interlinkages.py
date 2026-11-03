@@ -4,7 +4,7 @@ Collect UNSD observations or reuse a CSV, select/fill 2000–2025 series,
 consolidate shared measures, calculate Pearson and apply literature direction
 and temporal classification before network metrics. Final files contain audit,
 local trends, target ambition, rankings and adverse cases. Formula caches are
-preserved. Use python -m ods for the shared command-line interface."""
+preserved. Use python -m sdg for the shared command-line interface."""
 from pathlib import Path
 import argparse
 import csv
