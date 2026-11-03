@@ -2,7 +2,7 @@
 
 Explore directed networks of collaboration and neglect among Sustainable Development Goal (SDG) targets using IGES/JRC relationships and UNSD observations, or annual SDGIndex indicator scores.
 
-The Gradio application and command-line interface use the same Python analysis service. Local SDGIndex inputs cover 169 countries and 14 regions or aggregates. Each execution exports workbooks, node and edge tables, and three network images.
+The Gradio application and command-line interface use the same Python analysis service. Local SDGIndex inputs cover 169 countries and 14 regions or aggregates. Each execution exports workbooks, node and edge tables, and four network images.
 
 ## Windows application
 
@@ -15,7 +15,7 @@ The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and ope
 | IGES/JRC | Select a UNSD region or country. Optionally upload a previously collected UNSD CSV for the selected area. | Pearson |
 | SDGIndex | Select a region, aggregate, or country from the supplied annual-score workbooks. | Pearson, Spearman, or both |
 
-Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, and trade-offs. All three PNGs use the same four highlight groups, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
+Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, trade-offs, and the experimental Two-step interface. All four PNGs use the same four highlight groups, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
 
 The two tabs share a calculation queue. Choosing **Both** produces separate results for each method. Completed runs remain in `output/`; Gradio also keeps temporary copies of files served to the browser.
 
@@ -151,3 +151,7 @@ python -m unittest discover -s tests
 ```
 
 Tests cover measure identity, indicator directionality, temporal reclassification boundaries, highlight rules, and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
+
+### Experimental network view
+
+The existing complete network is retained alongside an additional **Two-step interface** view, with the same legends and an experimental-layout note. See [the layout documentation](docs/two-step-interface-layout.md) for its display score, positioning and interpretation.

@@ -1,4 +1,5 @@
 'Export network PNGs without a browser or graphics server.'
+from .two_step import interface_positions, NOTE
 from collections import defaultdict
 from math import atan2, cos, sin
 from pathlib import Path
@@ -20,7 +21,7 @@ def scale(value, lo, hi, small, large):
     return (small + large) / 2 if lo == hi else small + (large-small)*(value-lo)/(hi-lo)
 
 
-# Borders retain the same category meaning in all three views.
+# Borders retain the same category meaning in all views.
 BORDER_COLORS = ['#ffffff', '#f2c500', '#888888', '#d71920']
 PLOT = (80, 215, 3120, 1760)
 
@@ -191,8 +192,8 @@ def legend(draw, dataset):
 def render_networks(folder, prefix, title, graph, groups, icons):
     nodes = {n['id']: n for n in graph['nodes']}
     categories = {row[1]: i for i, g in enumerate(groups) for row in g['rows']}
-    for mode, label in [('full', 'Progress and regression'), ('synergy', 'Synergies'), ('trade-off', 'Trade-offs')]:
-        edges = [e for e in graph['edges'] if mode == 'full' or e['interaction'] == mode]
+    for mode, label in [('full', 'Progress and regression'), ('synergy', 'Synergies'), ('trade-off', 'Trade-offs'), ('two_step_interface', 'Two-step interface')]:
+        edges = [e for e in graph['edges'] if mode in ('full', 'two_step_interface') or e['interaction'] == mode]
         ids = sorted({e[k] for e in edges for k in ('source', 'target')})
         image = Image.new('RGB', (3200, 2240), 'white')
         draw = ImageDraw.Draw(image)
@@ -210,7 +211,7 @@ def render_networks(folder, prefix, title, graph, groups, icons):
                 elif mode == 'trade-off':
                     scores[b] += w * (nodes[a]['direction'] == 'forward')
                     scores[a] += w * (nodes[b]['direction'] == 'forward')
-            if mode == 'full':
+            if mode in ('full', 'two_step_interface'):
                 scores = {i: nodes[i]['colab'] if nodes[i]['direction']=='forward' else
                           nodes[i]['neglect'] if nodes[i]['direction']=='backward' else 0 for i in ids}
             tiers = {i: categories.get(i,-1) for i in ids}
@@ -220,6 +221,8 @@ def render_networks(folder, prefix, title, graph, groups, icons):
             ranges = {0:(58,68), 1:(66,76), 2:(58,68), 3:(66,76), -1:(44,56)}
             sizes = {i:int(scale(scores[i],min(extent[tiers[i]]),max(extent[tiers[i]]),*ranges[tiers[i]])) for i in ids}
             xy = positions(ids,edges,sizes)
+            if mode == 'two_step_interface':
+                xy = interface_positions([nodes[i] for i in ids], edges, sizes, xy, PLOT)
             weights = [abs(e['weight']) for e in edges]
             low, high = min(weights), max(weights)
             partners = {(e['source'],e['target']) for e in edges}
@@ -253,4 +256,6 @@ def render_networks(folder, prefix, title, graph, groups, icons):
                     label_font = font(label_font.size-1)
                 draw.text((x,y+size*.17),target,anchor='mm',fill='white',stroke_width=1,stroke_fill='#263238',font=label_font)
         legend(draw,graph.get('dataset','IGES_JRC'))
+        if mode == 'two_step_interface':
+            draw.text((70,2160), NOTE, font=font(20), fill='#465b63')
         image.save(folder / f"{prefix}_{mode}.png")

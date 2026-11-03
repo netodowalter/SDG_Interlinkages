@@ -1,6 +1,7 @@
 """Readable layouts preserve data and separate all icon bounding boxes."""
 import unittest
 import numpy as np
+from sdg.two_step import two_step_scores, interface_positions
 from sdg.render import positions, PLOT, components, edge_color
 
 
@@ -44,3 +45,20 @@ class NetworkRendering(unittest.TestCase):
         self.assertEqual(edge_color(dict(source='a',interaction='trade-off'),nodes),(153,0,51))
         self.assertEqual(edge_color(dict(source='b',interaction='synergy'),nodes),(219,166,184))
         self.assertEqual(edge_color(dict(source='b',interaction='trade-off'),nodes),(184,184,184))
+
+    def test_two_step_directed_channels(self):
+        nodes = [dict(id=i,direction=d) for i,d in [('a','backward'),('b','forward'),('c','forward'),('u','stable')]]
+        edges = [dict(source=a,target=b,weight=w,interaction=t) for a,b,w,t in [('a','b',-.5,'trade-off'),('b','c',.4,'synergy'),('c','b',.7,'synergy'),('u','b',1,'trade-off'),('b','b',1,'synergy')]]
+        result = two_step_scores(nodes,edges)
+        self.assertAlmostEqual(result['b'], .2)
+        self.assertEqual(result['a'], 0)
+        self.assertEqual(result['c'], 0)
+        sizes = {n['id']:76 for n in nodes}
+        baseline = positions(list(sizes),edges,sizes)
+        xy = interface_positions(nodes,edges,sizes,baseline,PLOT)
+        for a in sizes:
+            for b in sizes:
+                if a != b:
+                    delta = np.abs(xy[a]-xy[b])
+                    self.assertTrue(delta[0]>=94 or delta[1]>=94)
+        self.assertEqual(set(xy),set(sizes))
