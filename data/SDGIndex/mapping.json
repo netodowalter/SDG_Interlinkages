@@ -1,0 +1,810 @@
+[
+  {
+    "indicator": "n_sdg1_lmicpov",
+    "target": "1.2",
+    "goal": 1,
+    "description": "Poverty headcount ratio at $4.20/day (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg1_wpc",
+    "target": "1.1",
+    "goal": 1,
+    "description": "Poverty headcount ratio at $3.00/day (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg2_crlyld",
+    "target": "2.3",
+    "goal": 2,
+    "description": "Cereal yield (tonnes per hectare of harvested land)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg2_mdd",
+    "target": "2.2",
+    "goal": 2,
+    "description": "Minimum dietary diversity among children aged 6-23 months (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.969
+  },
+  {
+    "indicator": "n_sdg2_obesity",
+    "target": "2.2",
+    "goal": 2,
+    "description": "Prevalence of obesity, BMI ≥ 30 (% of adult population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.969
+  },
+  {
+    "indicator": "n_sdg2_pestexp",
+    "target": "2.4",
+    "goal": 2,
+    "description": "Exports of hazardous pesticides (tonnes per million population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.656
+  },
+  {
+    "indicator": "n_sdg2_stunting",
+    "target": "2.2",
+    "goal": 2,
+    "description": "Prevalence of stunting in children under 5 years of age (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.969
+  },
+  {
+    "indicator": "n_sdg2_sustagri",
+    "target": "2.4",
+    "goal": 2,
+    "description": "Progress towards productive and sustainable agriculture (worst 1-5 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.656
+  },
+  {
+    "indicator": "n_sdg2_trophic",
+    "target": "2.4",
+    "goal": 2,
+    "description": "Human Trophic Level (best 2-3 worst)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.656
+  },
+  {
+    "indicator": "n_sdg2_undernsh",
+    "target": "2.1",
+    "goal": 2,
+    "description": "Prevalence of undernourishment (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg2_wasting",
+    "target": "2.2",
+    "goal": 2,
+    "description": "Prevalence of wasting in children under 5 years of age (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.969
+  },
+  {
+    "indicator": "n_sdg3_births",
+    "target": "3.1",
+    "goal": 3,
+    "description": "Births attended by skilled health personnel (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg3_fertility",
+    "target": "3.7",
+    "goal": 3,
+    "description": "Adolescent fertility rate (births per 1,000 females aged 15 to 19)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg3_hiv",
+    "target": "3.3",
+    "goal": 3,
+    "description": "New HIV infections (per 1,000 uninfected population, all ages)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg3_lifee",
+    "target": "3.8",
+    "goal": 3,
+    "description": "Life expectancy at birth (years)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg3_matmort",
+    "target": "3.1",
+    "goal": 3,
+    "description": "Maternal mortality ratio (per 100,000 live births) ",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg3_ncds",
+    "target": "3.4",
+    "goal": 3,
+    "description": "Age-standardized death rate due to cardiovascular disease, cancer, diabetes, or chronic respiratory disease in adults aged 30 to 70 years (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg3_neonat",
+    "target": "3.2",
+    "goal": 3,
+    "description": "Neonatal mortality rate (per 1,000 live births)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg3_pollmort",
+    "target": "3.9",
+    "goal": 3,
+    "description": "Age-standardized death rate due to air pollution (per 100,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg3_swb",
+    "target": "3.4",
+    "goal": 3,
+    "description": "Subjective well-being (average ladder score, worst 0-10 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg3_tb",
+    "target": "3.3",
+    "goal": 3,
+    "description": "Incidence of tuberculosis (per 100,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg3_traffic",
+    "target": "3.6",
+    "goal": 3,
+    "description": "Traffic deaths (per 100,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.625
+  },
+  {
+    "indicator": "n_sdg3_u5mort",
+    "target": "3.2",
+    "goal": 3,
+    "description": "Mortality rate, under-5 (per 1,000 live births)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg3_uhc",
+    "target": "3.8",
+    "goal": 3,
+    "description": "Universal health coverage (UHC) index of service coverage (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg3_vac",
+    "target": "3.b",
+    "goal": 3,
+    "description": "Surviving infants who received 2 WHO-recommended vaccines (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg4_literacy",
+    "target": "4.6",
+    "goal": 4,
+    "description": "Literacy rate (% of population aged 15 to 24)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.844
+  },
+  {
+    "indicator": "n_sdg4_preprim",
+    "target": "4.2",
+    "goal": 4,
+    "description": "Participation rate in pre-primary organized learning (% of children aged 4 to 6)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg4_primary",
+    "target": "4.1",
+    "goal": 4,
+    "description": "Net primary enrollment rate (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg4_second",
+    "target": "4.1",
+    "goal": 4,
+    "description": "Lower secondary completion rate (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg5_edat",
+    "target": "5.1",
+    "goal": 5,
+    "description": "Ratio of female-to-male mean years of education received (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg5_familypl",
+    "target": "5.6",
+    "goal": 5,
+    "description": "Demand for family planning satisfied by modern methods (% of females aged 15 to 49)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg5_lfpr",
+    "target": "5.1",
+    "goal": 5,
+    "description": "Ratio of female-to-male labor force participation rate (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg5_parl",
+    "target": "5.5",
+    "goal": 5,
+    "description": "Seats held by women in national parliament (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg6_freshwat",
+    "target": "6.4",
+    "goal": 6,
+    "description": "Freshwater withdrawal (% of available freshwater resources)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.688
+  },
+  {
+    "indicator": "n_sdg6_sanita",
+    "target": "6.2",
+    "goal": 6,
+    "description": "Population using at least basic sanitation services (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.844
+  },
+  {
+    "indicator": "n_sdg6_scarcew",
+    "target": "6.4",
+    "goal": 6,
+    "description": "Scarce water consumption embodied in imports (m³ H₂Oeq/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.688
+  },
+  {
+    "indicator": "n_sdg6_water",
+    "target": "6.1",
+    "goal": 6,
+    "description": "Population using at least basic drinking water services (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg7_cleanfuel",
+    "target": "7.1",
+    "goal": 7,
+    "description": "Population with access to clean fuels and technology for cooking (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg7_co2twh",
+    "target": "7.3",
+    "goal": 7,
+    "description": "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg7_elecac",
+    "target": "7.1",
+    "goal": 7,
+    "description": "Population with access to electricity (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg7_renewcon",
+    "target": "7.2",
+    "goal": 7,
+    "description": "Renewable energy share in total final energy consumption (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg8_accounts",
+    "target": "8.10",
+    "goal": 8,
+    "description": "Adults with an account at a bank or other financial institution (% of population aged 15 or over)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.188
+  },
+  {
+    "indicator": "n_sdg8_adjgrowi",
+    "target": "8.1",
+    "goal": 8,
+    "description": "Adjusted GDP growth index (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.281
+  },
+  {
+    "indicator": "n_sdg8_rights",
+    "target": "8.8",
+    "goal": 8,
+    "description": "Fundamental labor rights are effectively guaranteed (worst 0-1 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg8_slavery",
+    "target": "8.7",
+    "goal": 8,
+    "description": "Victims of modern slavery (per 1,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg8_unemp",
+    "target": "8.5",
+    "goal": 8,
+    "description": "Unemployment rate (% of total labor force, ages 15+)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg9_articles",
+    "target": "9.5",
+    "goal": 9,
+    "description": "Articles published in academic journals (per 1,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.328
+  },
+  {
+    "indicator": "n_sdg9_egov",
+    "target": "9.c",
+    "goal": 9,
+    "description": "E-government: Online Services Index (worst 0-1 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.313
+  },
+  {
+    "indicator": "n_sdg9_intuse",
+    "target": "9.c",
+    "goal": 9,
+    "description": "Population using the internet (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.313
+  },
+  {
+    "indicator": "n_sdg9_lpi",
+    "target": "9.1",
+    "goal": 9,
+    "description": "Logistics Performance Index: Infrastructure Score (worst 1-5 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg9_mobuse",
+    "target": "9.c",
+    "goal": 9,
+    "description": "Mobile broadband subscriptions (per 100 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.313
+  },
+  {
+    "indicator": "n_sdg9_patents",
+    "target": "9.5",
+    "goal": 9,
+    "description": "Total patent applications by applicant's origin (per million population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.328
+  },
+  {
+    "indicator": "n_sdg9_rdex",
+    "target": "9.5",
+    "goal": 9,
+    "description": "Expenditure on research and development (% of GDP)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.328
+  },
+  {
+    "indicator": "n_sdg9_roads",
+    "target": "9.1",
+    "goal": 9,
+    "description": "Rural population with access to all-season roads (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg9_uni",
+    "target": "9.5",
+    "goal": 9,
+    "description": "Score of top 3 universities in Times Higher Education (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.328
+  },
+  {
+    "indicator": "n_sdg10_gini",
+    "target": "10.1",
+    "goal": 10,
+    "description": "Gini coefficient",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg10_palma",
+    "target": "10.1",
+    "goal": 10,
+    "description": "Palma ratio",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg11_pipedwat",
+    "target": "11.1",
+    "goal": 11,
+    "description": "Access to improved water source, piped (% of urban population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg11_pm25",
+    "target": "11.6",
+    "goal": 11,
+    "description": "Annual mean concentration of PM2.5 (μg/m³)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.375
+  },
+  {
+    "indicator": "n_sdg11_slums",
+    "target": "11.1",
+    "goal": 11,
+    "description": "Proportion of urban population living in slums (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg11_transport",
+    "target": "11.2",
+    "goal": 11,
+    "description": "Population with convenient access to public transport in cities (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg12_ewaste",
+    "target": "12.5",
+    "goal": 12,
+    "description": "Electronic waste that is not recollected (kg/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg12_explastic",
+    "target": "12.4",
+    "goal": 12,
+    "description": "Exports of plastic waste (kg/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.813
+  },
+  {
+    "indicator": "n_sdg12_msw",
+    "target": "12.5",
+    "goal": 12,
+    "description": "Municipal solid waste (kg/capita/day)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.563
+  },
+  {
+    "indicator": "n_sdg12_nimport",
+    "target": "12.4",
+    "goal": 12,
+    "description": "Nitrogen emissions associated with imports (kg/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.813
+  },
+  {
+    "indicator": "n_sdg12_nprod",
+    "target": "12.4",
+    "goal": 12,
+    "description": "Production-based nitrogen emissions (kg/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.813
+  },
+  {
+    "indicator": "n_sdg12_pollimp",
+    "target": "12.4",
+    "goal": 12,
+    "description": "Air pollution associated with imports (DALYs per 1,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.813
+  },
+  {
+    "indicator": "n_sdg12_pollprod",
+    "target": "12.4",
+    "goal": 12,
+    "description": "Production-based air pollution (DALYs per 1,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.813
+  },
+  {
+    "indicator": "n_sdg13_co2export",
+    "target": "13.2",
+    "goal": 13,
+    "description": "CO₂ emissions embodied in fossil fuel exports (tonnes/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg13_co2gcp",
+    "target": "13.2",
+    "goal": 13,
+    "description": "CO₂ emissions from fossil fuel combustion and cement production (tCO₂/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg13_ghgimport",
+    "target": "13.2",
+    "goal": 13,
+    "description": "GHG emissions embodied in imports (tCO₂equiv/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg14_biomar",
+    "target": "14.2",
+    "goal": 14,
+    "description": "Marine biodiversity threats embodied in imports (per million population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg14_cleanwat",
+    "target": "14.1",
+    "goal": 14,
+    "description": "Ocean Health Index: Clean Waters score (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.813
+  },
+  {
+    "indicator": "n_sdg14_cpma",
+    "target": "14.5",
+    "goal": 14,
+    "description": "Mean area that is protected in marine sites important to biodiversity (%) ",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.625
+  },
+  {
+    "indicator": "n_sdg14_discard",
+    "target": "14.4",
+    "goal": 14,
+    "description": "Fish caught that are then discarded (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg14_fishstocks",
+    "target": "14.4",
+    "goal": 14,
+    "description": "Fish caught from overexploited or collapsed stocks (% of total catch)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg14_trawl",
+    "target": "14.2",
+    "goal": 14,
+    "description": "Fish caught by trawling or dredging (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg15_cpfa",
+    "target": "15.1",
+    "goal": 15,
+    "description": "Mean area that is protected in freshwater sites important to biodiversity (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg15_cpta",
+    "target": "15.1",
+    "goal": 15,
+    "description": "Mean area that is protected in terrestrial sites important to biodiversity (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 1.0
+  },
+  {
+    "indicator": "n_sdg15_forchg",
+    "target": "15.2",
+    "goal": 15,
+    "description": "Permanent deforestation (% of forest area, 3-year average)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.438
+  },
+  {
+    "indicator": "n_sdg15_impdefor",
+    "target": "15.2",
+    "goal": 15,
+    "description": "Imported deforestation (m²/capita)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.438
+  },
+  {
+    "indicator": "n_sdg15_redlist",
+    "target": "15.5",
+    "goal": 15,
+    "description": "Red List Index of species survival (worst 0-1 best) ",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.708
+  },
+  {
+    "indicator": "n_sdg16_admin",
+    "target": "16.6",
+    "goal": 16,
+    "description": "Timeliness of administrative proceedings (worst 0-1 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg16_clabor",
+    "target": "16.2",
+    "goal": 16,
+    "description": "Children involved in child labor (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg16_cpi",
+    "target": "16.5",
+    "goal": 16,
+    "description": "Corruption Perceptions Index (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.375
+  },
+  {
+    "indicator": "n_sdg16_detain",
+    "target": "16.3",
+    "goal": 16,
+    "description": "Unsentenced detainees (% of prison population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg16_exprop",
+    "target": "16.3",
+    "goal": 16,
+    "description": "Expropriations are lawful and adequately compensated (worst 0-1 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg16_homicides",
+    "target": "16.1",
+    "goal": 16,
+    "description": "Homicides (per 100,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.375
+  },
+  {
+    "indicator": "n_sdg16_justice",
+    "target": "16.3",
+    "goal": 16,
+    "description": "Access to and affordability of justice (worst 0-1 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg16_rsf",
+    "target": "16.10",
+    "goal": 16,
+    "description": "Press Freedom Index (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg16_security",
+    "target": "16.1",
+    "goal": 16,
+    "description": "Crime is effectively controlled (worst 0-1 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.375
+  },
+  {
+    "indicator": "n_sdg16_u5reg",
+    "target": "16.9",
+    "goal": 16,
+    "description": "Birth registrations with civil authority (% of children under age 5)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.938
+  },
+  {
+    "indicator": "n_sdg16_weaponsexp",
+    "target": "16.4",
+    "goal": 16,
+    "description": "Exports of major conventional weapons (TIV per 100,000 population)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.438
+  },
+  {
+    "indicator": "n_sdg17_govex",
+    "target": "17.1",
+    "goal": 17,
+    "description": "Government spending on health and education (% of GDP)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.188
+  },
+  {
+    "indicator": "n_sdg17_govrev",
+    "target": "17.1",
+    "goal": 17,
+    "description": "Other countries: Government revenue excluding grants (% of GDP)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.188
+  },
+  {
+    "indicator": "n_sdg17_multilat",
+    "target": "17.16",
+    "goal": 17,
+    "description": "Index of countries' support to UN-based multilateralism (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.188
+  },
+  {
+    "indicator": "n_sdg17_sprofits",
+    "target": "17.1",
+    "goal": 17,
+    "description": "Shifted profits of multinationals (US$ billion)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.188
+  },
+  {
+    "indicator": "n_sdg17_statperf",
+    "target": "17.18",
+    "goal": 17,
+    "description": "Statistical Performance Index (worst 0-100 best)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.625
+  },
+  {
+    "indicator": "n_sdg6_wastewat",
+    "target": "6.3",
+    "goal": 6,
+    "description": "Anthropogenic wastewater that receives treatment (%)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.469
+  },
+  {
+    "indicator": "n_sdg17_oda",
+    "target": "17.2",
+    "goal": 17,
+    "description": "For high-income and all OECD DAC countries: International concessional public finance, including official development assistance (% of GNI)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.75
+  },
+  {
+    "indicator": "n_sdg17_cohaven",
+    "target": "17.1",
+    "goal": 17,
+    "description": "Corporate Tax Haven Score (best 0-100 worst)",
+    "rule": "Associação temática editorial dentro do mesmo ODS; nós distintos, sem arestas intra-ODS.",
+    "ambition": 0.188
+  }
+]

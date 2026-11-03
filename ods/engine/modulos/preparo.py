@@ -1,0 +1,2276 @@
+#!/usr/bin/env python3
+"""Prepara CSVs da API ODS para a rotina de Pearson/redes. Python >= 3.10.
+
+Dependência: openpyxl (py -m pip install openpyxl).
+Uso: py preparar_regioes_api.py
+     py preparar_regioes_api.py --entrada "C:\\dados"
+     py preparar_regioes_api.py --entrada "001_World_total_by_continental_regions.csv"
+
+Coloque o script junto dos CSVs da API. Processa arquivos com as colunas
+series, indicator, geoAreaCode, geoAreaName, timePeriodStart, value.
+Outros CSVs (redes, atributos etc.) são ignorados na busca em pasta.
+Saída: [codigo]_[Region]_SDG_API_2000_2025.xlsx, na mesma pasta.
+Abas: [Region], [Region]_original, Series, Ambicao_metas e API_catalog.
+
+SELEÇÃO
+- Preserva uma coluna por meta para auditoria; cálculos usam uma representante
+  por série/dimensões/unidade. Representacao_metas documenta a consolidação.
+- Cada linha do IGES é uma opção; as correspondências com a API e dimensões
+  fixas estão em DEFAULT_CONFIG (incluem proxies documentados da rotina anterior).
+- Entre opções disponíveis: mais anos NUMÉRICOS distintos em 2000–2025;
+  empate: primeira linha do IGES. Limites como <2.5 não são pontos numéricos.
+- Todas as metas IGES ficam na matriz. Metas sem observação numérica ficam
+  vazias e são sinalizadas em Series; não se inventa uma série para elas.
+- Series registra ordem IGES, candidatos, contagens, código real e proxy.
+- Usa table_iges.xlsx na pasta se existir, ou --iges; sem arquivo, usa a
+  tabela IGES incorporada. Linhas novas sem correspondência ficam pendentes.
+- --regras aceita uma lista JSON de regras para ampliar/substituir o mapeamento:
+  [{"iges_target":"1.1","iges_indicator":"1.1.1",
+    "iges_description":"... texto exato da tabela IGES ...",
+    "api_series":"SI_POV_DAY1","dimensions":{"dimensions_Age":"ALLAGE",
+    "dimensions_Location":"ALLAREA","dimensions_Sex":"BOTHSEX",
+    "dimensions_Reporting Type":"G"},"lower_bound":0,"upper_bound":100,
+    "notes":"..."}]
+  Seletores de dimensão exigem correspondência EXATA; nunca soma subgrupos.
+
+CAGR
+- Preserva os pontos e limites textuais originais.
+- Lacunas internas: V0*(V1/V0)^((ano-ano0)/(ano1-ano0)).
+- Antes/depois: dois primeiros/últimos pontos numéricos, respectivamente.
+- Extremos positivos permitem CAGR; dois zeros permitem zero constante.
+  Extremos negativos/zero misto deixam a lacuna vazia; sem método alternativo.
+- Limites configurados só afetam valores gerados. Não multiplica % por 100.
+- As fórmulas referenciam _original; editar pontos existentes recalcula valores.
+  Inserir novos pontos requer rodar novamente para redefinir âncoras/seleção.
+- API_catalog contém só combinações série/dimensões efetivamente selecionadas.
+- Ambicao_metas conserva a tabela integral de ambição fornecida pelo usuário.
+  A direção do progresso é calculada localmente, após a seleção e o CAGR.
+"""
+from __future__ import annotations
+
+import argparse
+import bisect
+import csv
+import json
+import math
+import os
+import re
+import sys
+import tempfile
+import unicodedata
+import zipfile
+import xml.etree.ElementTree as ET
+from collections import defaultdict
+from pathlib import Path
+
+from identidade import representatives
+from ambicao import AMBITIONS, SOURCE as AMBITION_SOURCE
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
+
+ROOT = Path(__file__).resolve().parent
+DEFAULT_CONFIG = {'iges': [{'order': 1,
+           'iges_target': '1.1',
+           'iges_indicator': '1.1.1',
+           'iges_description': '1.1.1 Proportion of population below international poverty line (%)'},
+          {'order': 2,
+           'iges_target': '1.2',
+           'iges_indicator': '1.2.1',
+           'iges_description': '1.2.1 Proportion of population living below the national poverty line (%)'},
+          {'order': 3,
+           'iges_target': '1.3',
+           'iges_indicator': '1.3.1',
+           'iges_description': '1.3.1 [ILO] Proportion of population above statutory pensionable age receiving a '
+                               'pension, by sex (%)'},
+          {'order': 4,
+           'iges_target': '1.3',
+           'iges_indicator': '1.3.1',
+           'iges_description': '1.3.1 [World Bank] Proportion of population covered by social insurance programs (%)'},
+          {'order': 5,
+           'iges_target': '1.5',
+           'iges_indicator': '1.5.1',
+           'iges_description': '1.5.1 Number of deaths and missing persons attributed to disasters per 100,000 '
+                               'population (number)'},
+          {'order': 6,
+           'iges_target': '1.a',
+           'iges_indicator': '1.a.2',
+           'iges_description': '1.a.2 Proportion of total government spending on essential services, education (%)'},
+          {'order': 7,
+           'iges_target': '2.1',
+           'iges_indicator': '2.1.1',
+           'iges_description': '2.1.1 Prevalence of undernourishment (%)'},
+          {'order': 8,
+           'iges_target': '2.2',
+           'iges_indicator': '2.2.1',
+           'iges_description': '2.2.1 Proportion of children moderately or severely stunted (%)'},
+          {'order': 9,
+           'iges_target': '2.2',
+           'iges_indicator': '2.2.2',
+           'iges_description': '2.2.2 Proportion of children moderately or severely wasted (%)'},
+          {'order': 10,
+           'iges_target': '2.3',
+           'iges_indicator': '2.3.1',
+           'iges_description': '2.3.1 Agriculture, forestry, and fishing, value added per worker (constant 2010 US$)'},
+          {'order': 11,
+           'iges_target': '2.4',
+           'iges_indicator': '2.4.1',
+           'iges_description': '2.4.1 Fertilizers by nutrient (tonnes)'},
+          {'order': 12,
+           'iges_target': '2.5',
+           'iges_indicator': '2.5.1',
+           'iges_description': '2.5.1 Plant breeds for which sufficient genetic resources are stored (number)'},
+          {'order': 13,
+           'iges_target': '2.5',
+           'iges_indicator': '2.5.2',
+           'iges_description': '2.5.2 Local breeds classified as being at unknown level of risk of extinction '
+                               '(number)'},
+          {'order': 14,
+           'iges_target': '2.5',
+           'iges_indicator': '2.5.2',
+           'iges_description': '2.5.2 Proportion of local breeds classified as being at unknown level of risk of '
+                               'extinction (%)'},
+          {'order': 15,
+           'iges_target': '2.a',
+           'iges_indicator': '2.a.1',
+           'iges_description': '2.a.1 Agriculture orientation index for government expenditures'},
+          {'order': 16,
+           'iges_target': '2.a',
+           'iges_indicator': '2.a.2',
+           'iges_description': '2.a.2 Total official flows (disbursements) for agriculture, by recipient countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 17,
+           'iges_target': '2.c',
+           'iges_indicator': '2.c.1',
+           'iges_description': '2.c.1 Consumer Food Price Index'},
+          {'order': 18,
+           'iges_target': '2.c',
+           'iges_indicator': '2.c.1',
+           'iges_description': '2.c.1 Indicator of Food Price Anomalies (IFPA), by type of product'},
+          {'order': 19,
+           'iges_target': '3.1',
+           'iges_indicator': '3.1.1',
+           'iges_description': '3.1.1 Maternal mortality ratio'},
+          {'order': 20,
+           'iges_target': '3.2',
+           'iges_indicator': '3.2.1',
+           'iges_description': '3.2.1 Under-five mortality rate, by sex (deaths per 1,000 live births)'},
+          {'order': 21,
+           'iges_target': '3.3',
+           'iges_indicator': '3.3.1',
+           'iges_description': '3.3.1 Number of new HIV infections per 1,000 uninfected population, by sex and age '
+                               '(per 1,000 uninfected population)'},
+          {'order': 22,
+           'iges_target': '3.3',
+           'iges_indicator': '3.3.2',
+           'iges_description': '3.3.2 Tuberculosis incidence (per 100,000 population)'},
+          {'order': 23,
+           'iges_target': '3.3',
+           'iges_indicator': '3.3.3',
+           'iges_description': '3.3.3 Malaria incidence per 1,000 population at risk (per 1,000 population)'},
+          {'order': 24,
+           'iges_target': '3.4',
+           'iges_indicator': '3.4.1',
+           'iges_description': '3.4.1 Mortality rate attributed to cardiovascular disease, cancer, diabetes or chronic '
+                               'respiratory disease (probability)'},
+          {'order': 25,
+           'iges_target': '3.5',
+           'iges_indicator': '3.5.2',
+           'iges_description': '3.5.2 Alcohol consumption per capita (aged 15 years and older) within a calendar year '
+                               '(litres of pure alcohol)'},
+          {'order': 26,
+           'iges_target': '3.6',
+           'iges_indicator': '3.6.1',
+           'iges_description': '3.6.1 Death rate due to road traffic injuries (per 100,000 population)'},
+          {'order': 27,
+           'iges_target': '3.7',
+           'iges_indicator': '3.7.1',
+           'iges_description': '3.7.1 Proportion of women married or in a union of reproductive age (aged 15-49 years) '
+                               'who have their need for family planning satisfied with modern methods (% of women aged '
+                               '15-49 years)'},
+          {'order': 28,
+           'iges_target': '3.7',
+           'iges_indicator': '3.7.2',
+           'iges_description': '3.7.2 Adolescent birth rate (per 1,000 women aged 15-19 years)'},
+          {'order': 29,
+           'iges_target': '3.8',
+           'iges_indicator': '3.8.2',
+           'iges_description': '3.8.2 Proportion of population with large household expenditures on health (greater '
+                               'than 25%) as a share of total household expenditure or income (%)'},
+          {'order': 30,
+           'iges_target': '3.9',
+           'iges_indicator': '3.9.2',
+           'iges_description': '3.9.2 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene '
+                               '(deaths per 100,000 population)'},
+          {'order': 31,
+           'iges_target': '3.9',
+           'iges_indicator': '3.9.3',
+           'iges_description': '3.9.3 Mortality rate attributed to unintentional poisonings, by sex (deaths per '
+                               '100,000 population)'},
+          {'order': 32,
+           'iges_target': '3.a',
+           'iges_indicator': '3.a.1',
+           'iges_description': '3.a.1 Age-standardized prevalence of current tobacco use among persons aged 15 years '
+                               'and older, by sex (%)'},
+          {'order': 33,
+           'iges_target': '3.b',
+           'iges_indicator': '3.b.1',
+           'iges_description': '3.b.1 Proportion of the target population with access to 3 doses of '
+                               'diphtheria-tetanus-pertussis (DTP3) (%)'},
+          {'order': 34,
+           'iges_target': '3.c',
+           'iges_indicator': '3.c.1',
+           'iges_description': '3.c.1 Health worker density, by type of occupation (per 10,000 population)'},
+          {'order': 35,
+           'iges_target': '3.d',
+           'iges_indicator': '3.d.1',
+           'iges_description': '3.d.1 Average of 13 International Health Regulations (IHR) core capacities'},
+          {'order': 36,
+           'iges_target': '3.c',
+           'iges_indicator': '3.c.1',
+           'iges_description': '3.c.1 Health worker density, by type of occupation (per 10,000 population)'},
+          {'order': 37,
+           'iges_target': '4.1',
+           'iges_indicator': '4.1.1',
+           'iges_description': '4.1.1 Minimum proficiency in mathematics, by education level and sex (%)'},
+          {'order': 38,
+           'iges_target': '4.1',
+           'iges_indicator': '4.1.1',
+           'iges_description': '4.1.1 Minimum proficiency in reading, by education level and sex (%)'},
+          {'order': 39,
+           'iges_target': '4.2',
+           'iges_indicator': '4.2.1',
+           'iges_description': '4.2.1 Proportion of children aged 36-59 months who are developmentally on track in at '
+                               'least three of the following domains: literacy-numeracy, physical development, '
+                               'social-emotional development, and learning (% of children aged 36-59 months)'},
+          {'order': 40,
+           'iges_target': '4.2',
+           'iges_indicator': '4.2.2',
+           'iges_description': '4.2.2 Participation rate in organized learning (one year before the official primary '
+                               'entry age), by sex (%)'},
+          {'order': 41,
+           'iges_target': '4.3',
+           'iges_indicator': '4.3.1',
+           'iges_description': '4.3.1 Participation rate in formal and non-formal education and training, by sex (%)'},
+          {'order': 42,
+           'iges_target': '4.4',
+           'iges_indicator': '4.4.1',
+           'iges_description': '4.4.1 Proportion of youth and adults with information and communications technology '
+                               '(ICT) skills, by sex and type of skill (%)'},
+          {'order': 43,
+           'iges_target': '4.5',
+           'iges_indicator': '4.5.1',
+           'iges_description': '4.5.1 Gender parity index for achievement in mathematics, by education level (ratio)'},
+          {'order': 44,
+           'iges_target': '4.5',
+           'iges_indicator': '4.5.1',
+           'iges_description': '4.5.1 Gender parity index for achievement in reading, by education level (ratio)'},
+          {'order': 45,
+           'iges_target': '4.5',
+           'iges_indicator': '4.5.1',
+           'iges_description': '4.5.1 Gender parity index for participation rate in organized learning (one year '
+                               'before the official primary entry age), (ratio)'},
+          {'order': 46,
+           'iges_target': '4.6',
+           'iges_indicator': '4.6.1',
+           'iges_description': '4.6.1 Proportion of population achieving at least a fixed level of proficiency in '
+                               'functional skills, by sex, age and type of skill (%)'},
+          {'order': 47,
+           'iges_target': '4.a',
+           'iges_indicator': '4.a.1',
+           'iges_description': '4.a.1 Schools with access to basic drinking water, by education level (%)'},
+          {'order': 48,
+           'iges_target': '4.a',
+           'iges_indicator': '4.a.1',
+           'iges_description': '4.a.1 Schools with access to the internet for pedagogical purposes, by education level '
+                               '(%)'},
+          {'order': 49,
+           'iges_target': '4.a',
+           'iges_indicator': '4.a.1',
+           'iges_description': '4.a.1 Schools with access to electricity, by education level (%)'},
+          {'order': 50,
+           'iges_target': '4.b',
+           'iges_indicator': '4.b.1',
+           'iges_description': '4.b.1 Total official flows for scholarships, by recipient countries (millions of '
+                               'constant 2016 United States dollars)'},
+          {'order': 51,
+           'iges_target': '4.c',
+           'iges_indicator': '4.c.1',
+           'iges_description': '4.c.1 Proportion of teachers who have received at least the minimum organized teacher '
+                               'training (e.g. pedagogical training) pre-service or in-service required for teaching '
+                               'at the relevant level in a given country, by education level (%)'},
+          {'order': 52,
+           'iges_target': '5.2',
+           'iges_indicator': '5.2.1',
+           'iges_description': '5.2.1 Proportion of ever-partnered women and girls subjected to physical and/or sexual '
+                               'violence by a current or former intimate partner in the previous 12 months, by age '
+                               '(%)'},
+          {'order': 53,
+           'iges_target': '5.3',
+           'iges_indicator': '5.3.1',
+           'iges_description': '5.3.1 Proportion of women aged 20-24 years who were married or in a union before age '
+                               '15 (%)'},
+          {'order': 54,
+           'iges_target': '5.4',
+           'iges_indicator': '5.4.1',
+           'iges_description': '5.4.1 Proportion of time spent on unpaid domestic chores and care work, by sex, age '
+                               'and location (%)'},
+          {'order': 55,
+           'iges_target': '5.5',
+           'iges_indicator': '5.5.1',
+           'iges_description': '5.5.1 Proportion of seats held by women in national parliaments (% of total number of '
+                               'seats)'},
+          {'order': 56,
+           'iges_target': '5.6',
+           'iges_indicator': '5.6.1',
+           'iges_description': '5.6.1 Proportion of women married or in a union of reproductive age (aged 15-49 years) '
+                               'who have their need for family planning satisfied with modern methods (% of women aged '
+                               '15-49 years)'},
+          {'order': 57,
+           'iges_target': '5.b',
+           'iges_indicator': '5.b.1',
+           'iges_description': '5.b.1 Proportion of individuals who own a mobile telephone, by sex (%)'},
+          {'order': 58,
+           'iges_target': '6.1',
+           'iges_indicator': '6.1.1',
+           'iges_description': '6.1.1 Proportion of population using safely managed drinking water services, by '
+                               'urban/rural (%)'},
+          {'order': 59,
+           'iges_target': '6.2',
+           'iges_indicator': '6.2.1',
+           'iges_description': '6.2.1 Proportion of population practicing open defecation, by urban/rural (%)'},
+          {'order': 60,
+           'iges_target': '6.2',
+           'iges_indicator': '6.2.1',
+           'iges_description': '6.2.1 Proportion of population using safely managed sanitation services, by '
+                               'urban/rural (%)'},
+          {'order': 61,
+           'iges_target': '6.3',
+           'iges_indicator': '6.3.1',
+           'iges_description': '6.3.1 Proportion of safely treated domestic wastewater flows (%)'},
+          {'order': 62,
+           'iges_target': '6.4',
+           'iges_indicator': '6.4.1',
+           'iges_description': '6.4.1 Water use efficiency (United States dollars per cubic meter)'},
+          {'order': 63,
+           'iges_target': '6.4',
+           'iges_indicator': '6.4.2',
+           'iges_description': '6.4.2 Level of water stress: freshwater withdrawal as a proportion of available '
+                               'freshwater resources (%)'},
+          {'order': 64,
+           'iges_target': '6.6',
+           'iges_indicator': '6.6.1',
+           'iges_description': '6.6.1 Water body extent (permanent and maybe permanent) (% of total land area)'},
+          {'order': 65,
+           'iges_target': '6.a',
+           'iges_indicator': '6.a.1',
+           'iges_description': '6.a.1 Total official development assistance (gross disbursement) for water supply and '
+                               'sanitation, by recipient countries (millions of constant 2016 United States dollars)'},
+          {'order': 66,
+           'iges_target': '7.1',
+           'iges_indicator': '7.1.1',
+           'iges_description': '7.1.1 Proportion of population with access to electricity, by urban/rural (%)'},
+          {'order': 67,
+           'iges_target': '7.1',
+           'iges_indicator': '7.1.2',
+           'iges_description': '7.1.2 Proportion of population with primary reliance on clean fuels and technology '
+                               '(%)'},
+          {'order': 68,
+           'iges_target': '7.2',
+           'iges_indicator': '7.2.1',
+           'iges_description': '7.2.1 Renewable energy share in the total final energy consumption (%)'},
+          {'order': 69,
+           'iges_target': '7.3',
+           'iges_indicator': '7.3.1',
+           'iges_description': '7.3.1 Energy intensity level of primary energy (megajoules per constant 2011 '
+                               'purchasing power parity GDP)'},
+          {'order': 70,
+           'iges_target': '8.1',
+           'iges_indicator': '8.1.1',
+           'iges_description': '8.1.1 Annual growth rate of real GDP per capita (%)'},
+          {'order': 71,
+           'iges_target': '8.1',
+           'iges_indicator': '8.10.1',
+           'iges_description': '8.10.1 Number of commercial bank branches per 100,000 adults'},
+          {'order': 72,
+           'iges_target': '8.2',
+           'iges_indicator': '8.2.1',
+           'iges_description': '8.2.1 Annual growth rate of real GDP per employed person (%)'},
+          {'order': 73,
+           'iges_target': '8.3',
+           'iges_indicator': '8.3.1',
+           'iges_description': '8.3.1 Proportion of informal employment in non-agriculture employment, by sex (ILO '
+                               'harmonized estimates) (%)'},
+          {'order': 74,
+           'iges_target': '8.4',
+           'iges_indicator': '8.4.2',
+           'iges_description': '8.4.2 Domestic material consumption per unit of GDP, by type of raw material '
+                               '(kilograms per constant 2010 United States dollars)'},
+          {'order': 75,
+           'iges_target': '8.5',
+           'iges_indicator': '8.5.1',
+           'iges_description': '8.5.1 Average hourly earnings of managers (ISCO-08) (local currency)'},
+          {'order': 76,
+           'iges_target': '8.5',
+           'iges_indicator': '8.5.2',
+           'iges_description': '8.5.2 Unemployment rate, by sex and age (%)'},
+          {'order': 77,
+           'iges_target': '8.6',
+           'iges_indicator': '8.6.1',
+           'iges_description': '8.6.1 Proportion of youth not in education, employment or training, by sex and age '
+                               '(%)'},
+          {'order': 78,
+           'iges_target': '8.8',
+           'iges_indicator': '8.8.1',
+           'iges_description': '8.8.1 Fatal occupational injuries among employees, by sex and migrant status (per '
+                               '100,000 employees)'},
+          {'order': 79,
+           'iges_target': '8.a',
+           'iges_indicator': '8.a.1',
+           'iges_description': '8.a.1 Total official flows (disbursement) for Aid for Trade, by donor countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 80,
+           'iges_target': '8.a',
+           'iges_indicator': '8.a.1',
+           'iges_description': '8.a.1 Total official flows (disbursement) for Aid for Trade, by recipient countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 81,
+           'iges_target': '8.4',
+           'iges_indicator': '8.4.2',
+           'iges_description': '8.4.2 Domestic material consumption per unit of GDP, by type of raw material '
+                               '(kilograms per constant 2010 United States dollars)'},
+          {'order': 82,
+           'iges_target': '9.1',
+           'iges_indicator': '9.1.2',
+           'iges_description': '9.1.2 Passenger volume (passenger kilometres), by mode of transport'},
+          {'order': 83,
+           'iges_target': '9.2',
+           'iges_indicator': '9.2.1',
+           'iges_description': '9.2.1 Manufacturing value added as a proportion of GDP (%)'},
+          {'order': 84,
+           'iges_target': '9.3',
+           'iges_indicator': '9.3.1',
+           'iges_description': '9.3.1 Proportion of small-scale industries in total industry value added (%)'},
+          {'order': 85,
+           'iges_target': '9.3',
+           'iges_indicator': '9.3.2',
+           'iges_description': '9.3.2 Proportion of small-scale industries with a loan or line of credit (%)'},
+          {'order': 86,
+           'iges_target': '9.4',
+           'iges_indicator': '9.4.1',
+           'iges_description': '9.4.1 Carbon dioxide emissions per unit of manufacturing value added (kilogrammes of '
+                               'CO2 per constant 2010 United States dollars)'},
+          {'order': 87,
+           'iges_target': '9.5',
+           'iges_indicator': '9.5.1',
+           'iges_description': '9.5.1 Research and development expenditure as a proportion of GDP (%)'},
+          {'order': 88,
+           'iges_target': '9.5',
+           'iges_indicator': '9.5.2',
+           'iges_description': '9.5.2 Researchers (in full-time equivalent) per million inhabitants (per 1,000,000 '
+                               'population)'},
+          {'order': 89,
+           'iges_target': '9.a',
+           'iges_indicator': '9.a.1',
+           'iges_description': '9.a.1 Total official flows for infrastructure, by recipient countries (millions of '
+                               'constant 2016 United States dollars)'},
+          {'order': 90,
+           'iges_target': '9.b',
+           'iges_indicator': '9.b.1',
+           'iges_description': '9.b.1 Proportion of medium and high-tech industry value added in total value added '
+                               '(%)'},
+          {'order': 91,
+           'iges_target': '9.c',
+           'iges_indicator': '9.c.1',
+           'iges_description': '9.c.1 Proportion of population covered by a mobile network, by technology (%)'},
+          {'order': 92,
+           'iges_target': '9.c',
+           'iges_indicator': '9.c.1',
+           'iges_description': '9.c.1 Proportion of population covered by a mobile network, by technology (%)'},
+          {'order': 93,
+           'iges_target': '10.1',
+           'iges_indicator': '10.1.1',
+           'iges_description': '10.1.1 Growth rates of household expenditure or income per capita among the bottom 40 '
+                               'per cent of the population (%)'},
+          {'order': 94,
+           'iges_target': '10.4',
+           'iges_indicator': '10.4.1',
+           'iges_description': '10.4.1 Labour share of GDP, comprising wages and social protection transfers (%)'},
+          {'order': 95,
+           'iges_target': '10.5',
+           'iges_indicator': '10.5.1',
+           'iges_description': '10.5.1 Regulatory Tier 1 capital to risk-weighted assets (%)'},
+          {'order': 96,
+           'iges_target': '10.6',
+           'iges_indicator': '10.6.1',
+           'iges_description': '10.6.1 Proportion of members of developing countries in international organizations, '
+                               'by organization (%)'},
+          {'order': 97,
+           'iges_target': '10.a',
+           'iges_indicator': '10.a.1',
+           'iges_description': '10.a.1 Tariff rate, applied, weighted mean, all products (%)'},
+          {'order': 98,
+           'iges_target': '10.b',
+           'iges_indicator': '10.b.1',
+           'iges_description': '10.b.1 Total assistance for development, by donor countries (millions of current '
+                               'United States dollars)'},
+          {'order': 99,
+           'iges_target': '10.b',
+           'iges_indicator': '10.b.1',
+           'iges_description': '10.b.1 Total assistance for development, by recipient countries (millions of current '
+                               'United States dollars)'},
+          {'order': 100,
+           'iges_target': '10.c',
+           'iges_indicator': '10.c.1',
+           'iges_description': '10.c.1 Remittance costs as a proportion of the amount remitted (%)'},
+          {'order': 101,
+           'iges_target': '10.6',
+           'iges_indicator': '10.6.1',
+           'iges_description': '10.6.1 Proportion of members of developing countries in international organizations, '
+                               'by organization (%)'},
+          {'order': 102,
+           'iges_target': '11.1',
+           'iges_indicator': '11.1.1',
+           'iges_description': '11.1.1 Proportion of urban population living in slums (%)'},
+          {'order': 103,
+           'iges_target': '11.2',
+           'iges_indicator': '11.2.1',
+           'iges_description': '11.2.1 Percent of paved roads over total roads (%)'},
+          {'order': 104,
+           'iges_target': '11.5',
+           'iges_indicator': '11.5.1',
+           'iges_description': '11.5.1 Number of deaths and missing persons attributed to disasters per 100,000 '
+                               'population (number)'},
+          {'order': 105,
+           'iges_target': '11.6',
+           'iges_indicator': '11.6.2',
+           'iges_description': '11.6.2 Annual mean levels of fine particulate matter in cities, urban population '
+                               '(micrograms per cubic meter)'},
+          {'order': 106,
+           'iges_target': '11.b',
+           'iges_indicator': '11.b.1',
+           'iges_description': '11.b.1 Score of adoption and implementation of national DRR strategies in line with '
+                               'the Sendai Framework'},
+          {'order': 107,
+           'iges_target': '11.b',
+           'iges_indicator': '11.b.2',
+           'iges_description': '11.b.2 Proportion of local governments that adopt and implement local disaster risk '
+                               'reduction strategies in line with national disaster risk reduction strategies (%)'},
+          {'order': 108,
+           'iges_target': '12.2',
+           'iges_indicator': '12.2.2',
+           'iges_description': '12.2.2 Domestic material consumption, by type of raw material (tonnes)'},
+          {'order': 109,
+           'iges_target': '12.4',
+           'iges_indicator': '12.4.1',
+           'iges_description': '12.4.1 Compliance with the Basel Convention on hazardous waste and other chemicals'},
+          {'order': 110,
+           'iges_target': '12.4',
+           'iges_indicator': '12.4.1',
+           'iges_description': '12.4.1 Compliance with the Rotterdam Convention on hazardous waste and other '
+                               'chemicals'},
+          {'order': 111,
+           'iges_target': '12.5',
+           'iges_indicator': '12.5.1',
+           'iges_description': '12.5.1 Municipal Solid Waste collection coverage, by cities (%)'},
+          {'order': 112,
+           'iges_target': '12.a',
+           'iges_indicator': '12.a.1',
+           'iges_description': '12.a.1 Researchers (in full-time equivalent) per million inhabitants (per 1,000,000 '
+                               'population)'},
+          {'order': 113,
+           'iges_target': '12.c',
+           'iges_indicator': '12.c.1',
+           'iges_description': '12.c.1 Fossil-fuel pre-tax subsidies (consumption and production) as a proportion of '
+                               'total GDP (%)'},
+          {'order': 114,
+           'iges_target': '12.c',
+           'iges_indicator': '12.c.1',
+           'iges_description': '12.c.1 Fossil-fuel pre-tax subsidies (consumption and production) per capita (current '
+                               'United States dollars)'},
+          {'order': 115,
+           'iges_target': '12.2',
+           'iges_indicator': '12.2.2',
+           'iges_description': '12.2.2 Domestic material consumption, by type of raw material (tonnes)'},
+          {'order': 116,
+           'iges_target': '13.1',
+           'iges_indicator': '13.1.1',
+           'iges_description': '13.1.1 Number of deaths and missing persons attributed to disasters per 100,000 '
+                               'population (number)'},
+          {'order': 117,
+           'iges_target': '14.4',
+           'iges_indicator': '14.4.1',
+           'iges_description': '14.4.1 Total fisheries production (metric tons)'},
+          {'order': 118,
+           'iges_target': '14.5',
+           'iges_indicator': '14.5.1',
+           'iges_description': '14.5.1 Average proportion of Marine Key Biodiversity Areas (KBAs) covered by protected '
+                               'areas (%)'},
+          {'order': 119,
+           'iges_target': '14.a',
+           'iges_indicator': '14.a.1',
+           'iges_description': '14.a.1 National ocean science expenditure as a share of total research and development '
+                               'funding (%)'},
+          {'order': 120,
+           'iges_target': '15.1',
+           'iges_indicator': '15.1.1',
+           'iges_description': '15.1.1 Forest area as a proportion of total land area (%)'},
+          {'order': 121,
+           'iges_target': '15.2',
+           'iges_indicator': '15.2.1',
+           'iges_description': '15.2.1 Above-ground biomass in forest per hectare (tonnes per hectare)'},
+          {'order': 122,
+           'iges_target': '15.3',
+           'iges_indicator': '15.3.1',
+           'iges_description': '15.3.1 Forest area (% of land area)'},
+          {'order': 123,
+           'iges_target': '15.4',
+           'iges_indicator': '15.4.1',
+           'iges_description': '15.4.1 Average proportion of Mountain Key Biodiversity Areas (KBAs) covered by '
+                               'protected areas (%)'},
+          {'order': 124,
+           'iges_target': '15.5',
+           'iges_indicator': '15.5.1',
+           'iges_description': '15.5.1 Red List Index'},
+          {'order': 125,
+           'iges_target': '15.a',
+           'iges_indicator': '15.a.1',
+           'iges_description': '15.a.1 Total official development assistance for biodiversity, by donor countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 126,
+           'iges_target': '15.a',
+           'iges_indicator': '15.a.1',
+           'iges_description': '15.a.1 Total official development assistance for biodiversity, by recipient countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 127,
+           'iges_target': '15.b',
+           'iges_indicator': '15.b.1',
+           'iges_description': '15.b.1 Total official development assistance for biodiversity, by donor countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 128,
+           'iges_target': '15.b',
+           'iges_indicator': '15.b.1',
+           'iges_description': '15.b.1 Total official development assistance for biodiversity, by recipient countries '
+                               '(millions of constant 2016 United States dollars)'},
+          {'order': 129,
+           'iges_target': '16.1',
+           'iges_indicator': '16.1.1',
+           'iges_description': '16.1.1 Number of victims of intentional homicide per 100,000 population, by sex '
+                               '(victims per 100,000 population)'},
+          {'order': 130,
+           'iges_target': '16.3',
+           'iges_indicator': '16.3.2',
+           'iges_description': '16.3.2 Unsentenced detainees as a proportion of overall prison population (%)'},
+          {'order': 131,
+           'iges_target': '16.5',
+           'iges_indicator': '16.5.2',
+           'iges_description': '16.5.2 Bribery incidence (% of firms experiencing at least one bribe payment request)'},
+          {'order': 132,
+           'iges_target': '16.6',
+           'iges_indicator': '16.6.1',
+           'iges_description': '16.6.1 Primary government expenditures as a proportion of original approved budget '
+                               '(%)'},
+          {'order': 133,
+           'iges_target': '16.8',
+           'iges_indicator': '16.8.1',
+           'iges_description': '16.8.1 Proportion of members of developing countries in international organizations, '
+                               'by organization (%)'},
+          {'order': 134,
+           'iges_target': '16.9',
+           'iges_indicator': '16.9.1',
+           'iges_description': '16.9.1 Proportion of children under 5 years of age whose births have been registered '
+                               'with a civil authority (% of children under 5 years of age)'},
+          {'order': 135,
+           'iges_target': '17.1',
+           'iges_indicator': '17.1.1',
+           'iges_description': '17.1.1 Tax revenue (% of GDP)'},
+          {'order': 136,
+           'iges_target': '17.11',
+           'iges_indicator': '17.11.1',
+           'iges_description': '17.11.1 Exports of goods and services (% of GDP)'},
+          {'order': 137,
+           'iges_target': '17.12',
+           'iges_indicator': '17.12.1',
+           'iges_description': '17.12.1 Tariff rate, applied, simple mean, all products (%)'},
+          {'order': 138,
+           'iges_target': '17.13',
+           'iges_indicator': '17.13.1',
+           'iges_description': '17.13.1 GDP (current US$)'},
+          {'order': 139,
+           'iges_target': '17.15',
+           'iges_indicator': '17.15.1',
+           'iges_description': '17.15.1 Proportion of new development interventions drawn from country-led result '
+                               'frameworks - data by provider (%)'},
+          {'order': 140,
+           'iges_target': '17.15',
+           'iges_indicator': '17.15.1',
+           'iges_description': '17.15.1 Proportion of new development interventions drawn from country-led result '
+                               'frameworks - data by recipient (%)'},
+          {'order': 141,
+           'iges_target': '17.15',
+           'iges_indicator': '17.15.1',
+           'iges_description': '17.15.1 Proportion of results indicators which will be monitored using government '
+                               'sources and monitoring systems - data by provider (%)'},
+          {'order': 142,
+           'iges_target': '17.17',
+           'iges_indicator': '17.17.1',
+           'iges_description': '17.17.1 Investment in energy with private participation (current US$)'},
+          {'order': 143,
+           'iges_target': '17.19',
+           'iges_indicator': '17.19.1',
+           'iges_description': '17.19.1 Dollar value of all resources made available to strengthen statistical '
+                               'capacity in developing countries (current United States dollars)'},
+          {'order': 144,
+           'iges_target': '17.2',
+           'iges_indicator': '17.2.1',
+           'iges_description': '17.2.1 Net official development assistance (ODA) to LDCs as a percentage of OECD-DAC '
+                               "donors' GNI, by donor countries (%)"},
+          {'order': 145,
+           'iges_target': '17.2',
+           'iges_indicator': '17.2.1',
+           'iges_description': '17.2.1 Net official development assistance and official aid received (current US$)'},
+          {'order': 146,
+           'iges_target': '17.3',
+           'iges_indicator': '17.3.2',
+           'iges_description': '17.3.2 Volume of remittances (in United States dollars) as a proportion of total GDP '
+                               '(%)'},
+          {'order': 147,
+           'iges_target': '17.4',
+           'iges_indicator': '17.4.1',
+           'iges_description': '17.4.1 Debt service as a proportion of exports of goods and services (%)'},
+          {'order': 148,
+           'iges_target': '17.6',
+           'iges_indicator': '17.6.2',
+           'iges_description': '17.6.2 Fixed Internet broadband subscriptions per 100 inhabitants, by speed (per 100 '
+                               'inhabitants)'},
+          {'order': 149,
+           'iges_target': '17.8',
+           'iges_indicator': '17.8.1',
+           'iges_description': '17.8.1 Internet users per 100 inhabitants'},
+          {'order': 150,
+           'iges_target': '17.9',
+           'iges_indicator': '17.9.1',
+           'iges_description': '17.9.1 Total official development assistance (gross disbursement) for technical '
+                               'cooperation (millions of 2016 United States dollars)'}],
+ 'rules': [{'iges_target': '1.1',
+            'iges_indicator': '1.1.1',
+            'iges_description': '1.1.1 Proportion of population below international poverty line (%)',
+            'api_series': 'SI_POV_DAY1',
+            'dimensions': {'dimensions_Age': 'ALLAGE',
+                           'dimensions_Location': 'ALLAREA',
+                           'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '1.3',
+            'iges_indicator': '1.3.1',
+            'iges_description': '1.3.1 [ILO] Proportion of population above statutory pensionable age receiving a '
+                                'pension, by sex (%)',
+            'api_series': 'SI_COV_PENSN',
+            'dimensions': {'dimensions_Age': '65+', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '1.3',
+            'iges_indicator': '1.3.1',
+            'iges_description': '1.3.1 [World Bank] Proportion of population covered by social insurance programs (%)',
+            'api_series': 'SI_COV_BENFTS',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy: proteção social (OIT), não cobertura de seguro social do Banco Mundial.'},
+           {'iges_target': '1.a',
+            'iges_indicator': '1.a.2',
+            'iges_description': '1.a.2 Proportion of total government spending on essential services, education (%)',
+            'api_series': 'SD_XPD_ESED',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '2.1',
+            'iges_indicator': '2.1.1',
+            'iges_description': '2.1.1 Prevalence of undernourishment (%)',
+            'api_series': 'SN_ITK_DEFC',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '2.2',
+            'iges_indicator': '2.2.1',
+            'iges_description': '2.2.1 Proportion of children moderately or severely stunted (%)',
+            'api_series': 'SH_STA_STNT',
+            'dimensions': {'dimensions_Age': '<5Y', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '2.2',
+            'iges_indicator': '2.2.2',
+            'iges_description': '2.2.2 Proportion of children moderately or severely wasted (%)',
+            'api_series': 'SH_STA_WAST',
+            'dimensions': {'dimensions_Age': '<5Y', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '2.4',
+            'iges_indicator': '2.4.1',
+            'iges_description': '2.4.1 Fertilizers by nutrient (tonnes)',
+            'api_series': 'AG_LND_SUST_PRXCSS',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Proxy oficial atual: escore de agricultura sustentável; não consumo de fertilizantes.'},
+           {'iges_target': '2.5',
+            'iges_indicator': '2.5.1',
+            'iges_description': '2.5.1 Plant breeds for which sufficient genetic resources are stored (number)',
+            'api_series': 'ER_GRF_PLNTSTOR',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Série atual de acessos de recursos genéticos vegetais, não contagem literal de variedades.'},
+           {'iges_target': '2.5',
+            'iges_indicator': '2.5.2',
+            'iges_description': '2.5.2 Local breeds classified as being at unknown level of risk of extinction '
+                                '(number)',
+            'api_series': 'ER_UNK_LBREDN',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Usa contagem de raças com risco desconhecido; a proporção solicitada não foi derivada.'},
+           {'iges_target': '2.5',
+            'iges_indicator': '2.5.2',
+            'iges_description': '2.5.2 Proportion of local breeds classified as being at unknown level of risk of '
+                                'extinction (%)',
+            'api_series': 'ER_UNK_LBREDN',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Usa contagem de raças com risco desconhecido; a proporção solicitada não foi derivada.'},
+           {'iges_target': '2.a',
+            'iges_indicator': '2.a.1',
+            'iges_description': '2.a.1 Agriculture orientation index for government expenditures',
+            'api_series': 'AG_PRD_ORTIND',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '2.a',
+            'iges_indicator': '2.a.2',
+            'iges_description': '2.a.2 Total official flows (disbursements) for agriculture, by recipient countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_TOF_AGRL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '2.c',
+            'iges_indicator': '2.c.1',
+            'iges_description': '2.c.1 Consumer Food Price Index',
+            'api_series': 'AG_FPA_HMFP',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Severity of price levels': 'TOTAL'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy regional: proporção de países com preços anormalmente altos/moderadamente altos; não '
+                     'índice de preços ao consumidor. Proxy regional de anomalias de preços, com nível TOTAL.'},
+           {'iges_target': '2.c',
+            'iges_indicator': '2.c.1',
+            'iges_description': '2.c.1 Indicator of Food Price Anomalies (IFPA), by type of product',
+            'api_series': 'AG_FPA_HMFP',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Severity of price levels': 'TOTAL'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy regional: proporção de países com preços anormalmente altos/moderadamente altos; não '
+                     'índice de preços ao consumidor. Proxy regional de anomalias de preços, com nível TOTAL.'},
+           {'iges_target': '3.1',
+            'iges_indicator': '3.1.1',
+            'iges_description': '3.1.1 Maternal mortality ratio',
+            'api_series': 'SH_STA_MORT',
+            'dimensions': {'dimensions_Sex': 'FEMALE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.2',
+            'iges_indicator': '3.2.1',
+            'iges_description': '3.2.1 Under-five mortality rate, by sex (deaths per 1,000 live births)',
+            'api_series': 'SH_DYN_MORT',
+            'dimensions': {'dimensions_Age': '<5Y', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.3',
+            'iges_indicator': '3.3.1',
+            'iges_description': '3.3.1 Number of new HIV infections per 1,000 uninfected population, by sex and age '
+                                '(per 1,000 uninfected population)',
+            'api_series': 'SH_HIV_INCD',
+            'dimensions': {'dimensions_Age': 'ALLAGE', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.3',
+            'iges_indicator': '3.3.2',
+            'iges_description': '3.3.2 Tuberculosis incidence (per 100,000 population)',
+            'api_series': 'SH_TBS_INCD',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.3',
+            'iges_indicator': '3.3.3',
+            'iges_description': '3.3.3 Malaria incidence per 1,000 population at risk (per 1,000 population)',
+            'api_series': 'SH_STA_MALR',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.4',
+            'iges_indicator': '3.4.1',
+            'iges_description': '3.4.1 Mortality rate attributed to cardiovascular disease, cancer, diabetes or '
+                                'chronic respiratory disease (probability)',
+            'api_series': 'SH_DTH_NCOM',
+            'dimensions': {'dimensions_Age': '30-69', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '3.5',
+            'iges_indicator': '3.5.2',
+            'iges_description': '3.5.2 Alcohol consumption per capita (aged 15 years and older) within a calendar year '
+                                '(litres of pure alcohol)',
+            'api_series': 'SH_ALC_CONSPT',
+            'dimensions': {'dimensions_Age': '15+', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.6',
+            'iges_indicator': '3.6.1',
+            'iges_description': '3.6.1 Death rate due to road traffic injuries (per 100,000 population)',
+            'api_series': 'SH_STA_TRAF',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.7',
+            'iges_indicator': '3.7.1',
+            'iges_description': '3.7.1 Proportion of women married or in a union of reproductive age (aged 15-49 '
+                                'years) who have their need for family planning satisfied with modern methods (% of '
+                                'women aged 15-49 years)',
+            'api_series': 'SH_FPL_MTMM',
+            'dimensions': {'dimensions_Age': '15-49', 'dimensions_Sex': 'FEMALE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'A descrição IGES repete planejamento familiar (3.7.1). Série real 3.7.1 vinculada também à meta '
+                     '5.6.'},
+           {'iges_target': '3.7',
+            'iges_indicator': '3.7.2',
+            'iges_description': '3.7.2 Adolescent birth rate (per 1,000 women aged 15-19 years)',
+            'api_series': 'SP_DYN_ADKL',
+            'dimensions': {'dimensions_Age': '15-19',
+                           'dimensions_Location': 'ALLAREA',
+                           'dimensions_Sex': 'FEMALE',
+                           'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.8',
+            'iges_indicator': '3.8.2',
+            'iges_description': '3.8.2 Proportion of population with large household expenditures on health (greater '
+                                'than 25%) as a share of total household expenditure or income (%)',
+            'api_series': 'SH_OOP_XPD_EARNNET40',
+            'dimensions': {'dimensions_Age': 'ALLAGE',
+                           'dimensions_Location': 'ALLAREA',
+                           'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Quantile': '_T',
+                           'dimensions_Type_of_household': '_T'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Definição atual: despesas diretas superiores a 40% do orçamento discricionário; difere do limiar '
+                     'de 25% do IGES.'},
+           {'iges_target': '3.9',
+            'iges_indicator': '3.9.2',
+            'iges_description': '3.9.2 Mortality rate attributed to unsafe water, unsafe sanitation and lack of '
+                                'hygiene (deaths per 100,000 population)',
+            'api_series': 'SH_STA_WASHARI',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.9',
+            'iges_indicator': '3.9.3',
+            'iges_description': '3.9.3 Mortality rate attributed to unintentional poisonings, by sex (deaths per '
+                                '100,000 population)',
+            'api_series': 'SH_STA_POISN',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.a',
+            'iges_indicator': '3.a.1',
+            'iges_description': '3.a.1 Age-standardized prevalence of current tobacco use among persons aged 15 years '
+                                'and older, by sex (%)',
+            'api_series': 'SH_PRV_SMOK',
+            'dimensions': {'dimensions_Age': '15+', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '3.b',
+            'iges_indicator': '3.b.1',
+            'iges_description': '3.b.1 Proportion of the target population with access to 3 doses of '
+                                'diphtheria-tetanus-pertussis (DTP3) (%)',
+            'api_series': 'SH_ACS_DTP3',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '3.c',
+            'iges_indicator': '3.c.1',
+            'iges_description': '3.c.1 Health worker density, by type of occupation (per 10,000 population)',
+            'api_series': 'SH_MED_DEN',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Type of occupation': 'PHYS'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.d',
+            'iges_indicator': '3.d.1',
+            'iges_description': '3.d.1 Average of 13 International Health Regulations (IHR) core capacities',
+            'api_series': 'SH_IHR_CAPS',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_IHR Capacity': '_T'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '3.c',
+            'iges_indicator': '3.c.1',
+            'iges_description': '3.c.1 Health worker density, by type of occupation (per 10,000 population)',
+            'api_series': 'SH_MED_DEN',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Type of occupation': 'PHYS'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '4.1',
+            'iges_indicator': '4.1.1',
+            'iges_description': '4.1.1 Minimum proficiency in mathematics, by education level and sex (%)',
+            'api_series': 'SE_TOT_PRFL',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Education level': 'PRIMAR',
+                           'dimensions_Type of skill': 'SKILL_MATH'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '4.1',
+            'iges_indicator': '4.1.1',
+            'iges_description': '4.1.1 Minimum proficiency in reading, by education level and sex (%)',
+            'api_series': 'SE_TOT_PRFL',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Education level': 'PRIMAR',
+                           'dimensions_Type of skill': 'SKILL_READ'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '4.2',
+            'iges_indicator': '4.2.1',
+            'iges_description': '4.2.1 Proportion of children aged 36-59 months who are developmentally on track in at '
+                                'least three of the following domains: literacy-numeracy, physical development, '
+                                'social-emotional development, and learning (% of children aged 36-59 months)',
+            'api_series': 'SE_PRE_PARTN',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy: participação na aprendizagem organizada; não desenvolvimento infantil.'},
+           {'iges_target': '4.2',
+            'iges_indicator': '4.2.2',
+            'iges_description': '4.2.2 Participation rate in organized learning (one year before the official primary '
+                                'entry age), by sex (%)',
+            'api_series': 'SE_PRE_PARTN',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy: participação na aprendizagem organizada; não desenvolvimento infantil.'},
+           {'iges_target': '4.3',
+            'iges_indicator': '4.3.1',
+            'iges_description': '4.3.1 Participation rate in formal and non-formal education and training, by sex (%)',
+            'api_series': 'SE_ADT_EDUCTRN',
+            'dimensions': {'dimensions_Age': '25-54', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '4.5',
+            'iges_indicator': '4.5.1',
+            'iges_description': '4.5.1 Gender parity index for achievement in mathematics, by education level (ratio)',
+            'api_series': 'SE_GPI_PART',
+            'dimensions': {'dimensions_Age': '25-54', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Proxy: paridade ajustada na educação formal/não formal (25–54 anos), não desempenho em '
+                     'matemática. Proxy: paridade ajustada na educação formal/não formal (25–54 anos), não desempenho '
+                     'em leitura.'},
+           {'iges_target': '4.5',
+            'iges_indicator': '4.5.1',
+            'iges_description': '4.5.1 Gender parity index for achievement in reading, by education level (ratio)',
+            'api_series': 'SE_GPI_PART',
+            'dimensions': {'dimensions_Age': '25-54', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Proxy: paridade ajustada na educação formal/não formal (25–54 anos), não desempenho em '
+                     'matemática. Proxy: paridade ajustada na educação formal/não formal (25–54 anos), não desempenho '
+                     'em leitura.'},
+           {'iges_target': '4.5',
+            'iges_indicator': '4.5.1',
+            'iges_description': '4.5.1 Gender parity index for participation rate in organized learning (one year '
+                                'before the official primary entry age), (ratio)',
+            'api_series': 'SE_GPI_PTNPRE',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Índice de paridade ajustado, conforme série atual.'},
+           {'iges_target': '4.6',
+            'iges_indicator': '4.6.1',
+            'iges_description': '4.6.1 Proportion of population achieving at least a fixed level of proficiency in '
+                                'functional skills, by sex, age and type of skill (%)',
+            'api_series': 'SE_ADT_LITR',
+            'dimensions': {'dimensions_Age': '15-99',
+                           'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Type of skill': 'LITE'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy: alfabetização de jovens/adultos (15–99 anos), não proficiência funcional no limiar '
+                     'descrito pelo IGES.'},
+           {'iges_target': '4.a',
+            'iges_indicator': '4.a.1',
+            'iges_description': '4.a.1 Schools with access to the internet for pedagogical purposes, by education '
+                                'level (%)',
+            'api_series': 'SE_ACS_INTNT',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Education level': 'PRIMAR'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '4.a',
+            'iges_indicator': '4.a.1',
+            'iges_description': '4.a.1 Schools with access to electricity, by education level (%)',
+            'api_series': 'SE_ACS_ELECT',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Education level': 'PRIMAR'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '4.b',
+            'iges_indicator': '4.b.1',
+            'iges_description': '4.b.1 Total official flows for scholarships, by recipient countries (millions of '
+                                'constant 2016 United States dollars)',
+            'api_series': 'DC_TOF_SCHIPSL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '4.c',
+            'iges_indicator': '4.c.1',
+            'iges_description': '4.c.1 Proportion of teachers who have received at least the minimum organized teacher '
+                                'training (e.g. pedagogical training) pre-service or in-service required for teaching '
+                                'at the relevant level in a given country, by education level (%)',
+            'api_series': 'SE_TRA_GRDL',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Education level': 'SECOND'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '5.2',
+            'iges_indicator': '5.2.1',
+            'iges_description': '5.2.1 Proportion of ever-partnered women and girls subjected to physical and/or '
+                                'sexual violence by a current or former intimate partner in the previous 12 months, by '
+                                'age (%)',
+            'api_series': 'VC_VAW_MARR',
+            'dimensions': {'dimensions_Age': '15-49', 'dimensions_Sex': 'FEMALE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '5.3',
+            'iges_indicator': '5.3.1',
+            'iges_description': '5.3.1 Proportion of women aged 20-24 years who were married or in a union before age '
+                                '15 (%)',
+            'api_series': 'SP_DYN_MRBF15',
+            'dimensions': {'dimensions_Age': '20-24', 'dimensions_Sex': 'FEMALE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '5.5',
+            'iges_indicator': '5.5.1',
+            'iges_description': '5.5.1 Proportion of seats held by women in national parliaments (% of total number of '
+                                'seats)',
+            'api_series': 'SG_GEN_PARL',
+            'dimensions': {'dimensions_Sex': 'FEMALE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '5.6',
+            'iges_indicator': '5.6.1',
+            'iges_description': '5.6.1 Proportion of women married or in a union of reproductive age (aged 15-49 '
+                                'years) who have their need for family planning satisfied with modern methods (% of '
+                                'women aged 15-49 years)',
+            'api_series': 'SH_FPL_MTMM',
+            'dimensions': {'dimensions_Age': '15-49', 'dimensions_Sex': 'FEMALE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'A descrição IGES repete planejamento familiar (3.7.1). Série real 3.7.1 vinculada também à meta '
+                     '5.6.'},
+           {'iges_target': '5.b',
+            'iges_indicator': '5.b.1',
+            'iges_description': '5.b.1 Proportion of individuals who own a mobile telephone, by sex (%)',
+            'api_series': 'IT_MOB_OWN',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '6.1',
+            'iges_indicator': '6.1.1',
+            'iges_description': '6.1.1 Proportion of population using safely managed drinking water services, by '
+                                'urban/rural (%)',
+            'api_series': 'SH_H2O_SAFE',
+            'dimensions': {'dimensions_Location': 'ALLAREA', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '6.2',
+            'iges_indicator': '6.2.1',
+            'iges_description': '6.2.1 Proportion of population practicing open defecation, by urban/rural (%)',
+            'api_series': 'SH_SAN_DEFECT',
+            'dimensions': {'dimensions_Location': 'ALLAREA', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '6.2',
+            'iges_indicator': '6.2.1',
+            'iges_description': '6.2.1 Proportion of population using safely managed sanitation services, by '
+                                'urban/rural (%)',
+            'api_series': 'SH_SAN_SAFE',
+            'dimensions': {'dimensions_Location': 'ALLAREA', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '6.3',
+            'iges_indicator': '6.3.1',
+            'iges_description': '6.3.1 Proportion of safely treated domestic wastewater flows (%)',
+            'api_series': 'EN_WWT_WWDS',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '6.4',
+            'iges_indicator': '6.4.1',
+            'iges_description': '6.4.1 Water use efficiency (United States dollars per cubic meter)',
+            'api_series': 'ER_H2O_WUEYST',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Activity': 'TOTAL'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '6.4',
+            'iges_indicator': '6.4.2',
+            'iges_description': '6.4.2 Level of water stress: freshwater withdrawal as a proportion of available '
+                                'freshwater resources (%)',
+            'api_series': 'ER_H2O_STRESS',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Activity': 'TOTAL'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '6.6',
+            'iges_indicator': '6.6.1',
+            'iges_description': '6.6.1 Water body extent (permanent and maybe permanent) (% of total land area)',
+            'api_series': 'EN_LKRV_PWAP',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '6.a',
+            'iges_indicator': '6.a.1',
+            'iges_description': '6.a.1 Total official development assistance (gross disbursement) for water supply and '
+                                'sanitation, by recipient countries (millions of constant 2016 United States dollars)',
+            'api_series': 'DC_TOF_WASHL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '7.1',
+            'iges_indicator': '7.1.1',
+            'iges_description': '7.1.1 Proportion of population with access to electricity, by urban/rural (%)',
+            'api_series': 'EG_ACS_ELEC',
+            'dimensions': {'dimensions_Location': 'ALLAREA', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '7.1',
+            'iges_indicator': '7.1.2',
+            'iges_description': '7.1.2 Proportion of population with primary reliance on clean fuels and technology '
+                                '(%)',
+            'api_series': 'EG_EGY_CLEAN',
+            'dimensions': {'dimensions_Location': 'ALLAREA', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '7.2',
+            'iges_indicator': '7.2.1',
+            'iges_description': '7.2.1 Renewable energy share in the total final energy consumption (%)',
+            'api_series': 'EG_FEC_RNEW',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '7.3',
+            'iges_indicator': '7.3.1',
+            'iges_description': '7.3.1 Energy intensity level of primary energy (megajoules per constant 2011 '
+                                'purchasing power parity GDP)',
+            'api_series': 'EG_EGY_PRIM',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '8.1',
+            'iges_indicator': '8.1.1',
+            'iges_description': '8.1.1 Annual growth rate of real GDP per capita (%)',
+            'api_series': 'NY_GDP_PCAP',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '8.1',
+            'iges_indicator': '8.10.1',
+            'iges_description': '8.10.1 Number of commercial bank branches per 100,000 adults',
+            'api_series': 'FB_CBK_BRCH',
+            'dimensions': {'dimensions_Age': '15+', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '8.2',
+            'iges_indicator': '8.2.1',
+            'iges_description': '8.2.1 Annual growth rate of real GDP per employed person (%)',
+            'api_series': 'SL_EMP_PCAP',
+            'dimensions': {'dimensions_Age': '15+', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '8.3',
+            'iges_indicator': '8.3.1',
+            'iges_description': '8.3.1 Proportion of informal employment in non-agriculture employment, by sex (ILO '
+                                'harmonized estimates) (%)',
+            'api_series': 'SL_ISV_IFEM',
+            'dimensions': {'dimensions_Age': '15+',
+                           'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Activity': 'TOTAL'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Informalidade no emprego total; o recorte não agrícola IGES não está disponível nesta seleção.'},
+           {'iges_target': '8.4',
+            'iges_indicator': '8.4.2',
+            'iges_description': '8.4.2 Domestic material consumption per unit of GDP, by type of raw material '
+                                '(kilograms per constant 2010 United States dollars)',
+            'api_series': 'EN_MAT_DOMCMPG',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Type of product': 'ALP'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '8.5',
+            'iges_indicator': '8.5.1',
+            'iges_description': '8.5.1 Average hourly earnings of managers (ISCO-08) (local currency)',
+            'api_series': 'SL_TLF_UEM',
+            'dimensions': {'dimensions_Age': '15+', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy mantido da planilha anterior: desemprego (8.5.2), não remuneração (8.5.1).'},
+           {'iges_target': '8.5',
+            'iges_indicator': '8.5.2',
+            'iges_description': '8.5.2 Unemployment rate, by sex and age (%)',
+            'api_series': 'SL_TLF_UEM',
+            'dimensions': {'dimensions_Age': '15+', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy mantido da planilha anterior: desemprego (8.5.2), não remuneração (8.5.1).'},
+           {'iges_target': '8.6',
+            'iges_indicator': '8.6.1',
+            'iges_description': '8.6.1 Proportion of youth not in education, employment or training, by sex and age '
+                                '(%)',
+            'api_series': 'SL_TLF_NEET',
+            'dimensions': {'dimensions_Age': '15-24', 'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '8.a',
+            'iges_indicator': '8.a.1',
+            'iges_description': '8.a.1 Total official flows (disbursement) for Aid for Trade, by donor countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_TOF_TRDDBML',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos por países beneficiários, não por doadores. Não existe recorte doador separado no CSV.'},
+           {'iges_target': '8.a',
+            'iges_indicator': '8.a.1',
+            'iges_description': '8.a.1 Total official flows (disbursement) for Aid for Trade, by recipient countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_TOF_TRDDBML',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos por países beneficiários, não por doadores. Não existe recorte doador separado no CSV.'},
+           {'iges_target': '8.4',
+            'iges_indicator': '8.4.2',
+            'iges_description': '8.4.2 Domestic material consumption per unit of GDP, by type of raw material '
+                                '(kilograms per constant 2010 United States dollars)',
+            'api_series': 'EN_MAT_DOMCMPG',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Type of product': 'ALP'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '9.1',
+            'iges_indicator': '9.1.2',
+            'iges_description': '9.1.2 Passenger volume (passenger kilometres), by mode of transport',
+            'api_series': 'IS_RDP_PFVOL',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Mode of transportation': 'AIR'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '9.2',
+            'iges_indicator': '9.2.1',
+            'iges_description': '9.2.1 Manufacturing value added as a proportion of GDP (%)',
+            'api_series': 'NV_IND_MANF',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Activity': 'ISIC4_C'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '9.4',
+            'iges_indicator': '9.4.1',
+            'iges_description': '9.4.1 Carbon dioxide emissions per unit of manufacturing value added (kilogrammes of '
+                                'CO2 per constant 2010 United States dollars)',
+            'api_series': 'EN_ATM_CO2MVA',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Activity': 'ISIC4_C'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '9.5',
+            'iges_indicator': '9.5.1',
+            'iges_description': '9.5.1 Research and development expenditure as a proportion of GDP (%)',
+            'api_series': 'GB_XPD_RSDV',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '9.5',
+            'iges_indicator': '9.5.2',
+            'iges_description': '9.5.2 Researchers (in full-time equivalent) per million inhabitants (per 1,000,000 '
+                                'population)',
+            'api_series': 'GB_POP_SCIERD',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Mantém a variável descrita pelo IGES (pesquisadores), atualmente em 9.5.2; não capacidade '
+                     'elétrica.'},
+           {'iges_target': '9.a',
+            'iges_indicator': '9.a.1',
+            'iges_description': '9.a.1 Total official flows for infrastructure, by recipient countries (millions of '
+                                'constant 2016 United States dollars)',
+            'api_series': 'DC_TOF_INFRAL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '9.b',
+            'iges_indicator': '9.b.1',
+            'iges_description': '9.b.1 Proportion of medium and high-tech industry value added in total value added '
+                                '(%)',
+            'api_series': 'NV_IND_TECH',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Activity': 'ISIC3_D'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '9.c',
+            'iges_indicator': '9.c.1',
+            'iges_description': '9.c.1 Proportion of population covered by a mobile network, by technology (%)',
+            'api_series': 'IT_MOB_2GNTWK',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Tecnologia 2G, escolhida como na planilha anterior. Mesma tecnologia 2G; referência duplicada '
+                     'consolidada.'},
+           {'iges_target': '9.c',
+            'iges_indicator': '9.c.1',
+            'iges_description': '9.c.1 Proportion of population covered by a mobile network, by technology (%)',
+            'api_series': 'IT_MOB_2GNTWK',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Tecnologia 2G, escolhida como na planilha anterior. Mesma tecnologia 2G; referência duplicada '
+                     'consolidada.'},
+           {'iges_target': '10.4',
+            'iges_indicator': '10.4.1',
+            'iges_description': '10.4.1 Labour share of GDP, comprising wages and social protection transfers (%)',
+            'api_series': 'SL_EMP_GTOTL',
+            'dimensions': {'dimensions_Age': 'ALLAGE', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '10.b',
+            'iges_indicator': '10.b.1',
+            'iges_description': '10.b.1 Total assistance for development, by donor countries (millions of current '
+                                'United States dollars)',
+            'api_series': 'DC_TRF_TFDV',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos por beneficiários, não doadores; não há recorte distinto no CSV.'},
+           {'iges_target': '10.b',
+            'iges_indicator': '10.b.1',
+            'iges_description': '10.b.1 Total assistance for development, by recipient countries (millions of current '
+                                'United States dollars)',
+            'api_series': 'DC_TRF_TFDV',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos por beneficiários, não doadores; não há recorte distinto no CSV.'},
+           {'iges_target': '10.c',
+            'iges_indicator': '10.c.1',
+            'iges_description': '10.c.1 Remittance costs as a proportion of the amount remitted (%)',
+            'api_series': 'SI_RMT_COST',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '11.1',
+            'iges_indicator': '11.1.1',
+            'iges_description': '11.1.1 Proportion of urban population living in slums (%)',
+            'api_series': 'EN_LND_SLUM',
+            'dimensions': {'dimensions_Location': 'URBAN', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '11.2',
+            'iges_indicator': '11.2.1',
+            'iges_description': '11.2.1 Percent of paved roads over total roads (%)',
+            'api_series': 'SP_TRN_PUBL',
+            'dimensions': {'dimensions_Age': 'ALLAGE',
+                           'dimensions_Sex': 'BOTHSEX',
+                           'dimensions_Reporting Type': 'G',
+                           'dimensions_Cities': 'NOCITI',
+                           'dimensions_Disability status': '_T'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy mantido: acesso a transporte público, não proporção de vias pavimentadas.'},
+           {'iges_target': '11.6',
+            'iges_indicator': '11.6.2',
+            'iges_description': '11.6.2 Annual mean levels of fine particulate matter in cities, urban population '
+                                '(micrograms per cubic meter)',
+            'api_series': 'EN_ATM_PM25',
+            'dimensions': {'dimensions_Location': 'URBAN', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '12.2',
+            'iges_indicator': '12.2.2',
+            'iges_description': '12.2.2 Domestic material consumption, by type of raw material (tonnes)',
+            'api_series': 'EN_MAT_DOMCMPT',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Type of product': 'ALP'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '12.4',
+            'iges_indicator': '12.4.1',
+            'iges_description': '12.4.1 Compliance with the Basel Convention on hazardous waste and other chemicals',
+            'api_series': 'SG_HAZ_CMRBASEL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '12.4',
+            'iges_indicator': '12.4.1',
+            'iges_description': '12.4.1 Compliance with the Rotterdam Convention on hazardous waste and other '
+                                'chemicals',
+            'api_series': 'SG_HAZ_CMRROTDAM',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '12.5',
+            'iges_indicator': '12.5.1',
+            'iges_description': '12.5.1 Municipal Solid Waste collection coverage, by cities (%)',
+            'api_series': 'EN_EWT_RCYV',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Proxy mantido: lixo eletrônico reciclado (toneladas), não cobertura de coleta municipal.'},
+           {'iges_target': '12.a',
+            'iges_indicator': '12.a.1',
+            'iges_description': '12.a.1 Researchers (in full-time equivalent) per million inhabitants (per 1,000,000 '
+                                'population)',
+            'api_series': 'GB_POP_SCIERD',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Mantém a variável descrita pelo IGES (pesquisadores), atualmente em 9.5.2; não capacidade '
+                     'elétrica.'},
+           {'iges_target': '12.c',
+            'iges_indicator': '12.c.1',
+            'iges_description': '12.c.1 Fossil-fuel pre-tax subsidies (consumption and production) as a proportion of '
+                                'total GDP (%)',
+            'api_series': 'ER_FFS_CMPT_GDP',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'A série atual de subsídios não é rotulada como pré-tributária.'},
+           {'iges_target': '12.c',
+            'iges_indicator': '12.c.1',
+            'iges_description': '12.c.1 Fossil-fuel pre-tax subsidies (consumption and production) per capita (current '
+                                'United States dollars)',
+            'api_series': 'ER_FFS_CMPT_PC_CD',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'A série atual de subsídios não é rotulada como pré-tributária.'},
+           {'iges_target': '12.2',
+            'iges_indicator': '12.2.2',
+            'iges_description': '12.2.2 Domestic material consumption, by type of raw material (tonnes)',
+            'api_series': 'EN_MAT_DOMCMPT',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Type of product': 'ALP'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '14.5',
+            'iges_indicator': '14.5.1',
+            'iges_description': '14.5.1 Average proportion of Marine Key Biodiversity Areas (KBAs) covered by '
+                                'protected areas (%)',
+            'api_series': 'ER_MRN_MPA',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '15.1',
+            'iges_indicator': '15.1.1',
+            'iges_description': '15.1.1 Forest area as a proportion of total land area (%)',
+            'api_series': 'AG_LND_FRST',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Mantém a variável descrita pelo IGES (florestas), que está em 15.1.1; não degradação de terras.'},
+           {'iges_target': '15.2',
+            'iges_indicator': '15.2.1',
+            'iges_description': '15.2.1 Above-ground biomass in forest per hectare (tonnes per hectare)',
+            'api_series': 'AG_LND_FRSTBIOPHA',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '15.3',
+            'iges_indicator': '15.3.1',
+            'iges_description': '15.3.1 Forest area (% of land area)',
+            'api_series': 'AG_LND_FRST',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Mantém a variável descrita pelo IGES (florestas), que está em 15.1.1; não degradação de terras.'},
+           {'iges_target': '15.4',
+            'iges_indicator': '15.4.1',
+            'iges_description': '15.4.1 Average proportion of Mountain Key Biodiversity Areas (KBAs) covered by '
+                                'protected areas (%)',
+            'api_series': 'ER_PTD_MTN',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '15.5',
+            'iges_indicator': '15.5.1',
+            'iges_description': '15.5.1 Red List Index',
+            'api_series': 'ER_RSK_LST',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 1,
+            'notes': ''},
+           {'iges_target': '15.a',
+            'iges_indicator': '15.a.1',
+            'iges_description': '15.a.1 Total official development assistance for biodiversity, by donor countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_ODA_BDVL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos para biodiversidade por países beneficiários; não recorte doador. Mesma série de '
+                     'biodiversidade por países beneficiários; não recorte doador.'},
+           {'iges_target': '15.a',
+            'iges_indicator': '15.a.1',
+            'iges_description': '15.a.1 Total official development assistance for biodiversity, by recipient countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_ODA_BDVL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos para biodiversidade por países beneficiários; não recorte doador. Mesma série de '
+                     'biodiversidade por países beneficiários; não recorte doador.'},
+           {'iges_target': '15.b',
+            'iges_indicator': '15.b.1',
+            'iges_description': '15.b.1 Total official development assistance for biodiversity, by donor countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_ODA_BDVL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos para biodiversidade por países beneficiários; não recorte doador. Mesma série de '
+                     'biodiversidade por países beneficiários; não recorte doador.'},
+           {'iges_target': '15.b',
+            'iges_indicator': '15.b.1',
+            'iges_description': '15.b.1 Total official development assistance for biodiversity, by recipient countries '
+                                '(millions of constant 2016 United States dollars)',
+            'api_series': 'DC_ODA_BDVL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Fluxos para biodiversidade por países beneficiários; não recorte doador. Mesma série de '
+                     'biodiversidade por países beneficiários; não recorte doador.'},
+           {'iges_target': '16.1',
+            'iges_indicator': '16.1.1',
+            'iges_description': '16.1.1 Number of victims of intentional homicide per 100,000 population, by sex '
+                                '(victims per 100,000 population)',
+            'api_series': 'VC_IHR_PSRC',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '16.3',
+            'iges_indicator': '16.3.2',
+            'iges_description': '16.3.2 Unsentenced detainees as a proportion of overall prison population (%)',
+            'api_series': 'VC_PRS_UNSNT',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '16.9',
+            'iges_indicator': '16.9.1',
+            'iges_description': '16.9.1 Proportion of children under 5 years of age whose births have been registered '
+                                'with a civil authority (% of children under 5 years of age)',
+            'api_series': 'SG_REG_BRTH',
+            'dimensions': {'dimensions_Age': '<5Y', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '17.1',
+            'iges_indicator': '17.1.1',
+            'iges_description': '17.1.1 Tax revenue (% of GDP)',
+            'api_series': 'GC_TAX_TOTL_GD_ZS',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Receita tributária disponível sob 17.13.1; unidade preservada (% PIB).'},
+           {'iges_target': '17.11',
+            'iges_indicator': '17.11.1',
+            'iges_description': '17.11.1 Exports of goods and services (% of GDP)',
+            'api_series': 'TX_EXP_GBSVR',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': 'Proxy mantido: participação nas exportações mundiais de serviços; não exportações/PIB.'},
+           {'iges_target': '17.13',
+            'iges_indicator': '17.13.1',
+            'iges_description': '17.13.1 GDP (current US$)',
+            'api_series': 'NY_GDP_MKTP_KD_ZG',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Proxy mantido: crescimento anual do PIB; não nível do PIB em US$.'},
+           {'iges_target': '17.15',
+            'iges_indicator': '17.15.1',
+            'iges_description': '17.15.1 Proportion of new development interventions drawn from country-led result '
+                                'frameworks - data by recipient (%)',
+            'api_series': 'SG_PLN_RECNDI',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '17.15',
+            'iges_indicator': '17.15.1',
+            'iges_description': '17.15.1 Proportion of results indicators which will be monitored using government '
+                                'sources and monitoring systems - data by provider (%)',
+            'api_series': 'SG_PLN_RECRIMON',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Proxy: dados por beneficiários; a referência IGES pede dados por provedores.'},
+           {'iges_target': '17.19',
+            'iges_indicator': '17.19.1',
+            'iges_description': '17.19.1 Dollar value of all resources made available to strengthen statistical '
+                                'capacity in developing countries (current United States dollars)',
+            'api_series': 'SG_STT_CAPTY',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '17.3',
+            'iges_indicator': '17.3.2',
+            'iges_description': '17.3.2 Volume of remittances (in United States dollars) as a proportion of total GDP '
+                                '(%)',
+            'api_series': 'BX_TRF_PWKR',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': 'Remessas/PIB restauradas a partir da API; substitui financiamento privado mobilizado usado '
+                     'antes.'},
+           {'iges_target': '17.4',
+            'iges_indicator': '17.4.1',
+            'iges_description': '17.4.1 Debt service as a proportion of exports of goods and services (%)',
+            'api_series': 'DT_TDS_DECT',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '17.8',
+            'iges_indicator': '17.8.1',
+            'iges_description': '17.8.1 Internet users per 100 inhabitants',
+            'api_series': 'IT_USE_ii99',
+            'dimensions': {'dimensions_Sex': 'BOTHSEX', 'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '17.9',
+            'iges_indicator': '17.9.1',
+            'iges_description': '17.9.1 Total official development assistance (gross disbursement) for technical '
+                                'cooperation (millions of 2016 United States dollars)',
+            'api_series': 'DC_FTA_TOTAL',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': None,
+            'upper_bound': None,
+            'notes': ''},
+           {'iges_target': '4.a',
+            'iges_indicator': '4.a.1',
+            'iges_description': '4.a.1 Schools with access to basic drinking water, by education level (%)',
+            'api_series': 'SE_ACS_H2O',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Education level': 'PRIMAR'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '9.3',
+            'iges_indicator': '9.3.2',
+            'iges_description': '9.3.2 Proportion of small-scale industries with a loan or line of credit (%)',
+            'api_series': 'FC_ACC_SSID',
+            'dimensions': {'dimensions_Reporting Type': 'G', 'dimensions_Activity': 'ISIC4_C'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '14.a',
+            'iges_indicator': '14.a.1',
+            'iges_description': '14.a.1 National ocean science expenditure as a share of total research and '
+                                'development funding (%)',
+            'api_series': 'ER_RDE_OSEX',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '16.5',
+            'iges_indicator': '16.5.2',
+            'iges_description': '16.5.2 Bribery incidence (% of firms experiencing at least one bribe payment request)',
+            'api_series': 'IC_FRM_BRIB',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''},
+           {'iges_target': '17.15',
+            'iges_indicator': '17.15.1',
+            'iges_description': '17.15.1 Proportion of new development interventions drawn from country-led result '
+                                'frameworks - data by provider (%)',
+            'api_series': 'SG_PLN_PRVNDI',
+            'dimensions': {'dimensions_Reporting Type': 'G'},
+            'lower_bound': 0,
+            'upper_bound': 100,
+            'notes': ''}],
+ 'metadata': []}
+
+
+def text(v):
+    return '' if v is None else str(v).strip()
+
+
+def normalize(v):
+    return ' '.join(''.join(c for c in unicodedata.normalize('NFKD', text(v).lower())
+                            if not unicodedata.combining(c)).split())
+
+
+def number(v):
+    if v is None or isinstance(v, bool) or text(v) == '':
+        return None
+    try:
+        n = float(text(v))
+        return n if math.isfinite(n) else None
+    except (ValueError, TypeError):
+        return None
+
+
+def source_value(v):
+    n = number(v)
+    if n is not None:
+        return n
+    return text(v) if text(v).startswith(('<', '>', '≤', '≥')) else None
+
+
+def rule_key(row):
+    return (text(row['iges_target']), text(row['iges_indicator']), normalize(row['iges_description']))
+
+
+def load_iges(path):
+    if path is None:
+        return DEFAULT_CONFIG['iges']
+    w = load_workbook(path, read_only=True, data_only=True)
+    try:
+        for sheet in w:
+            iterator = iter(sheet.values)
+            header = [text(v) for v in next(iterator, ())]
+            if not {'Target', 'Indicator', 'Description'} <= set(header):
+                continue
+            result = []
+            for order, values in enumerate(iterator, 1):
+                r = dict(zip(header, values))
+                if not text(r.get('Target')):
+                    continue
+                result.append({'order':order, 'iges_target':text(r['Target']),
+                               'iges_indicator':text(r['Indicator']),
+                               'iges_description':text(r['Description'])})
+            return result
+        raise ValueError(f'{path}: colunas Target, Indicator, Description ausentes.')
+    finally:
+        w.close()
+
+
+def read_csv_groups(path):
+    with path.open(encoding='utf-8-sig', newline='') as handle:
+        reader = csv.DictReader(handle)
+        required = {'series','indicator','geoAreaCode','geoAreaName','timePeriodStart','value'}
+        if not required <= set(reader.fieldnames or []):
+            return None
+        regions = {}
+        for source_row, row in enumerate(reader, 2):
+            code = text(row['geoAreaCode'])
+            region = regions.setdefault(code, {'name':text(row['geoAreaName']), 'groups':{}})
+            if region['name'] != text(row['geoAreaName']):
+                raise ValueError(f'{path.name}: código {code} com nomes de região distintos.')
+            dims = {k:text(v) for k,v in row.items() if k and k.startswith('dimensions_') and text(v)}
+            groupkey = (text(row['series']), json.dumps(dims, sort_keys=True, ensure_ascii=False))
+            group = region['groups'].setdefault(groupkey, {'rows':[], 'dimensions':dims})
+            group['rows'].append((source_row, row))
+    return regions
+
+
+def observations(group, start, end):
+    result = {}
+    for _, row in group['rows']:
+        year = number(row['timePeriodStart'])
+        if year is None or year != int(year) or not start <= year <= end:
+            continue
+        value = source_value(row['value'])
+        if value is None:
+            continue
+        year = int(year)
+        if year in result and result[year] != value:
+            raise ValueError(f"{row['series']}, {year}: valores conflitantes na mesma combinação de dimensões; não se calculou média.")
+        result[year] = value
+    return result
+
+
+def select_series(iges, rules, groups, start, end):
+    by_target = defaultdict(list)
+    for row in iges:
+        by_target[row['iges_target']].append(row)
+    result = []
+    for target, options in by_target.items():
+        candidates = []
+        available = []
+        for row in options:
+            rule = rules.get(rule_key(row))
+            candidate = {'iges_order':row['order'], 'iges_indicator':row['iges_indicator'],
+                         'iges_description':row['iges_description'], 'n_numeric':0}
+            if rule is None:
+                candidate['status'] = 'sem correspondência API definida'
+            else:
+                groupkey = (rule['api_series'], json.dumps(rule['dimensions'], sort_keys=True, ensure_ascii=False))
+                candidate['api_series'] = rule['api_series']
+                group = groups.get(groupkey)
+                if group is None:
+                    candidate['status'] = 'série/dimensões ausentes neste CSV'
+                else:
+                    obs = observations(group, start, end)
+                    n = sum(isinstance(v, (int,float)) for v in obs.values())
+                    candidate['n_numeric'] = n
+                    candidate['status'] = 'disponível' if n else 'sem observações numéricas no período'
+                    if n:
+                        available.append((n, -row['order'], row, rule, groupkey, obs))
+            candidate['n_missing_numeric'] = end - start + 1 - candidate['n_numeric']
+            candidates.append(candidate)
+        if available:
+            chosen = max(available, key=lambda x:(x[0],x[1]))
+            _, _, row, rule, groupkey, obs = chosen
+            group = groups[groupkey]
+            raw = group['rows'][0][1]
+            actual_indicators = re.findall(r'(?:1[0-7]|[1-9])\.(?:\d+|[a-z])\.\d+', raw['indicator'])
+            # Um código real por meta. Indicadores equivalentes publicados em
+            # conjunto usam o código da meta correspondente, quando existir.
+            indicator = next((i for i in actual_indicators if i.rsplit('.',1)[0] == target),
+                             row['iges_indicator'] if row['iges_indicator'] in actual_indicators else
+                             actual_indicators[0] if actual_indicators else '')
+            result.append({'target':target, 'row':row, 'rule':rule, 'groupkey':groupkey,
+                           'group':group, 'obs':obs, 'indicator':indicator,
+                           'candidates':candidates, 'description':text(raw['seriesDescription']),
+                           'unit':text(raw.get('attributes_Units')), 'status':'selecionada'})
+        else:
+            result.append({'target':target, 'row':options[0], 'rule':{}, 'obs':{},
+                           'indicator':'', 'candidates':candidates, 'description':'',
+                           'unit':'', 'status':'sem série numérica disponível'})
+    return result
+
+
+def sheet_name(name):
+    clean = re.sub(r"[\\/*?:\[\]']", '_', name).strip(' ')
+    return (clean or 'Region')[:22]  # Reserva nove caracteres para _original.
+
+
+def filename_name(name):
+    return re.sub(r'[^\w.-]+', '_', name, flags=re.UNICODE).strip('_.') or 'Region'
+
+
+def fill_formula(target_year, column, obs, original, series_row, rule, start):
+    row = target_year - start + 2
+    ref = f"'{original}'!{column}{row}"
+    if target_year in obs:
+        return f'=IF(ISNUMBER({ref}),{ref},IF(ISTEXT({ref}),{ref},""))', 'original', obs[target_year]
+    years = sorted(y for y,v in obs.items() if isinstance(v,(int,float)))
+    if len(years) < 2:
+        return '=""', 'missing', None
+    p = bisect.bisect(years, target_year)
+    a,b = years[:2] if p == 0 else years[-2:] if p == len(years) else [years[p-1],years[p]]
+    ar,br = a-start+2,b-start+2
+    va,vb = f"'{original}'!{column}{ar}",f"'{original}'!{column}{br}"
+    calc = f"{va}*({vb}/{va})^(($A{row}-'{original}'!$A${ar})/('{original}'!$A${br}-'{original}'!$A${ar}))"
+    clipped = calc
+    if rule.get('lower_bound') is not None:
+        clipped = f'MAX(Series!$L${series_row},{clipped})'
+    if rule.get('upper_bound') is not None:
+        clipped = f'MIN(Series!$M${series_row},{clipped})'
+    formula = (f'=IF(AND(ISNUMBER({va}),ISNUMBER({vb})),IF(AND({va}>0,{vb}>0),'
+               f'{clipped},IF(AND({va}=0,{vb}=0),0,"")),"")')
+    x,z = obs[a],obs[b]
+    if x == z == 0:
+        return formula, 'zero', 0
+    if x <= 0 or z <= 0:
+        return formula, 'missing', None
+    try:
+        value = x*(z/x)**((target_year-a)/(b-a))
+    except (OverflowError, ZeroDivisionError):
+        raise ValueError('CAGR não finito; revise os valores e a escala da série.') from None
+    if not math.isfinite(value):
+        raise ValueError('CAGR não finito; revise os valores e a escala da série.')
+    if rule.get('lower_bound') is not None:
+        value = max(rule['lower_bound'],value)
+    if rule.get('upper_bound') is not None:
+        value = min(rule['upper_bound'],value)
+    return formula, 'interpolation' if a<target_year<b else 'extrapolation', value
+
+
+def format_sheet(sheet, widths=None):
+    sheet.freeze_panes = 'A2'
+    sheet.sheet_view.showGridLines = False
+    sheet.auto_filter.ref = sheet.dimensions
+    sheet.row_dimensions[1].height = 46
+    for cell in sheet[1]:
+        cell.font = Font(name='Calibri',bold=True,color='FFFFFF',size=11)
+        cell.fill = PatternFill('solid',fgColor='17365D')
+        cell.alignment = Alignment(vertical='center',wrap_text=True)
+        sheet.column_dimensions[cell.column_letter].width = (widths or {}).get(cell.column,22)
+
+
+def cache_formulas(path, cached):
+    """Grava os resultados calculados junto das fórmulas para leitura data_only.
+
+    Isso permite rodar Pearson diretamente, sem abrir/salvar antes no Excel.
+    Usa somente ZIP/XML da biblioteca padrão; não executa fórmulas externas.
+    """
+    ns = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
+    with zipfile.ZipFile(path) as archive:
+        members = [(info, archive.read(info.filename)) for info in archive.infolist()]
+    with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED) as archive:
+        for info,data in members:
+            values = cached.get(info.filename)
+            if values is not None:
+                root = ET.fromstring(data)
+                for cell in root.iter('{'+ns+'}c'):
+                    address = cell.get('r')
+                    if address not in values:
+                        continue
+                    if cell.find('{'+ns+'}f') is None:
+                        raise ValueError(f'Cache sem fórmula: {info.filename}/{address}')
+                    value = values[address]
+                    v = cell.find('{'+ns+'}v')
+                    if v is None:
+                        v = ET.SubElement(cell,'{'+ns+'}v')
+                    if value is None or isinstance(value,str):
+                        cell.set('t','str')
+                        v.text = '' if value is None else value
+                    else:
+                        cell.attrib.pop('t',None)
+                        v.text = str(value)
+                data = ET.tostring(root,encoding='utf-8',xml_declaration=True)
+            archive.writestr(info,data)
+
+
+def write_region(output, region_name, region_code, selections, start, end, csv_name):
+    workbook = Workbook()
+    main = workbook.active
+    main.title = sheet_name(region_name)
+    original = workbook.create_sheet(main.title+'_original')
+    series_sheet = workbook.create_sheet('Series')
+    metadata_sheet = workbook.create_sheet('Ambicao_metas')
+    catalog = workbook.create_sheet('API_catalog')
+    prefix = filename_name(region_code).upper()
+    for i,s in enumerate(selections,1):
+        s['id'] = f"{prefix}_{i:03d}_{s['indicator'] or 'META_'+s['target']}"
+    header = ['year','region']+[s['id'] for s in selections]
+    main.append(header)
+    original.append(header)
+    series_sheet.append(['series_id','targets','indicator_used','api_series','description',
+                         'dimensions','unit','source','n_numeric_source','n_censored_source',
+                         'n_missing_source','lower_bound','upper_bound','iges_order',
+                         'iges_indicator','iges_description','notes','selection_status',
+                         'candidates_audit','n_CAGR_interpolations','n_CAGR_extrapolations',
+                         'n_zero_fills','n_missing_final','n_numeric_final'])
+    for year in range(start,end+1):
+        original.append([year,region_name]+[s['obs'].get(year) for s in selections])
+        main.append([year,region_name]+[None]*len(selections))
+    total = end-start+1
+    cached = {'xl/worksheets/sheet1.xml':{},'xl/worksheets/sheet3.xml':{}}
+    for i,s in enumerate(selections,3):
+        c = get_column_letter(i)
+        sr = i-1
+        counts = defaultdict(int)
+        final_numbers = 0
+        for year in range(start,end+1):
+            formula, kind, value = fill_formula(year,c,s['obs'],original.title,sr,s['rule'],start)
+            main.cell(year-start+2,i,formula).number_format = '0.########'
+            cached['xl/worksheets/sheet1.xml'][f'{c}{year-start+2}'] = value
+            counts[kind] += 1
+            final_numbers += isinstance(value,(int,float))
+        n = sum(isinstance(v,(int,float)) for v in s['obs'].values())
+        censored = sum(isinstance(v,str) for v in s['obs'].values())
+        series_sheet.append([s['id'],s['target'],s['indicator'] or None,
+            s['rule'].get('api_series'),s['description'] or None,
+            json.dumps(s['rule'].get('dimensions',{}),ensure_ascii=False),s['unit'] or None,
+            csv_name,n,censored,total-n,s['rule'].get('lower_bound'),s['rule'].get('upper_bound'),
+            s['row']['order'],s['row']['iges_indicator'],s['row']['iges_description'],
+            s['rule'].get('notes'),s['status'],json.dumps(s['candidates'],ensure_ascii=False),
+            counts['interpolation'],counts['extrapolation'],counts['zero'],
+            f'= {total}-COUNT(\'{main.title}\'!{c}2:{c}{total+1})-{censored}',
+            f'=COUNT(\'{main.title}\'!{c}2:{c}{total+1})'])
+        cached['xl/worksheets/sheet3.xml'][f'W{sr}'] = total-final_numbers-censored
+        cached['xl/worksheets/sheet3.xml'][f'X{sr}'] = final_numbers
+    metadata_sheet.append(['MetaODS','ambicao_meta','Fonte'])
+    for target,value in AMBITIONS.items():
+        metadata_sheet.append([target,value,AMBITION_SOURCE])
+    catalog.append(['api_series','indicator','description','unit','dimensions','targets',
+                    'series_ids','n_numeric_period','n_censored_period','first_numeric_year',
+                    'last_numeric_year','source'])
+    used = defaultdict(list)
+    for s in selections:
+        if s['status'] == 'selecionada':
+            used[s['groupkey']].append(s)
+    for groupkey,items in used.items():
+        s = items[0]
+        raw = s['group']['rows'][0][1]
+        years = sorted(y for y,v in s['obs'].items() if isinstance(v,(int,float)))
+        catalog.append([raw['series'],raw['indicator'],raw['seriesDescription'],s['unit'],groupkey[1],
+                        '; '.join(t['target'] for t in items),'; '.join(t['id'] for t in items),
+                        len(years),sum(isinstance(v,str) for v in s['obs'].values()),
+                        years[0],years[-1],csv_name])
+    # A legenda é anexada ao final: preserva os índices das abas e caches.
+    identity_rows = [dict(series_id=s['id'], targets=s['target'], indicator_used=s['indicator'],
+                          api_series=s['rule'].get('api_series'), dimensions=json.dumps(s['rule'].get('dimensions',{}),sort_keys=True,ensure_ascii=False), unit=s['unit']) for s in selections]
+    canonical, legend = representatives(identity_rows)
+    series_sheet.cell(1,25,'canonical_series_id')
+    series_sheet.cell(1,26,'used_in_analysis')
+    for row_number,s in enumerate(selections,2):
+        series_sheet.cell(row_number,25,canonical[s['id']])
+        series_sheet.cell(row_number,26,canonical[s['id']]==s['id'])
+    representation = workbook.create_sheet('Representacao_metas')
+    representation.append(['Meta_representante','Metas_representadas','Serie_API','Dimensoes','Unidade','Serie_canonica','Series_excluidas','Regra'])
+    for item in legend:
+        representation.append([item['representative'], '; '.join(item['represents']),item['api_series'],item['dimensions'],item['unit'],item['canonical_series_id'],'; '.join(item['excluded_series_ids']), 'Mesma série API + dimensões + unidade. Preferir meta nativa; desempate por código ODS. Apenas a representante participa dos cálculos e das regras IGES/JRC; não se somam nem transferem evidências das metas omitidas. Equivalência da medida usada, não equivalência conceitual das metas.'])
+    for sheet in workbook:
+        format_sheet(sheet)
+    for sheet in (main,original):
+        sheet.freeze_panes = 'C2'
+        sheet.column_dimensions['A'].width = 10
+        sheet.column_dimensions['B'].width = 28
+    for col in ('E','F','P','Q','S'):
+        series_sheet.column_dimensions[col].width = 65
+    metadata_sheet.column_dimensions['C'].width=65
+    for row in metadata_sheet.iter_rows(min_row=2,min_col=2,max_col=2):row[0].number_format='0.000'
+    catalog.column_dimensions['C'].width = 75
+    catalog.column_dimensions['E'].width = 65
+    temporary = None
+    try:
+        output.parent.mkdir(parents=True,exist_ok=True)
+        with tempfile.NamedTemporaryFile(prefix='.'+output.stem+'_',suffix='.xlsx',dir=output.parent,delete=False) as f:
+            temporary = Path(f.name)
+        workbook.save(temporary)
+        workbook.close()
+        cache_formulas(temporary,cached)
+        os.replace(temporary,output)
+    finally:
+        workbook.close()
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--entrada',type=Path,default=ROOT,help='CSV da API ou pasta com CSVs.')
+    parser.add_argument('--saida',type=Path,help='Pasta de saída; padrão: mesma pasta do CSV.')
+    parser.add_argument('--iges',type=Path,help='table_iges.xlsx; padrão: pasta do CSV, do script ou tabela incorporada.')
+    parser.add_argument('--regras',type=Path,help='JSON opcional de regras específicas de correspondência.')
+    parser.add_argument('--inicio',type=int,default=2000)
+    parser.add_argument('--fim',type=int,default=2025)
+    args = parser.parse_args(argv)
+    if args.inicio>args.fim:
+        parser.error('--inicio deve ser menor ou igual a --fim.')
+    if not args.entrada.exists():
+        parser.error(f'Entrada não encontrada: {args.entrada}')
+    rules = {rule_key(r):r for r in DEFAULT_CONFIG['rules']}
+    if args.regras:
+        for r in json.loads(args.regras.read_text(encoding='utf-8-sig')):
+            rules[rule_key(r)] = r
+    files = [args.entrada] if args.entrada.is_file() else sorted(args.entrada.glob('*.csv'))
+    files = [p for p in files if not p.name.startswith(('~$','.'))]
+    processed = 0
+    failures = 0
+    outputs = set()
+    for path in files:
+        try:
+            regions = read_csv_groups(path)
+            if regions is None:
+                if args.entrada.is_file():
+                    raise ValueError('O CSV não contém as colunas esperadas da API.')
+                continue
+            iges_path = args.iges
+            if iges_path is None:
+                iges_path = next((p for p in (path.parent/'table_iges.xlsx',ROOT/'table_iges.xlsx') if p.is_file()),None)
+            iges = load_iges(iges_path)
+            for code,region in regions.items():
+                selections = select_series(iges,rules,region['groups'],args.inicio,args.fim)
+                n = sum(s['status']=='selecionada' for s in selections)
+                output = (args.saida or path.parent)/(f'{text(code).zfill(3)}_{filename_name(region["name"])}_SDG_API_{args.inicio}_{args.fim}.xlsx')
+                if output.resolve() in outputs:
+                    raise ValueError(f'Duas entradas gerariam {output.name}; mantenha só uma versão do CSV por região.')
+                outputs.add(output.resolve())
+                write_region(output,region['name'],code,selections,args.inicio,args.fim,path.name)
+                processed += 1
+                print(f'Criado: {output.name} — {n}/{len(selections)} metas com série numérica.',flush=True)
+                missing = [s['target'] for s in selections if s['status']!='selecionada']
+                if missing:
+                    print('  Sem série numérica (colunas vazias): '+', '.join(missing),flush=True)
+        except Exception as exc:
+            failures += 1
+            print(f'ERRO em {path.name}: {exc}',file=sys.stderr,flush=True)
+    if not processed:
+        print('Nenhum CSV da API foi processado.',file=sys.stderr)
+    return 1 if failures or not processed else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

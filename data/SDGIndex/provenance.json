@@ -1,0 +1,11 @@
+{
+  "zip_sha256": "d8291e54bc6cdc83dd54db4d85c4dee14954bdb5ce4d1e48291b43399f171f9a",
+  "regional_zip_sha256": "5db0dff350e77d7f067e1d7d1ab365dba60dc68360bcb32b9e8b856a567040f5",
+  "regions": 14,
+  "countries": 169,
+  "networks": 28,
+  "indicators": 101,
+  "basis": "scores",
+  "classification": "progress-direction-v1",
+  "within_goal_edges": false
+}
