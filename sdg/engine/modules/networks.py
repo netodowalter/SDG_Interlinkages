@@ -555,7 +555,7 @@ def main(argv=None):
             c=process_file(path,destination,norm,directions,args.alpha)
             processed.append({'file':str(path),**c})
             print(f"  {c['final_edges']} edges; {c['targets']} targets; {c['unresolved_directionality']} pairs with unresolved directionality.",flush=True)
-            print(f'  Created: {path.stem}_final.xlsx; {c['cytoscape_nodes']} connected targets. Region-prefixed CSV files saved in the same folder.',flush=True)
+            print(f"  Created: {path.stem}_final.xlsx; {c['cytoscape_nodes']} connected targets. Region-prefixed CSV files saved in the same folder.",flush=True)
         except Exception as e:
             failures.append({'file':str(path),'error':str(e)})
             print('  ERROR:',e,flush=True)

@@ -2047,7 +2047,7 @@ def main(argv=None):
             for code,region in regions.items():
                 selections = select_series(iges,rules,region['groups'],args.start,args.end)
                 n = sum(s['status']=='selected' for s in selections)
-                output = (args.output or path.parent)/(f'{text(code).zfill(3)}_{filename_name(region['name'])}_SDG_API_{args.start}_{args.end}.xlsx')
+                output = (args.output or path.parent)/(f"{text(code).zfill(3)}_{filename_name(region['name'])}_SDG_API_{args.start}_{args.end}.xlsx")
                 if output.resolve() in outputs:
                     raise ValueError(f'Two inputs would produce {output.name}; keep only one CSV version per region.')
                 outputs.add(output.resolve())
