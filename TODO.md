@@ -45,6 +45,18 @@ Items in the first section can be done with the data already in the package and 
 - [ ] Verify bibliographic details and add DOIs for Pradhan et al. (2017), Kroll, Warchold and Pradhan (2019), Miola et al. (2019), Nilsson et al. (2017), Issa, Mezher and El Fadel (2024), Di Lucia, Slade and Khan (2022).
 - [ ] Convert LaTeX equation blocks to Word equations in the `.docx` before submission.
 
+## To consider
+
+Ideas worth evaluating; not committed.
+
+- [ ] **Progress direction less sensitive to the trend window**, borrowing from the UNSD Technical Note for Progress Assessment (SDG Report 2026):
+    - a stagnation band (e.g. |annual rate in the desired direction| < 0.5%) classified as stable, so small slopes that flip sign with the period do not decide links and roles;
+    - a 2015–latest window aligned with the Agenda and the UNSD convention, as an alternative or complement to 2000–2025;
+    - requiring the same direction in both windows, otherwise undetermined;
+    - the annual rate estimated by log-linear regression on all points rather than from the two endpoints (UNSD's endpoint CAGR is fragile to atypical first or last values); absolute change for series that are already rates or contain zeros or negatives.
+  The UNSD distance-to-2030-target ratio needs numeric targets per series and measures sufficiency of pace rather than direction; if used, it belongs with context, not with link classification.
+- [ ] **Check normative directions against the UNSD annex**, which lists "Increasing"/"Decreasing" for each series used in the global assessment; flag divergences from `indicator_directionality.xlsx`.
+
 ## Later: needs more or other data (stated as limitations in Section 9 of the article)
 
 - [ ] **Associations of changes, IGES/JRC.** Requires series with fewer gaps: within CAGR-imputed stretches, year-on-year changes are constant by construction.
