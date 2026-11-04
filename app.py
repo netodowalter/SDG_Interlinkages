@@ -1,56 +1,16 @@
 'Local SDG Interlinkages interface. Run python app.py.'
 import logging
-from zipfile import ZIP_DEFLATED, ZipFile
 
 import gradio as gr
-from openpyxl import load_workbook
 
 from sdg.service import list_areas, run_analysis
+from sdg.ui_results import results, table_headers
 
 
 def areas(version, scope):
     return [(f"{name} ({code})", code) for code, name in list_areas(version, scope).items()]
 
 
-def results(folder):
-    rankings, highlights, images = [], [], []
-    files = sorted(path for path in folder.rglob('*') if path.is_file())
-    for path in files:
-        if path.suffix == '.png':
-            images.append((str(path), path.stem))
-        if not path.name.endswith('_interlinkages.xlsx'):
-            continue
-        method = path.parent.name if path.parent != folder else 'pearson'
-        book = load_workbook(path, read_only=True, data_only=True)
-        try:
-            for sheet, metric in [('TopCollaborators', 'Colab'), ('TopNeglected', 'Neglect')]:
-                rows = iter(book[sheet].values)
-                headers = next(rows)
-                for pos, values in enumerate(rows, 1):
-                    if pos > 10:
-                        break
-                    row = dict(zip(headers, values))
-                    rankings.append([method, metric, row.get('Ranking', pos),
-                                     str(row.get('TargetCode', row.get('Target'))),
-                                     row.get(metric, row.get('Value')),
-                                     row.get('progress_direction', row.get('Direction')),
-                                     row.get('IndicatorCode', row.get('Indicator')),
-                                     format(row['years_to_target'], '.3f') if row.get('years_to_target') is not None else '',
-                                     format(row['years_to_zero'], '.3f') if row.get('years_to_zero') is not None else ''])
-            rows = iter(book['Highlights'].values)
-            headers = next(rows)
-            for values in rows:
-                row = dict(zip(headers, values))
-                target = row.get('TargetCode') or row.get('Indicator')
-                if target:
-                    highlights.append([method, row['Group'], str(target), row['Score'], format(row['Years'], '.3f') if row.get('Years') is not None else ''])
-        finally:
-            book.close()
-    archive = folder / 'results.zip'
-    with ZipFile(archive, 'w', compression=ZIP_DEFLATED) as bundle:
-        for path in files:
-            bundle.write(path, path.relative_to(folder))
-    return rankings, highlights, images, [str(p) for p in files], str(archive)
 
 
 def tab(version, title):
@@ -71,13 +31,13 @@ def tab(version, title):
         status = gr.Markdown()
         gr.Markdown("""### First ten in each ranking
 Select a row to see the indicator.""")
-        headers = ['Method', 'Ranking', 'Position', 'Target', 'Score', 'Direction', 'Years to target', 'Years to zero']
+        headers, highlight_headers = table_headers(version)
         grid = gr.Dataframe(headers=headers, interactive=False)
         indicators = gr.State([])
         indicator = gr.Textbox(label='Selected indicator', interactive=False)
         gr.Markdown("""### Highlights by progress direction
 Groups a–d from top 10 intersections. SDGIndex uses performance times; IGES/JRC retains ambition criteria.""")
-        groups = gr.Dataframe(headers=['Method', 'Group', 'Target / indicator', 'Score', 'Years'], interactive=False)
+        groups = gr.Dataframe(headers=highlight_headers, interactive=False)
         gallery = gr.Gallery(label='Networks', columns=3, height='auto')
         bundle = gr.File(label='Download all results as ZIP')
         files = gr.File(label='Individual files', file_count='multiple')
@@ -90,7 +50,7 @@ Groups a–d from top 10 intersections. SDGIndex uses performance times; IGES/JR
             try:
                 kwargs = {'csv_path': selection} if version == 'IGES_JRC' else {'method': selection}
                 folder = run_analysis(version, kind, code, **kwargs)
-                ranked, highlighted, previews, paths, archive = results(folder)
+                ranked, highlighted, previews, paths, archive = results(folder, version)
                 name = list_areas(version, kind)[code]
                 return (f"**{name} ({code})** · {title} · {len(paths)} files generated.",
                         [r[:6] + r[7:] for r in ranked], [r[6] for r in ranked], '', highlighted,
@@ -122,3 +82,4 @@ Networks of collaboration and neglect among SDG targets.""")
 
 if __name__ == '__main__':
     build_app().launch(inbrowser=True, share=False)
+
