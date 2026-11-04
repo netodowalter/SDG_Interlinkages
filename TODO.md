@@ -44,6 +44,7 @@ Items in the first section can be done with the data already in the package and 
 - [ ] Archive the release used in the article on Zenodo and cite its DOI; give the application a persistent address.
 - [ ] Verify bibliographic details and add DOIs for Pradhan et al. (2017), Kroll, Warchold and Pradhan (2019), Miola et al. (2019), Nilsson et al. (2017), Issa, Mezher and El Fadel (2024), Di Lucia, Slade and Khan (2022).
 - [ ] Convert LaTeX equation blocks to Word equations in the `.docx` before submission.
+- [ ] **Policy-created interlinkages (argument to add).** Literature-based inventories such as IGES and JRC record links that studies have found or experts expect. Some links, however, are created by policy decisions, not by any mechanism the literature would predict. In Brazil, the National School Feeding Programme (PNAE) requires part of its federal funds to be spent on family farming, which ties family farming to school meals and, through them, to child nutrition. A filter that keeps only links with an apparent logic or a scientific study (e.g. that more family farming reduces child malnutrition) removes this synergy from the network and discards the information a high, significant correlation between the indicators could carry. The same example shows that policy can also reverse undesired bridges, by deliberately creating or redirecting a link. Points for the article: Sections 3.3 and 8 (two sources of evidence) and Section 7 (interrupting transmission); verify the legal basis and current share before citing.
 
 ## Later: needs more or other data (stated as limitations in Section 9 of the article)
 
@@ -55,4 +56,5 @@ Items in the first section can be done with the data already in the package and 
 
 ## Research agenda
 
+- [ ] **Data-supported links absent from the inventories.** In the IGES/JRC procedure, flag (or retain in a variant) pairs with strong, significant associations that neither inventory records, as candidates for policy-created links; compare with the SDG Index procedure, which keeps such pairs by design.
 - [ ] **Transmission between countries.** Design a way to overlay national networks and investigate whether performance in one country is associated with trade-offs in another, for instance through trade. Starting points: SDG Index spillover indicators (in Brazil, scarce water consumption embodied in imports is a transmission bridge) combined with bilateral data such as trade flows.
