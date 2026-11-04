@@ -168,8 +168,8 @@ def legend(draw, dataset):
     y = 1830
     draw.line((70,y-24,3130,y-24),fill='#cbd5da',width=2)
     draw.text((70,y), 'LINK COLOR',font=font(24),fill='#163b49')
-    links = [((51,51,51),'Synergy: non-regressing source'),((153,0,51),'Trade-off: non-regressing source'),
-             ((184,184,184),'Trade-off from regression'),((219,166,184),'Backward synergy')]
+    links = [((51,51,51),'Synergy: source not deteriorating'),((153,0,51),'Trade-off: source not deteriorating'),
+             ((184,184,184),'Trade-off from deterioration'),((219,166,184),'Synergy from deterioration')]
     for x,(color,label) in zip((310,1000,1730,2440),links):
         draw.line((x,y+14,x+70,y+14),fill=color,width=6)
         draw.polygon([(x+70,y+14),(x+57,y+7),(x+57,y+21)],fill=color)
@@ -186,13 +186,13 @@ def legend(draw, dataset):
         draw.rectangle((x,yy,x+32,yy+32),fill=color,outline='#536067',width=2)
         draw.text((x+50,yy+2),label,font=font(24),fill='#334455')
     draw.text((70,2070),'Black border: other indicators. Highlights use the same four groups in every view.',font=font(23),fill='#465b63')
-    draw.text((70,2110),'Link thickness: |r|. Links from regression use 35% opacity. Component spacing is optimized for readability.',font=font(23),fill='#465b63')
+    draw.text((70,2110),'Link thickness: |r|. Links from deterioration use 35% opacity. Component spacing is optimized for readability.',font=font(23),fill='#465b63')
 
 
 def render_networks(folder, prefix, title, graph, groups, icons):
     nodes = {n['id']: n for n in graph['nodes']}
     categories = {row[1]: i for i, g in enumerate(groups) for row in g['rows']}
-    for mode, label in [('full', 'Progress and regression'), ('synergy', 'Synergies'), ('trade-off', 'Trade-offs'), ('two_step_interface', 'Two-step interface')]:
+    for mode, label in [('full', 'Improvement and deterioration'), ('synergy', 'Synergies'), ('trade-off', 'Trade-offs'), ('two_step_interface', 'Two-step interface')]:
         edges = [e for e in graph['edges'] if mode in ('full', 'two_step_interface') or e['interaction'] == mode]
         ids = sorted({e[k] for e in edges for k in ('source', 'target')})
         image = Image.new('RGB', (3200, 2240), 'white')

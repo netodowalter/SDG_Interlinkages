@@ -18,6 +18,7 @@ def tab(version, title):
         description = ('UNSD indicators and relationships anticipated by IGES/JRC. Collect data online or upload a UNSD CSV.' if version == 'IGES_JRC' else
                        'Annual SDGIndex scores. Country and aggregate data are read from local workbooks.')
         gr.Markdown(description)
+        gr.Markdown('Improvement means movement towards the desired outcome; deterioration means movement away from it. These describe the observed trajectory, not whether a target is on track for 2030. Stable indicates negligible fitted change; undetermined indicates insufficient evidence.')
         with gr.Row():
             scope = gr.Radio([('Region or aggregate', 'region'), ('Country', 'country')], value='region', label='Scope')
             choices = areas(version, 'region')
@@ -36,8 +37,8 @@ Select a row to see the indicator.""")
         grid = gr.Dataframe(headers=headers, interactive=False)
         indicators = gr.State([])
         indicator = gr.Textbox(label='Selected indicator', interactive=False)
-        gr.Markdown("""### Highlights by progress direction
-Groups a–d from top 10 intersections. SDGIndex uses performance times; IGES/JRC retains ambition criteria.""")
+        gr.Markdown("""### Highlights by performance direction
+Groups a–d from top 10 intersections. SDGIndex uses performance times; IGES/JRC retains ambitiousness criteria.""")
         groups = gr.Dataframe(headers=highlight_headers, interactive=False)
         gallery = gr.Gallery(label='Networks', columns=3, height='auto')
         bundle = gr.File(label='Download all results as ZIP')

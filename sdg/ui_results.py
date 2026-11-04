@@ -5,8 +5,21 @@ from openpyxl import load_workbook
 
 def table_headers(version):
     context = ['Ambitiousness'] if version == 'IGES_JRC' else ['Years to target', 'Years to zero']
-    return (['Method', 'Ranking', 'Position', 'Target', 'Score', 'Direction'] + context,
+    return (['Method', 'Ranking', 'Position', 'Target', 'Score', 'Performance direction'] + context,
             ['Method', 'Group', 'Target / indicator', 'Score'] + (['Ambitiousness'] if version == 'IGES_JRC' else ['Years']))
+
+
+def direction_label(value):
+    key = str(value or '').strip().lower()
+    return {'forward': 'Improvement', 'progressing': 'Improvement', 'improving': 'Improvement',
+            'improvement': 'Improvement', 'backward': 'Deterioration', 'regressing': 'Deterioration',
+            'deteriorating': 'Deterioration', 'deterioration': 'Deterioration',
+            'stable': 'Stable', 'undetermined': 'Undetermined'}.get(key, 'Undetermined')
+
+
+def display_terminology(value):
+    return str(value).replace('from regression', 'from deterioration').replace(
+        'backward synergies', 'synergies from deteriorating sources')
 
 
 def decimal(value):
@@ -40,7 +53,7 @@ def results(folder, version):
                     rankings.append([method, metric, row.get('Ranking', pos),
                                      str(row.get('TargetCode', row.get('Target'))),
                                      row.get(metric, row.get('Value')),
-                                     row.get('progress_direction', row.get('Direction')),
+                                     direction_label(row.get('progress_direction', row.get('Direction'))),
                                      row.get('IndicatorCode', row.get('Indicator')),
                                      *context_values(row, version)])
             rows = iter(book['Highlights'].values)
@@ -49,7 +62,7 @@ def results(folder, version):
                 row = dict(zip(headers, values))
                 target = row.get('TargetCode') or row.get('Indicator')
                 if target:
-                    highlights.append([method, row['Group'], str(target), row['Score'], decimal(row.get('target_ambition') if version == 'IGES_JRC' else row.get('Years'))])
+                    highlights.append([method, display_terminology(row['Group']), str(target), row['Score'], decimal(row.get('target_ambition') if version == 'IGES_JRC' else row.get('Years'))])
         finally:
             book.close()
     archive = folder / 'results.zip'

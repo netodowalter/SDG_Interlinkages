@@ -128,9 +128,9 @@ def highlight_groups(metrics,details,edges=()):
     receivers=top(good,lambda t:received[t]);senders=top(bad,lambda t:sent[t])
     sets=[cg-receivers,cg&receivers,ng-senders,ng&senders]
     definitions=[('autonomous_collaborators','a · Collaborators — ambition > 0.6, outside the top receivers','Colab'),
-                 ('contextual_collaborators','b · Collaborators — top receivers of trade-offs from regression','Colab'),
+                 ('contextual_collaborators','b · Collaborators — top receivers of trade-offs from deterioration','Colab'),
                  ('low_ambition_neglected','c · Neglected targets — ambition < 0.6, outside the top senders','Neglect'),
-                 ('propagating_neglected','d · Neglected targets — top senders of backward synergies','Neglect')]
+                 ('propagating_neglected','d · Neglected targets — top senders of synergies from deteriorating sources','Neglect')]
     groups=[]
     for i,((slug,title,metric),selected) in enumerate(zip(definitions,sets)):
         if i in (0,2):selected={t for t in selected if finite(details[t][4]) and (details[t][4]>.6 if i==0 else details[t][4]<.6)}

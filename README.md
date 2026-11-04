@@ -98,16 +98,16 @@ The desired direction and local linear slope determine whether each node moves f
 - **Colab** equals outgoing weighted synergies minus outgoing weighted trade-offs.
 - **Neglect** equals incoming weighted trade-offs plus incoming weighted synergies from backward-moving sources.
 
-**SDGIndex: performance-time rankings (no semantic ambition).** For each connected indicator, use its latest finite score S and the existing 2000–2025 slope v (score points/year). Forward indicators have `years_to_target = max(0, 100-S)/v`; backward indicators have `years_to_zero = max(0, S)/abs(v)`. Scores already at the relevant boundary have zero remaining years. Stable/undetermined trends have no finite time and are excluded from time rankings. Times are conditional linear extrapolations, not forecasts, with no fixed deadline. Excel retains numeric precision and displays ordinary decimal years to three places; Gradio does likewise.
+**SDGIndex: performance-time rankings (no semantic ambition).** For each connected indicator, use its latest finite score S and the existing 2000–2025 slope v (score points/year). Forward indicators have `years_to_target = max(0, 100-S)/v`; deteriorating indicators have `years_to_zero = max(0, S)/abs(v)`. Scores already at the relevant boundary have zero remaining years. Stable/undetermined trends have no finite time and are excluded from time rankings. Times are conditional linear extrapolations, not forecasts, with no fixed deadline. Excel retains numeric precision and displays ordinary decimal years to three places; Gradio does likewise.
 
-Rank within progress direction, using all connected indicators. Colab/Neglect and receipt/sending rankings require positive weights or metric values. Each ranking has at most 10 entries; exact ties are resolved by stable node ID. Intersections are not refilled:
+Rank within performance direction, using all connected indicators. Colab/Neglect and receipt/sending rankings require positive weights or metric values. Each ranking has at most 10 entries; exact ties are resolved by stable node ID. Intersections are not refilled:
 
 | Group | Intersection and exclusions |
 |---|---|
-| a · Collaborators with short target times | Top 10 forward Colab ∩ 10 shortest target times, excluding the top 10 receivers in group b |
-| b · Dependent collaborators | Top 10 forward Colab ∩ top 10 forward recipients of total weighted trade-offs from backward sources |
-| c · Resilient neglected indicators | Top 10 backward Neglect ∩ 10 longest times to zero, excluding the top 10 backward synergy senders in group d |
-| d · Propagating neglected indicators | Top 10 backward Neglect ∩ top 10 backward synergy senders, irrespective of time to zero |
+| a · Collaborators with short target times | Top 10 Colab among improving nodes ∩ 10 shortest target times, excluding the top 10 receivers in group b |
+| b · Dependent collaborators | Top 10 Colab among improving nodes ∩ top 10 forward recipients of total weighted trade-offs from deteriorating sources |
+| c · Resilient neglected indicators | Top 10 Neglect among deteriorating nodes ∩ 10 longest times to zero, excluding the top 10 synergy from deteriorating sources senders in group d |
+| d · Propagating neglected indicators | Top 10 Neglect among deteriorating nodes ∩ top 10 synergy from deteriorating sources senders, irrespective of time to zero |
 
 “Dependent” is an exploratory network label, not evidence of a causal mechanism. Group membership, input scores/slopes, times, all six rank positions, and weighted receipts/sending are exported. The complete network highlights the four groups; the synergy and trade-off views retain those same category borders for highlighted nodes present in each view.
 
@@ -158,3 +158,7 @@ Tests cover measure identity, indicator directionality, temporal reclassificatio
 
 The existing complete network is retained alongside an additional **Two-step interface** view, with the same legends and an experimental-layout note. See [the layout documentation](docs/two-step-interface-layout.md) for its display score, positioning and interpretation.
 
+
+### Performance terminology
+
+The interfaces use **Improvement**, **Deterioration**, **Stable** and **Undetermined**. Improvement and deterioration refer to movement towards or away from the desired outcome, not whether a target is on track for 2030. Stable indicates negligible fitted change; undetermined indicates insufficient evidence. Existing internal direction codes (`forward`, `backward`, `stable`, `undetermined`) are retained for compatibility with saved analyses. This terminology update does not change calculations, rankings or classification criteria.

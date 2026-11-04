@@ -59,9 +59,9 @@ def highlight_groups(nodes, edges):
                 top['neglect_rank'] & top['sender_rank']]
     definitions = [
         ('autonomous_collaborators', 'a · Collaborators — shortest target times, outside top receivers', 'colab', 'years_to_target'),
-        ('contextual_collaborators', 'b · Collaborators — top receivers of trade-offs from regression', 'colab', 'years_to_target'),
+        ('contextual_collaborators', 'b · Collaborators — top receivers of trade-offs from deterioration', 'colab', 'years_to_target'),
         ('resilient_neglected', 'c · Resilient neglected indicators — longest times to zero, outside top senders', 'neglect', 'years_to_zero'),
-        ('propagating_neglected', 'd · Neglected indicators — top senders of backward synergies', 'neglect', 'years_to_zero')]
+        ('propagating_neglected', 'd · Neglected indicators — top senders of synergies from deteriorating sources', 'neglect', 'years_to_zero')]
     groups = []
     for (slug, title, metric, time), ids in zip(definitions, selected):
         ordered = sorted(ids, key=lambda i: (-byid[i][metric], i))
