@@ -335,26 +335,16 @@ The framework changes the unit of attention. A target matters not only because i
 
 No intervention follows automatically from a node's position, and removing an edge from a visualisation achieves nothing. The framework supplies a sequence: network analysis identifies configurations; substantive inquiry examines mechanisms; intervention design formulates feasible adjustments; evaluation tests their effects. Repeated observation can then show whether the implicated relationships change, though a before-and-after comparison alone does not identify the effect of an adjustment.
 
-## 8 Limitations and sensitivity agenda
+## 8 Limitations
 
-The framework is a potential operationalisation, not a validated causal diagnostic. Its limitations fall into four groups.
+The framework is a potential operationalisation, not a validated causal diagnostic. Its remaining limitations stem from the data available for SDG monitoring and from the nature of indicator associations.
 
-- **Associations of levels.** Correlations between trending series may reflect common trends. Nominal p-values do not correct for autocorrelation, and series completed by CAGR imputation or carried values in the SDG Index do not provide additional independent observations.
-- **Direction of links.** Literature-based arrows come from other settings and periods; temporal orientation in the SDG Index procedure is exploratory. Uncertain directions are represented by two arcs, which may inflate two-step flows through a node.
-- **Trajectories.** A single linear slope over 2000–2025 can hide reversals. Reclassification depends on thresholds for R² and |r| that are operational choices of this framework, not standards of the monitoring institutions.
-- **Selection.** Top-10 cut-offs, tie rules and context thresholds are conventions. Uneven research coverage may still inflate the connectivity of well-studied targets. Regional networks aggregate national trajectories and must not be read as transmission between countries.
+- **Short and incomplete series.** Annual indicator series are short and, in the UN database, often incomplete. Imputed values add no independent observations, and within imputed stretches year-on-year changes are constant by construction, which prevents the IGES/JRC procedure from analysing associations of changes rather than levels. At these lengths, corrections for autocorrelation remove most statistical significance.
+- **Orientation of links.** Literature-based arrows come from other settings and periods. Temporal orientation in the SDG Index procedure relies on lagged tests whose power is low with about 25 annual observations; longer series, or panels pooling comparable countries, would strengthen it.
+- **Prediction.** Testing whether bridges identified in one period anticipate deterioration downstream in the next requires splitting series that are already short, so such a test would currently be fragile.
+- **Aggregation and mechanisms.** National indicators aggregate subnational trajectories, and regional networks aggregate national ones; neither should be read as transmission between places. Identifying mechanisms, and validating roles against documented cases, requires policy, budget and sectoral evidence beyond indicator series.
 
-These concerns define a sensitivity agenda. Before any policy reading, an application should report how role membership changes under:
-
-1. Benjamini–Hochberg q-values in place of nominal p-values;
-2. alternative trend windows, including the most recent decade only;
-3. alternative reclassification thresholds, and the exclusion of all discordant links;
-4. alternative rules for uncertain JRC directions (Table 1);
-5. alternative cut-offs (top 5, top 15);
-6. comparison with the link-share weighted version (IGES/JRC), to flag targets whose roles depend on research coverage;
-7. Pearson versus Spearman coefficients in the SDG Index procedure; the isolation threshold (φ < 1 versus no forward synergy at all).
-
-Roles that persist across these variations are stronger candidates for investigation than roles that appear under one setting only.
+These limitations define what the roles can claim. They are screening hypotheses: they indicate where policy, sectoral and longer-run evidence would be most informative, not what that evidence will show.
 
 ## 9 Conclusion
 
@@ -362,7 +352,7 @@ SDG interlinkage networks cannot be operationalised meaningfully without the dir
 
 Once performance enters classification, the network splits into an improving and a deteriorating subsystem connected only by trade-offs. The specific contribution of network analysis lies at that interface. Transmission bridges show where the cost of gains elsewhere enters the deteriorating subsystem and spreads. Isolated beneficiaries show where improvement is associated with others' losses and is not passed on. Neither can be seen by monitoring targets one by one or by ranking centrality. In Brazil's SDG Index network, ten transmission bridges and no isolated beneficiaries emerge: gains associated with losses elsewhere are passed on, and deterioration is consistently connected to improvement elsewhere. Conditional times then separate bridges deteriorating within a decade from those that would take centuries to reach the lower boundary.
 
-The result is a reproducible basis for directing inquiry, not a set of prescriptions. It indicates where detailed evidence would be most valuable and what that evidence must establish before corrective action is justified. Further applications and sensitivity analyses can test whether the selected roles are stable and whether they lead to mechanisms that policy can address. The open implementation makes those tests possible.
+The result is a reproducible basis for directing inquiry, not a set of prescriptions. It indicates where detailed evidence would be most valuable and what that evidence must establish before corrective action is justified. Applications to other countries, combined with evidence on policies and sectors, can test whether the selected roles lead to mechanisms that policy can address. The open implementation makes those applications possible.
 
 ## Data and code availability
 
