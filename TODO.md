@@ -57,4 +57,9 @@ Items in the first section can be done with the data already in the package and 
 ## Research agenda
 
 - [ ] **Data-supported links absent from the inventories.** In the IGES/JRC procedure, flag (or retain in a variant) pairs with strong, significant associations that neither inventory records, as candidates for policy-created links; compare with the SDG Index procedure, which keeps such pairs by design.
+- [ ] **Policy-intended interlinkages from the PPA 2024–2027 (future study).** The PPA 2024–2027 required those formulating each programme to state which SDG targets it contributes to. Mapping each programme's central target to the targets its formulators indicated yields a list of policy intentions: a network of links that policy *thought* it would create. A classification of every technical programme by SDG (all components, justification, objective and expected result) has already been produced with BERT language models (ods-brasil-bahia). Planned: cross these intended links with the IGES/JRC (literature) and SDG Index (data) networks and with the six roles, for example:
+    - intended synergies that appear in the data as trade-offs, or not at all;
+    - transmission bridges and exposed targets that no programme claims to address;
+    - strong data-supported links absent from the literature that match programme intentions (policy-created links, see the PNAE example above).
+  Purpose: inform hypotheses to be considered in drafting the PPA 2028–2031.
 - [ ] **Transmission between countries.** Design a way to overlay national networks and investigate whether performance in one country is associated with trade-offs in another, for instance through trade. Starting points: SDG Index spillover indicators (in Brazil, scarce water consumption embodied in imports is a transmission bridge) combined with bilateral data such as trade flows.
