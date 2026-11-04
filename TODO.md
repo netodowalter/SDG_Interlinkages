@@ -31,7 +31,7 @@ Items in the first section can be done with the data already in the package and 
 
 - [ ] Run IGES/JRC with real UNSD data (requires internet only) and inspect the weighted `_pond` outputs; so far tested only on the synthetic fixture.
 - [ ] Run the Brazil IGES/JRC network for 2010–2023 with the VNR 2024 indicators to compare directly with the NT Dinte 77 categories.
-- [ ] **Two synergy clusters.** On that network, check whether the two synergy clusters of NT Dinte 77 (Figure 5) coincide with the improving and deteriorating groups, and report the share of sign-classified synergies linking same-direction targets (98.5% in the Brazil SDG Index network; article Section 4.4). Repeat for other IGES/JRC countries.
+- [ ] **Two synergy clusters.** On that network, check whether the two synergy clusters of NT Dinte 77 (Figure 5) coincide with the improving and deteriorating groups, and report the share of sign-classified synergies linking same-direction targets (98.5% in the Brazil SDG Index network; article Section 4.4). Check the performance direction of the apparent synergy bridges (10.1, 9.4, 8.5): under performance-based classification they should be stable or undetermined, or rest on discordant links (article Section 4.4). Repeat for other IGES/JRC countries.
 
 ### Visualisation
 
