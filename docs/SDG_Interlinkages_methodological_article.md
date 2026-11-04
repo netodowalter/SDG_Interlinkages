@@ -8,7 +8,7 @@ Synergies and trade-offs among Sustainable Development Goal (SDG) targets are us
 
 We propose a framework in which performance direction enters link classification, node metrics and role selection. Once links are classified this way, synergies connect targets moving in the same direction, and trade-offs become the only links crossing between an improving and a deteriorating subsystem. The main contribution of network analysis then lies at this interface. It can identify transmission bridges, deteriorating targets that receive trade-offs from improving targets and pass deterioration on through synergies, and isolated beneficiaries, improving targets that gain through trade-offs from deteriorating targets while passing forward less synergy than they receive. Neither role is visible to centrality measures or to target-by-target monitoring.
 
-The framework is implemented in an open repository with two procedures: literature-based IGES/JRC relationships with United Nations indicators, and annual SDG Index component scores with exploratory temporal orientation. A synthetic worked example shows how the reading of each target changes once performance direction enters the classification. An application to Brazil's SDG Index components identifies ten transmission bridges, with very different times to the lower boundary, and no isolated beneficiaries. The roles are hypotheses for causal investigation and policy adjustment, not estimated effects.
+The framework is implemented in an open repository with two procedures: literature-based IGES/JRC relationships with United Nations indicators, and annual SDG Index component scores with exploratory temporal orientation. A synthetic worked example shows how the reading of each target changes once performance direction enters the classification. An application to Brazil's SDG Index components identifies ten transmission bridges, with very different times to the lower boundary, and no isolated beneficiaries. The open implementation also supports comparisons between evidence sources and between countries, and points to transmission between countries as a line of research. The roles are hypotheses for causal investigation and policy adjustment, not estimated effects.
 
 **Keywords:** Sustainable Development Goals; synergies; trade-offs; policy coherence; network analysis; transmission; monitoring and evaluation.
 
@@ -25,7 +25,7 @@ This gap has two consequences, which structure the article.
 
 The argument builds on an application to Brazil's 2024 Voluntary National Review (VNR), documented in Ipea's Technical Note Dinte 77 (Desiderá Neto et al., 2025). The note applied the approaches recommended to countries at the time, the IGES tool and the JRC compilation, and proposed two network categories based on weighted degree. When target progress could be examined, it raised a point that neither framework addresses: the meaning of synergy and trade-off depends on whether the targets involved are improving or deteriorating. This article develops that finding into a complete operational framework and shows where its added value lies.
 
-Section 2 reconstructs the VNR exercise and the finding that motivates this article. Section 3 positions the framework within the literature and examines the evidential basis of literature-derived networks. Section 4 sets out the analytical design. Section 5 defines the metrics and roles, with emphasis on the interface roles. Section 6 presents a worked illustration and an application to Brazil. Sections 7 and 8 discuss implications for investigation and policy, and limitations. Section 9 concludes.
+Section 2 reconstructs the VNR exercise and the finding that motivates this article. Section 3 positions the framework within the literature and examines the evidential basis of literature-derived networks. Section 4 sets out the analytical design. Section 5 defines the metrics and roles, with emphasis on the interface roles. Section 6 presents a worked illustration and an application to Brazil. Section 7 discusses implications for investigation and policy, Section 8 other uses of the open implementation, and Section 9 limitations. Section 10 concludes.
 
 ## 2 Starting point: the Brazilian VNR exercise and its finding
 
@@ -335,7 +335,19 @@ The framework changes the unit of attention. A target matters not only because i
 
 No intervention follows automatically from a node's position, and removing an edge from a visualisation achieves nothing. The framework supplies a sequence: network analysis identifies configurations; substantive inquiry examines mechanisms; intervention design formulates feasible adjustments; evaluation tests their effects. Repeated observation can then show whether the implicated relationships change, though a before-and-after comparison alone does not identify the effect of an adjustment.
 
-## 8 Limitations
+## 8 Other uses of the open implementation
+
+The implementation is useful beyond the roles themselves, in four ways.
+
+**An open, end-to-end pipeline.** A single run collects observations from the official UNSD SDG API (or reads the SDG Index workbooks), selects and completes series, estimates associations, applies the evidence and reclassification rules, selects roles and exports workbooks and figures. It is available as a browser application and from the command line. Every intermediate decision is recorded: the evidence behind each arc, excluded and reclassified links, and every interface measure. The IGES tool, by contrast, is offered as a visualisation whose processing steps, expert-consultation procedures and intended use in decision-making are not documented to the same degree (Desiderá Neto et al., 2025). Openness allows the procedure to be replicated, scrutinised and changed.
+
+**Two sources of evidence and two ways of defining direction.** The IGES/JRC procedure takes the existence and orientation of links from literature inventories; the SDG Index procedure estimates both from data, with direction inferred from temporal tests. Applied to the same country, the two procedures expose fragilities that a single network would hide: links or directions supported by one source and not the other, and roles that depend on literature coverage, which the weighted version flags. Roles that appear under both procedures are stronger candidates for investigation.
+
+**National and regional differences and recurrences.** The same procedures run for 169 countries and 14 regions or aggregates in the SDG Index, and for UNSD countries and regions in the IGES/JRC procedure. Roles that recur across countries point to regularities, for example by income level, as suggested by the regularities reviewed by Issa, Mezher and El Fadel (2024); roles specific to one country point to its policies and context. Regional networks describe aggregated trajectories and should not be read as transmission between member countries.
+
+**Transmission between countries: a research agenda.** Overlaying national networks could help investigate whether performance in one country is associated with trade-offs in another, for instance through trade. The SDG Index already contains spillover indicators of this kind; in Brazil, scarce water consumption embodied in imports appears among the transmission bridges. Testing such links requires a design not yet implemented here, combining national networks with bilateral data such as trade flows, and is left for future research.
+
+## 9 Limitations
 
 The framework is a potential operationalisation, not a validated causal diagnostic. Its remaining limitations stem from the data available for SDG monitoring and from the nature of indicator associations.
 
@@ -346,13 +358,13 @@ The framework is a potential operationalisation, not a validated causal diagnost
 
 These limitations define what the roles can claim. They are screening hypotheses: they indicate where policy, sectoral and longer-run evidence would be most informative, not what that evidence will show.
 
-## 9 Conclusion
+## 10 Conclusion
 
 SDG interlinkage networks cannot be operationalised meaningfully without the direction of observed performance. Without it, reinforcing deterioration is counted as synergy, deteriorating targets rank as leading collaborators, and improving targets that gain from losses elsewhere appear neglected. NT Dinte 77 raised this point when applying the IGES and JRC approaches to Brazil's VNR, since neither considers performance in classifying interlinkages. The framework presented here carries performance direction through link classification, metrics and role selection, while keeping the established vocabulary of synergy and trade-off.
 
 Once performance enters classification, the network splits into an improving and a deteriorating subsystem connected only by trade-offs. The specific contribution of network analysis lies at that interface. Transmission bridges show where the cost of gains elsewhere enters the deteriorating subsystem and spreads. Isolated beneficiaries show where improvement is associated with others' losses and is not passed on. Neither can be seen by monitoring targets one by one or by ranking centrality. In Brazil's SDG Index network, ten transmission bridges and no isolated beneficiaries emerge: gains associated with losses elsewhere are passed on, and deterioration is consistently connected to improvement elsewhere. Conditional times then separate bridges deteriorating within a decade from those that would take centuries to reach the lower boundary.
 
-The result is a reproducible basis for directing inquiry, not a set of prescriptions. It indicates where detailed evidence would be most valuable and what that evidence must establish before corrective action is justified. Applications to other countries, combined with evidence on policies and sectors, can test whether the selected roles lead to mechanisms that policy can address. The open implementation makes those applications possible.
+The result is a reproducible basis for directing inquiry, not a set of prescriptions. It indicates where detailed evidence would be most valuable and what that evidence must establish before corrective action is justified. Applications to other countries, combined with evidence on policies and sectors, can test whether the selected roles lead to mechanisms that policy can address. The open implementation makes those applications possible, together with the comparisons between evidence sources and countries, and the study of transmission between countries, outlined in Section 8.
 
 ## Data and code availability
 

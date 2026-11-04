@@ -2,7 +2,7 @@
 
 Open items for the SDG Interlinkages package and the methodological article (`docs/SDG_Interlinkages_methodological_article.md`). The framework is experimental and preliminary.
 
-Items in the first section can be done with the data already in the package and should be completed before the article is submitted; their results then enter the article (Sections 6 and 7). Items that depend on longer series or on other kinds of evidence are stated as limitations in Section 8 of the article and listed at the end of this file.
+Items in the first section can be done with the data already in the package and should be completed before the article is submitted; their results then enter the article (Sections 6 and 7). Items that depend on longer series or on other kinds of evidence are stated as limitations in Section 9 of the article and listed at the end of this file.
 
 ## Before submission: doable with current data
 
@@ -22,6 +22,11 @@ Items in the first section can be done with the data already in the package and 
 - [ ] Alternative rules for uncertain JRC directions (Table 1 of the article).
 - [ ] Alternative reclassification thresholds for discordant links, and exclusion of all discordant links.
 
+### Comparisons (article Section 8)
+
+- [ ] **Two procedures, same country.** Run IGES/JRC and SDG Index for the same country and tabulate links, directions and roles supported by one procedure but not the other.
+- [ ] **Recurrences across countries.** Batch-run the SDG Index procedure for all 169 countries and 14 aggregates; tabulate how often each indicator takes each role, overall and by income group or BRICS.
+
 ### Runs
 
 - [ ] Run IGES/JRC with real UNSD data (requires internet only) and inspect the weighted `_pond` outputs; so far tested only on the synthetic fixture.
@@ -39,10 +44,14 @@ Items in the first section can be done with the data already in the package and 
 - [ ] Verify bibliographic details and add DOIs for Pradhan et al. (2017), Kroll, Warchold and Pradhan (2019), Miola et al. (2019), Nilsson et al. (2017), Issa, Mezher and El Fadel (2024), Di Lucia, Slade and Khan (2022).
 - [ ] Convert LaTeX equation blocks to Word equations in the `.docx` before submission.
 
-## Later: needs more or other data (stated as limitations in the article)
+## Later: needs more or other data (stated as limitations in Section 9 of the article)
 
 - [ ] **Associations of changes, IGES/JRC.** Requires series with fewer gaps: within CAGR-imputed stretches, year-on-year changes are constant by construction.
 - [ ] **Autocorrelation corrections** (effective sample size, block bootstrap). Feasible now, but at current lengths they remove most significance; meaningful with longer series.
 - [ ] **Predictive test.** Whether bridges identified in one period anticipate deterioration downstream in the next; splitting ~26 annual points leaves about 13 per period.
 - [ ] **Validation against documented cases** (e.g. agricultural expansion vs deforestation in Brazil). Requires sectoral evidence, not more indicator series.
 - [ ] **Mechanisms.** Requires policy, budget and, ideally, subnational data.
+
+## Research agenda
+
+- [ ] **Transmission between countries.** Design a way to overlay national networks and investigate whether performance in one country is associated with trade-offs in another, for instance through trade. Starting points: SDG Index spillover indicators (in Brazil, scarce water consumption embodied in imports is a transmission bridge) combined with bilateral data such as trade flows.
