@@ -23,7 +23,7 @@ This gap has two consequences, which structure the article.
 1. **Without performance direction, the network cannot be operationalised meaningfully, nor can its links be properly read.** A positive association between two deteriorating targets is labelled a synergy, and a target that drags its neighbours backwards is ranked as a leading contributor. Rankings built on such links answer a question nobody asked.
 2. **With performance direction, network analysis gains a contribution of its own.** Classified links separate an improving subsystem from a deteriorating one and expose the trade-off arcs that connect them. Two roles at this interface matter most for policy: **transmission bridges**, which carry the cost of others' gains into the deteriorating subsystem and propagate it, and **isolated beneficiaries**, whose improvement is associated with others' deterioration and is not passed on.
 
-The argument builds on an application to Brazil's 2024 Voluntary National Review (VNR), documented in Ipea's Technical Note Dinte 77 (Desiderá Neto et al., 2025). The note applied the approaches recommended to countries at the time, the IGES tool and the JRC compilation, and proposed two network categories based on weighted degree. When target progress could be examined, it raised a point that neither framework addresses: the meaning of synergy and trade-off depends on whether the targets involved are improving or deteriorating. This article develops that finding into a complete operational framework and shows where its added value lies.
+The argument builds on an application to Brazil's 2024 Voluntary National Review (VNR), documented in Ipea's Technical Note Dinte 77 (Desiderá Neto et al., 2025). The note applied the approaches recommended to countries at the time, the IGES tool and the JRC compilation, and proposed two network categories based on weighted degree. When target progress could be examined, it raised a point that neither the IGES tool nor the JRC compilation incorporates: the meaning of synergy and trade-off depends on whether the targets involved are improving or deteriorating. This article develops that finding into a complete operational framework and shows where its added value lies.
 
 Section 2 reconstructs the VNR exercise and the finding that motivates this article. Section 3 positions the framework within the literature and examines the evidential basis of literature-derived networks. Section 4 sets out the analytical design. Section 5 defines the metrics and roles, with emphasis on the interface roles. Section 6 presents a worked illustration and an application to Brazil. Section 7 discusses implications for investigation and policy, Section 8 other uses of the open implementation, and Section 9 limitations. Section 10 concludes.
 
@@ -49,7 +49,7 @@ When target-level progress data became available, the note examined what the cat
 
 The reverse also held. A target with high TL.In but improving performance could not be described as neglected. It was more plausibly pursued through individualised strategies, indifferent to the rest of the plan, such that deterioration elsewhere contributed to its own progress. The note read this as a possible sign of concentrated misallocation of scarce resources (Desiderá Neto et al., 2025).
 
-The note drew two conclusions. First, positive performance is not an intrinsic attribute of synergy: with links classified by the sign of association alone, as in the available methods, network positions cannot be read as contribution or neglect. Second, performance has three dimensions that must be kept apart: **stage** (distance to the target), **direction** (approaching or moving away) and **pace** (speed of change). Its literature search found studies that consider the stage of achievement as a limit on a target's capacity to transmit synergies. It found none that examined how the *direction* of performance changes the meaning of synergy and trade-off.
+The note drew two conclusions. First, positive performance is not an intrinsic attribute of synergy: with links classified by the sign of association alone, as in the available methods, network positions cannot be read as contribution or neglect. Second, performance has three dimensions that must be kept apart: **stage** (distance to the target), **direction** (approaching or moving away) and **pace** (speed of change). Its literature search found studies that consider the stage of achievement as a limit on a target's capacity to transmit synergies. It found none that examined how the *direction* of performance changes the meaning of synergy and trade-off. The point had been made as a conceptual typology by the authors of the IGES tool (Zhou and Moinuddin, 2021) and by Su, Krol and Hogeboom (2022), in publications outside the tool's documentation (Section 3.2).
 
 ### 2.3 From diagnosis to framework
 
@@ -79,13 +79,23 @@ Reviews group methods for inferring SDG interlinkages into qualitative, literatu
 
 These approaches share a premise: once indicators are oriented so that higher is better, a positive association means mutual support. This premise holds only when both indicators improve. When both deteriorate, the same coefficient describes reinforcement of deterioration. Studies that follow classifications over time ask whether a relationship changes sign, not whether the outcomes it links are moving towards or away from their targets.
 
-### 3.2 The limits of centrality
+### 3.2 Recognition of the problem and additive approaches
+
+The premise has been questioned. In a review of the effects of the COVID-19 crisis on the SDGs in Asia, the authors of the IGES tool distinguished four configurations according to whether a causal and an affected target are progressing or regressing: synergy, trade-off, "development drag" and "coupled deterioration" (Zhou and Moinuddin, 2021). Su, Krol and Hogeboom (2022) noted that two deteriorating indicators produce a positive coefficient and are therefore labelled a synergy. A recent review of quantitative interlinkage studies treats this as a widespread fallacy, recommends moving beyond the synergy–trade-off labels, and concludes that a research gap remains in operationalising such enhanced interpretations (Sota and Venghaus, 2026). NT Dinte 77 reached the same point independently, by applying the IGES tool, whose procedure does not incorporate performance.
+
+Other studies combine performance and networks additively. Issa and El Fadel (2026) add an urgency score, built from normalised achievement, a world benchmark and the trend, to an influence score derived from centrality and from links classified by sign and normative direction. Ah-Pine and Ah-Pine (2026) select indicators that are both underperforming, by level, and central in a cross-sectional network. Yuan et al. (2026) report the progress of goals alongside a correlation-based classification of their interactions. In all three, performance enters as a separate criterion and the meaning of links stays sign-based, so a target that deteriorates within a deteriorating cluster scores as both urgent and positively influential: a lever to stimulate.
+
+Attention to indirect effects is also growing. Xiao, Liu and Ren (2023) extend direct synergies and trade-offs to indirect ones transmitted through intermediate targets, finding that synergies account for most of the total influence once indirect paths are counted. Without performance, however, a chain of synergies may be propagating deterioration. Reviews also point to directionality, causal mechanisms and transboundary effects as understudied (Khot, Warchold and Pradhan, 2026). Their "temporal dynamics" concerns whether an interaction changes over time (Kroll, Warchold and Pradhan, 2019), which differs from whether the linked targets are improving or deteriorating.
+
+This article responds to the gap identified by Sota and Venghaus. It keeps the synergy and trade-off labels as descriptions of the form of an association, qualifies them by the trajectories of the linked targets, and carries that qualification through link classification, metrics, two-step transmission measures and role selection, in an open implementation.
+
+### 3.3 The limits of centrality
 
 Network applications typically rank targets by degree, betweenness, eigenvector or closeness centrality (Issa, Mezher and El Fadel, 2024). Weighted in- and out-degree are the most common because they are simple and separate sending from receiving. Issa, Mezher and El Fadel recommend composite indices to balance the distortions of single measures. Composite indices still treat all synergy weight as favourable. A target can be central because it accompanies widespread improvement, because its deterioration accompanies deterioration elsewhere, or because it sits where gains and losses meet. These positions call for different responses, and no combination of centralities distinguishes them without performance direction.
 
 Decision-makers also value simplicity and direct applicability over methodological sophistication (Di Lucia, Slade and Khan, 2022). A framework that translates network positions into a small number of interpretable roles, each tied to a specific question, addresses that demand without hiding the underlying evidence.
 
-### 3.3 Evidential basis of literature-derived networks
+### 3.4 Evidential basis of literature-derived networks
 
 The IGES tool combines relationships drawn from a union of reference sources with country-specific indicator correlations (Zhou and Moinuddin, 2017). The JRC compilation records interaction types, directions, methods and contexts, including cases where direction cannot be established (Fronza et al., 2023). The literature supplies the existence and orientation of candidate relationships; local correlations supply their strength. Correlations do not independently establish direction. Uneven research coverage may also make well-studied targets appear more connected (Desiderá Neto et al., 2025); the IGES/JRC procedure therefore also produces a link-share weighted version (Section 5.6). Inventories also omit links created by policy rather than by mechanisms studied in the literature (Section 8).
 
@@ -144,7 +154,7 @@ Let *m* be the smaller of the two trend R² values and |r| the absolute associat
 | Improving | Deteriorating | Trade-off | The source's gains are associated with the recipient's losses |
 | Deteriorating | Improving | Trade-off | The recipient's gains are associated with, and may be sustained by, the source's losses |
 
-*Note:* Interpretations are hypotheses about relationships, not estimated causal effects. Arcs keep their literature-based or temporal evidential status.
+*Note:* Interpretations are hypotheses about relationships, not estimated causal effects. Arcs keep their literature-based or temporal evidential status. The four rows correspond to the configurations of Zhou and Moinuddin (2021): synergy, coupled deterioration, trade-off and development drag.
 
 The last two rows describe opposite situations. In the third, the improving node is the source and the cost falls downstream. In the fourth, the improving node is the recipient, and its improvement may depend on deterioration upstream. This is the configuration NT Dinte 77 identified as possible concentrated misallocation. Keeping the two rows distinct is what allows the interface roles of Section 5.
 
@@ -392,7 +402,7 @@ The implementation, operational inputs, regression tests and methodological docu
 | Shared series | One representative target | Distinct indicators mapped to one target keep distinct node IDs |
 | Pair exclusions | — | Same goal or same target |
 | Association | Pearson, p ≤ 0.10 | Pearson and/or Spearman, ≥ 8 matched observations, nonzero r, p < 0.10 |
-| Orientation | IGES/JRC evidence rules, each direction evaluated separately (Section 3.3) | Lagged and conditional tests, both p < 0.10; otherwise two arcs |
+| Orientation | IGES/JRC evidence rules, each direction evaluated separately (Section 3.4) | Lagged and conditional tests, both p < 0.10; otherwise two arcs |
 | Trend | Linear, ≥ 3 distinct years; negligible change = stable | Same |
 | Reclassification | Exclude discordant link if min R² < 0.10, or min R² < 0.20 and \|r\| < 0.40; otherwise reclassify | Same |
 | Rankings | Top 10 positive values within direction, exact ties at position 10 included | Top 10 positive values within direction, ties resolved by stable node ID |
@@ -404,6 +414,8 @@ The implementation, operational inputs, regression tests and methodological docu
 Intersections are not refilled with lower-ranked cases. Conditional times are in decimal years; a score at the relevant boundary has zero remaining time, and stable or undetermined trajectories have none. Benjamini–Hochberg q-values are computed but are not the active selection criterion.
 
 ## References
+
+Ah-Pine, J., & Nasho Ah-Pine, E. (2026). A consistent and integrated network analysis framework for decoding interlinkages between sustainable development indicators at the global scale. *European Journal of Operational Research*, 335, 661–673.
 
 Brasil. (2009). *Lei nº 11.947, de 16 de junho de 2009*. Dispõe sobre o atendimento da alimentação escolar e do Programa Dinheiro Direto na Escola aos alunos da educação básica. Diário Oficial da União.
 
@@ -417,7 +429,11 @@ Di Lucia, L., Slade, R., & Khan, J. (2022). Decision-making fitness of methods t
 
 Fronza, V., Barbero Vignola, G., Borchardt, S., Valentini, S., Buscaglia, D., Maroni, M., & Marelli, L. (2023). *Uncovering SDG Interlinkages: interconnection at the core of the 2030 Agenda*. EUR 31666 EN, JRC134248. Publications Office of the European Union. https://doi.org/10.2760/711960
 
+Issa, L., & El Fadel, M. (2026). Prioritization of the Sustainable Development Goals: Developing and testing a novel framework under varying geographic scales. *Sustainable Development*, 34, 2251–2278. https://doi.org/10.1002/sd.70424
+
 Issa, L., Mezher, T., & El Fadel, M. (2024). Can network analysis ascertain SDGs interlinkages towards evidence-based policy planning? A systematic critical assessment. *Environmental Impact Assessment Review*, 104, 107295.
+
+Khot, U. A., Warchold, A., & Pradhan, P. (2026). Existing gaps in understanding Sustainable Development Goals interactions: Insights from a systematic review. *Environmental Impact Assessment Review*, 118, 108274. https://doi.org/10.1016/j.eiar.2025.108274
 
 Kroll, C., Warchold, A., & Pradhan, P. (2019). Sustainable Development Goals (SDGs): Are we successful in turning trade-offs into synergies? *Palgrave Communications*, 5, 140.
 
@@ -431,8 +447,18 @@ Pradhan, P., Costa, L., Rybski, D., Lucht, W., & Kropp, J. P. (2017). A systemat
 
 Sachs, J. D., Lafortune, G., Fuller, G., & Iablonovski, G. (2026). *Implementing Sustainable Development: 2030 and Beyond. Sustainable Development Report 2026*. SDSN and Dublin University Press. https://doi.org/10.82163/225
 
+Sota, R., & Venghaus, S. (2026). Talking past each other: A review of the quantitative study of interlinkages between the sustainable development goals. *Energy, Sustainability and Society*, 16, 14. https://doi.org/10.1186/s13705-026-00572-0
+
+Su, H., Krol, M. S., & Hogeboom, R. J. (2022). The role of context in identifying linkages between SDG 2 (food) and SDG 6 (water). *Sustainability Science*, 17(4), 1605–1618. https://doi.org/10.1007/s11625-022-01158-3
+
 United Nations. (2026a). *The Sustainable Development Goals Report 2026*. UN DESA. https://unstats.un.org/sdgs/report/2026/
 
 United Nations. (2026b). *The Sustainable Development Goals Report 2026: Technical Note for Progress Assessment*. United Nations Statistics Division.
 
+Xiao, H., Liu, Y., & Ren, J. (2023). Synergies and trade-offs across sustainable development goals: A novel method incorporating indirect interactions analysis. *Sustainable Development*, 31, 1135–1148. https://doi.org/10.1002/sd.2446
+
+Yuan, Z., Gao, X., Liu, X., Feng, Y., & Zhang, L. (2026). Progress, trade-offs, and synergies of sustainable development goals in China's urban agglomerations. *Humanities and Social Sciences Communications*. https://doi.org/10.1057/s41599-026-07960-z
+
 Zhou, X., & Moinuddin, M. (2017). *Sustainable Development Goals interlinkages and network analysis: A practical tool for SDG integration and policy coherence*. IGES Research Report RR1602. Institute for Global Environmental Strategies. https://www.iges.or.jp/en/pub/sustainable-development-goals-interlinkages/en
+
+Zhou, X., & Moinuddin, M. (2021). Impacts and implications of the COVID-19 crisis and its recovery for achieving sustainable development goals in Asia: A review from an SDG interlinkage perspective. Book chapter, Elsevier. https://doi.org/10.1016/B978-0-323-85512-9.00018-8

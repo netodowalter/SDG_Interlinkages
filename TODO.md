@@ -42,13 +42,16 @@ Items in the first section can be done with the data already in the package and 
 
 - [ ] Report the results of the items above in Sections 6–7.
 - [ ] Archive the release used in the article on Zenodo and cite its DOI; give the application a persistent address.
-- [ ] Verify bibliographic details and add DOIs for Pradhan et al. (2017), Kroll, Warchold and Pradhan (2019), Miola et al. (2019), Nilsson et al. (2017), Issa, Mezher and El Fadel (2024), Di Lucia, Slade and Khan (2022).
+- [ ] Verify bibliographic details and add DOIs for Pradhan et al. (2017), Miola et al. (2019), Nilsson et al. (2017), Issa, Mezher and El Fadel (2024), Di Lucia, Slade and Khan (2022).
 - [ ] Convert LaTeX equation blocks to Word equations in the `.docx` before submission.
-- [ ] **Position against additive performance + network approaches.** Issa et al. (Sustainable Development, 2025/2026; MENA prioritisation) combine a performance score (normalised achievement, world benchmark, trend; 3–9 urgency) with network influence (IOTA + Spearman; synergy/trade-off by correlation sign and normative direction only, as in IGES) through an equal-weight average. Performance never enters link classification, so a deteriorating hub in a deteriorating cluster counts as both urgent and positively influential, i.e. a lever to stimulate. Add a short subsection in Section 3 on these additive approaches (also Allen et al. 2019 and Huan et al. 2022, cited by Issa et al.; verify full references first) and reformulate the novelty claim in Section 2.2: not that no one combines progress and interlinkages, but that performance direction is used to give links their meaning and to identify interface roles, rather than added as an urgency score.
+- [ ] **Read Zhou and Moinuddin (2021)** (book chapter, Elsevier, doi 10.1016/B978-0-323-85512-9.00018-8), cited in Section 3.2 and Table 2 from its reproduction in Sota and Venghaus (2026). Check whether the typology goes beyond a conceptual table, confirm the row labels (development drag, coupled deterioration), and complete the reference (book title, editors, pages).
+- [ ] **Check Feng et al. (2023)**, "Assessing progress and interactions toward SDG 11 indicators based on geospatial big data at prefecture-level cities" (cited by Khot et al. 2026), the only other title found that joins progress and interactions; cite in Section 3.2 if relevant.
 
 ## To consider
 
 Ideas worth evaluating; not committed.
+
+- [ ] **Transfer entropy for link orientation** (Warchold and Pradhan, 2025, recommended by Khot et al. 2026) as an alternative to lagged and conditional tests in the SDG Index procedure.
 
 - [ ] **Progress direction less sensitive to the trend window**, borrowing from the UNSD Technical Note for Progress Assessment (SDG Report 2026):
     - a stagnation band (e.g. |annual rate in the desired direction| < 0.5%) classified as stable, so small slopes that flip sign with the period do not decide links and roles;
