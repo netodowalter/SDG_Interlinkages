@@ -9,6 +9,7 @@ Items in the first section can be done with the data already in the package and 
 ### Validity of roles
 
 - [ ] **Null model.** Rewire links at random while keeping each node's performance direction and its numbers of sent and received links; recompute bridge and relay flows and role membership. Report whether observed bridges exceed the null distribution. Addresses the objection that, after reclassification, synergy ≈ "same direction" and trade-off ≈ "opposite directions", so roles might only reflect trend strength and degree.
+- [ ] **Phase-shuffled surrogate tests** (as in Ding et al. 2026): series that preserve each indicator's power spectrum and autocorrelation but destroy synchrony, to check that associations and orientations are not produced by shared trends. Complements the null model.
 - [ ] **Associations of changes, SDG Index.** Add an option to correlate first differences (or detrended scores) instead of levels. Trending series correlate strongly regardless of any relationship; the Brazil SDG Index network already links about half of all possible pairs (3,305 arcs, 81 indicators). About 25 annual changes per indicator are available.
 - [ ] **Stability across windows, SDG Index.** Compare roles for 2000–2025 and 2010–2025.
 - [ ] **Pooled panels, SDG Index.** Pool comparable countries (income group, BRICS) to gain power for orientation tests, as an alternative to longer national series.
@@ -51,7 +52,7 @@ Items in the first section can be done with the data already in the package and 
 
 Ideas worth evaluating; not committed.
 
-- [ ] **Transfer entropy for link orientation** (Warchold and Pradhan, 2025, recommended by Khot et al. 2026) as an alternative to lagged and conditional tests in the SDG Index procedure.
+- [ ] **Alternative methods for link orientation** in the SDG Index procedure, besides lagged and conditional tests: transfer entropy (Warchold and Pradhan, 2025, recommended by Khot et al. 2026) and convergent cross mapping (Ding et al. 2026).
 
 - [ ] **Progress direction less sensitive to the trend window**, borrowing from the UNSD Technical Note for Progress Assessment (SDG Report 2026):
     - a stagnation band (e.g. |annual rate in the desired direction| < 0.5%) classified as stable, so small slopes that flip sign with the period do not decide links and roles;
