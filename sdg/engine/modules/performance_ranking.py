@@ -40,12 +40,13 @@ RANK_FIELDS = (
     ('bridge_rank', 'bridge_flow', 'backward', False, True),
     ('relay_rank', 'relay_flow', 'backward', False, True))
 RANK_KEYS = tuple(spec[0] for spec in RANK_FIELDS)
-CONTEXT = {'contributors': (' — shortest target times', 'target_time_rank'),
-           'exposed': (' — longest times to zero', 'zero_time_rank')}
 
 
 def highlight_groups(nodes, edges):
-    """Six interface roles; at most ten per ranking, exact ties broken by stable node ID."""
+    """Six interface roles; at most ten per ranking, exact ties broken by stable node ID.
+
+    Years to target (improving) or to zero (deteriorating) characterise each selected
+    node in its row; they do not filter role membership."""
     from roles import ROLES, interface_measures, select_roles
     byid = {n['id']: n for n in nodes}
     measures = interface_measures({i: n['direction'] for i, n in byid.items()},
@@ -60,7 +61,6 @@ def highlight_groups(nodes, edges):
         field_rank[field] = rank
         top[rank] = {i for i, position in ranking.items() if position <= TOP_N}
     selected = select_roles(lambda field, direction: top[field_rank[field]],
-                            lambda role: top[CONTEXT[role][1]],
                             {i: n['forward_ratio'] for i, n in byid.items()})
     groups = []
     for slug, title, metric, label, direction in ROLES:
@@ -69,7 +69,7 @@ def highlight_groups(nodes, edges):
         rows = [[byid[i][field_rank[metric]], i, byid[i][metric], byid[i]['description'],
                  byid[i]['indicator'], byid[i]['description'], byid[i][time],
                  byid[i]['direction'], ''] for i in ordered]
-        groups.append(dict(id=slug, title=title + CONTEXT.get(slug, ('',))[0], metric=label, rows=rows,
+        groups.append(dict(id=slug, title=title, metric=label, rows=rows,
                            base='Intersection of top 10 rankings; ties resolved by node ID.'))
     return groups
 

@@ -69,9 +69,10 @@ class Methodology(unittest.TestCase):
         details['2.1'][5]='backward'
         details['3.1'][4]=None
         groups={g['id']:g['rows'] for g in highlight_groups(metrics,details)}
-        self.assertEqual([r[1] for r in groups['contributors']],['4.1','5.1','6.1','7.1','8.1'])
+        # Ambition no longer filters contributors; 2.1 is deteriorating and stays out.
+        self.assertEqual([r[1] for r in groups['contributors']],['1.1','3.1','4.1','5.1','6.1','7.1','8.1'])
         self.assertFalse(groups['dependent_contributors'])
-        self.assertFalse(groups['exposed'])
+        self.assertEqual([r[1] for r in groups['exposed']],['2.1'])
         self.assertFalse(groups['transmission_bridges'])
     def test_six_highlight_groups(self):
         from progress import highlight_groups
@@ -83,7 +84,8 @@ class Methodology(unittest.TestCase):
         self.assertEqual([[r[1] for r in g['rows']] for g in highlight_groups(metrics,details,edges)],[['1.1'],[],['2.1'],['3.1'],[],[]])
         for value in details.values():value[4]=.6
         groups=highlight_groups(metrics,details,edges)
-        self.assertFalse(groups[0]['rows']);self.assertFalse(groups[3]['rows'])
+        # Ambition characterises; membership is unchanged.
+        self.assertEqual([r[1] for r in groups[0]['rows']],['1.1']);self.assertEqual([r[1] for r in groups[3]['rows']],['3.1'])
         self.assertEqual([r[1] for r in groups[2]['rows']],['2.1'])
         self.assertFalse(groups[4]['rows']);self.assertFalse(groups[5]['rows'])
     def test_adverse_policy_and_boundaries(self):

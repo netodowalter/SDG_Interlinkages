@@ -128,20 +128,17 @@ def top_ten(nodes,field,direction):
     cutoff=nodes[ordered[min(9,len(ordered)-1)]][field]
     return {t for t in ordered if nodes[t][field]>=cutoff}
 
-IGES_CONTEXT={'contributors':' — ambition > 0.6','exposed':' — ambition < 0.6'}
-
 def highlight_groups(metrics,details,edges=()):
     from ranking import ranked_rows
     from roles import ROLES,select_roles
     nodes=interface_nodes(metrics,details,edges)
-    def context(role):
-        return {t for t in metrics if finite(details[t][4]) and (details[t][4]>.6 if role=='contributors' else details[t][4]<.6)}
-    selected=select_roles(lambda field,direction:top_ten(nodes,field,direction),context,{t:n['forward_ratio'] for t,n in nodes.items()})
+    # Semantic ambitiousness characterises each selected target in its row; it does not filter roles.
+    selected=select_roles(lambda field,direction:top_ten(nodes,field,direction),{t:n['forward_ratio'] for t,n in nodes.items()})
     scored={t:dict(metrics[t],**{label:nodes[t][field] for _,_,field,label,_ in ROLES}) for t in metrics}
     groups=[]
     for slug,title,field,label,_ in ROLES:
         rows=[r for r in ranked_rows(scored,details,label) if r[1] in selected[slug]]
-        groups.append(dict(id=slug,title=title+IGES_CONTEXT.get(slug,''),metric=label,rows=rows,base='top ten by direction before filters; ties at tenth place included'))
+        groups.append(dict(id=slug,title=title,metric=label,rows=rows,base='top ten by direction before filters; ties at tenth place included'))
     return groups
 
 def interface_rows(metrics,details,edges=()):

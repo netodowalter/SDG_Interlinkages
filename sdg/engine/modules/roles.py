@@ -5,8 +5,10 @@ direction and trade-offs link nodes moving in opposite directions. The roles
 below separate what arrives at each node across that interface from what it
 passes on. They are exploratory hypotheses, not estimates of causal effects.
 
-Both procedures share these definitions. Each supplies its own ranking rule
-(``top``) and its own context criterion (``context``).
+Both procedures share these definitions and supply their own ranking rule
+(``top``). Context (semantic ambitiousness in IGES/JRC; conditional years to
+target or to zero in SDGIndex) does not filter roles: it is exported alongside
+every selected node to characterise and prioritise within each role.
 """
 from collections import defaultdict
 
@@ -44,14 +46,14 @@ ROLES = (
 )
 
 RULES = {
-    'contributors': 'Top Colab among improving nodes meeting the context criterion, excluding top receivers '
-                    'of trade-offs from deterioration and top senders of trade-offs to deterioration.',
+    'contributors': 'Top Colab among improving nodes, excluding top receivers of trade-offs from '
+                    'deterioration and top senders of trade-offs to deterioration.',
     'dependent_contributors': 'Top receivers of trade-offs from deteriorating sources that pass at least as '
                               'much synergy weight forward to improving nodes (phi >= 1).',
     'isolated_beneficiaries': 'Top receivers of trade-offs from deteriorating sources that pass less synergy '
                               'weight forward to improving nodes than they receive (phi < 1).',
-    'exposed': 'Top Neglect among deteriorating nodes meeting the context criterion, excluding top senders '
-               'of synergies from deterioration, transmission bridges and relays.',
+    'exposed': 'Top Neglect among deteriorating nodes, excluding top senders of synergies from '
+               'deterioration, transmission bridges and relays.',
     'transmission_bridges': 'Top bridge flow: trade-off received from improving sources multiplied by '
                             'synergy sent to deteriorating nodes (all two-step paths improving → k → deteriorating).',
     'deterioration_relays': 'Top relay flow: synergy received from deteriorating sources multiplied by synergy '
@@ -98,13 +100,12 @@ def interface_measures(direction, edges):
     return values
 
 
-def select_roles(top, context, ratio):
+def select_roles(top, ratio):
     """Return {role id: set of node ids}.
 
     ``top(field, direction)`` returns the selected top set of positive values of
-    ``field`` among nodes with that performance direction. ``context(role)``
-    returns the set of nodes meeting the procedure's context criterion for
-    'contributors' or 'exposed'. ``ratio`` maps node id to forward_ratio (phi).
+    ``field`` among nodes with that performance direction. ``ratio`` maps node
+    id to forward_ratio (phi).
     Intersections are not refilled.
     """
     colab, receivers = top('colab', FORWARD), top('tradeoff_received_from_backward', FORWARD)
@@ -114,10 +115,10 @@ def select_roles(top, context, ratio):
     bridges = top('bridge_flow', BACKWARD)
     relays = top('relay_flow', BACKWARD) - bridges
     return dict(
-        contributors=(colab & context('contributors')) - receivers - cost,
+        contributors=colab - receivers - cost,
         dependent_contributors=receivers - isolated,
         isolated_beneficiaries=isolated,
-        exposed=(neglect & context('exposed')) - senders - bridges - relays,
+        exposed=neglect - senders - bridges - relays,
         transmission_bridges=bridges,
         deterioration_relays=relays,
     )
