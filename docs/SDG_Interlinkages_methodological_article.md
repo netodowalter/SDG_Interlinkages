@@ -64,7 +64,7 @@ This was the note's central contribution. The IGES tool and the JRC compilation 
 | Exposure metric | TL.In = in-trade-off − in-synergy | Neglect = in-trade-off **+** in-synergy from deteriorating sources, read only among deteriorating nodes |
 | Interface measures | None | Trade-off received and sent across the interface, synergy passed on, bridge and relay flows, forward ratio φ |
 | Roles | Two categories | Six roles defined by performance direction, including the two interface roles |
-| Context | None | Semantic ambitiousness (IGES/JRC) or conditional time to boundary (SDG Index), reported for every role, not used as a filter |
+| Context | None | Semantic ambitiousness (IGES/JRC) or conditional time to boundary (SDG Index), reported for every role |
 | Coverage bias | Link-share weighting factor | Same factor, IGES/JRC only, produced as a parallel weighted version with a rank comparison (Section 5.6) |
 
 The change in the exposure metric is the clearest consequence of incorporating performance. TL.In *subtracted* incoming synergies on the assumption that any synergy is help. Neglect *adds* incoming synergies from deteriorating sources, because reinforcement from a deteriorating neighbour is a source of pressure, not support.
@@ -221,7 +221,7 @@ Each node receives at most one role. I-2 and I-3 split the top receivers by φ, 
 
 ### 5.4 Context: characterising roles
 
-Direction alone does not capture what a target demands. Context therefore characterises every role instead of filtering any of them, using a measure suited to each procedure.
+Direction alone does not capture what a target demands. Context therefore characterises every role, using a measure suited to each procedure; it does not determine membership.
 
 In the IGES/JRC procedure, the context is **semantic ambitiousness**: the strength of the commitment expressed in a target's wording (Mustajoki et al., 2022). A commitment to eradicate a deprivation is more demanding than one to reduce it, whatever the setting. Within a role, high ambitiousness marks improvement on a demanding commitment, and low ambitiousness marks deterioration despite a modest one. Semantic ambitiousness differs from relative ambitiousness (distance to target) and absolute ambitiousness (effort required), and the target-level coding is distinct from the goal-level aggregates reported by Mustajoki et al.
 
@@ -231,7 +231,7 @@ In the SDG Index procedure, the common scale allows a measure of **stage and pac
 T_{100} = \frac{\max(0,\,100 - S)}{\beta}, \;\; \beta > 0; \qquad T_{0} = \frac{\max(0,\,S)}{|\beta|}, \;\; \beta < 0
 ```
 
-Every selected node is reported with its T₁₀₀ or T₀. Used as filters, these times would select near-achieved contributors and slowly deteriorating exposed targets, and would point in the opposite direction to the ambitiousness criterion. Reported alongside every role, they rank urgency within it: a transmission bridge close to the lower boundary is more urgent than one deteriorating slowly. These are conditional extrapolations at the fitted pace, not forecasts. A long T₀ means slow deterioration relative to the remaining score, not demonstrated resilience to shocks.
+Every selected node is reported with its T₁₀₀ or T₀. These times rank urgency within each role: a transmission bridge close to the lower boundary is more urgent than one deteriorating slowly. These are conditional extrapolations at the fitted pace, not forecasts. A long T₀ means slow deterioration relative to the remaining score, not demonstrated resilience to shocks.
 
 ### 5.5 The interface roles as the main contribution
 
@@ -243,7 +243,7 @@ Two roles carry the contribution that only a network can make, and they mirror e
 
 A **transmission bridge** (D-2) is a deteriorating target that receives trade-offs from improving targets and passes deterioration on through synergies. It is where the cost of gains elsewhere enters the deteriorating subsystem and spreads. Selecting it by Bridge(k), rather than by total Neglect, matters: a node can receive little pressure overall yet be the main point of entry and propagation. Conversely, a node with high Neglect may receive and pass on deterioration entirely within the deteriorating subsystem, which makes it a relay, not a bridge.
 
-An **isolated beneficiary** (I-3) is an improving target that receives trade-offs from deteriorating targets and passes forward less synergy than it receives (φ < 1). Its improvement is associated with losses elsewhere and largely stays where it is. This is the configuration that NT Dinte 77 interpreted as individualised strategies and possible concentrated misallocation. It differs from a dependent contributor (I-2), which also gains from others' losses but passes forward at least as much as it receives (φ ≥ 1). An absolute threshold is needed because, in dense networks, almost every receiver also sends substantial synergy; a relative cut-off would label strong spreaders as isolated.
+An **isolated beneficiary** (I-3) is an improving target that receives trade-offs from deteriorating targets and passes forward less synergy than it receives (φ < 1). Its improvement is associated with losses elsewhere and largely stays where it is. This is the configuration that NT Dinte 77 interpreted as individualised strategies and possible concentrated misallocation. It differs from a dependent contributor (I-2), which also gains from others' losses but passes forward at least as much as it receives (φ ≥ 1). Isolation is defined by the balance at the node rather than by rank, because in dense networks almost every receiver also sends substantial synergy.
 
 The two roles define the most specific policy questions in the framework. At a bridge, the question is whether interrupting the transmission would prevent wider deterioration without sacrificing the upstream gains. At an isolated beneficiary, the question is whether the gains could be maintained with fewer losses elsewhere, or redistributed so that they reach other targets.
 
@@ -286,9 +286,9 @@ The links form a sequence across the interface. Improving targets F and E send t
 
 **Reading without performance direction.** The two leading "transversal collaborators", A and B, are deteriorating. Their large outgoing synergies spread deterioration, which is precisely the case NT Dinte 77 anticipated in its hypothetical example. The leading "neglected" target, G, is improving: its high TL.In reflects gains associated with losses in C and D, not neglect. A is also selected as "neglected", although its main role is to pass deterioration on.
 
-**What the new roles show.** E remains a contributor, but a dependent one: it spreads synergies to F and H while receiving a trade-off from deteriorating D (R = 0.50). G is an isolated beneficiary: it receives 1.30 of trade-off weight from C and D and passes nothing forward (φ = 0), whereas E passes forward 2.8 times what it receives. F receives no role. Its Colab is positive (0.10), but it is among the top senders of costs to deteriorating targets: its trade-off to A is the entry point of a bridge. A rule based on Colab alone would have called it a contributor.
+**What the new roles show.** E remains a contributor, but a dependent one: it spreads synergies to F and H while receiving a trade-off from deteriorating D (R = 0.50). G is an isolated beneficiary: it receives 1.30 of trade-off weight from C and D and passes nothing forward (φ = 0), whereas E passes forward 2.8 times what it receives. F receives no role. Its Colab is positive (0.10), but it is among the top senders of costs to deteriorating targets: its trade-off to A is the entry point of a bridge. Its positive SL.Out would have placed it in NT Dinte 77's transversal collaboration category.
 
-**Why the interface measures matter.** Under a rule combining top Neglect with top senders (top Neglect ∩ top B), B and C would be selected and A would not, because A's Neglect (0.40) is the lowest among deteriorating nodes. Yet A is the entry point for F's trade-off and the largest propagator of deterioration (B = 1.30). Bridge(k) identifies A and B as the two points where the cost of gains in F and E enters the deteriorating subsystem. C, by contrast, receives deterioration only from other deteriorating nodes and passes it on: it is a relay, not a bridge.
+**Why the interface measures matter.** Total Neglect does not single out A: at 0.40 it is the lowest among deteriorating nodes. Yet A is the entry point for F's trade-off and the largest propagator of deterioration (B = 1.30). Bridge(k) identifies A and B as the two points where the cost of gains in F and E enters the deteriorating subsystem. C, by contrast, receives deterioration only from other deteriorating nodes and passes it on: it is a relay, not a bridge.
 
 The illustration shows the full sequence the framework is designed to reveal. Gains in F and E are associated with losses in A and B; these spread to C and D; and losses in C and D are associated with gains in G, which keeps them. Each link is a hypothesis. The sequence specifies which links an investigation should examine first.
 
@@ -352,7 +352,7 @@ These concerns define a sensitivity agenda. Before any policy reading, an applic
 4. alternative rules for uncertain JRC directions (Table 1);
 5. alternative cut-offs (top 5, top 15);
 6. comparison with the link-share weighted version (IGES/JRC), to flag targets whose roles depend on research coverage;
-7. Pearson versus Spearman coefficients in the SDG Index procedure; the isolation threshold (φ < 1 versus no forward synergy at all); and context applied as a filter rather than as characterisation.
+7. Pearson versus Spearman coefficients in the SDG Index procedure; the isolation threshold (φ < 1 versus no forward synergy at all).
 
 Roles that persist across these variations are stronger candidates for investigation than roles that appear under one setting only.
 
