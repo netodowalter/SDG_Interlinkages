@@ -230,6 +230,14 @@ def save_rankings(output, metrics, details, adverse_cases=(), edges=()):
             for row in group['rows']:highlights.append([group['title'],group['metric']]+row)
         highlights.freeze_panes='E2';highlights.auto_filter.ref=highlights.dimensions
         for i in range(1,highlights.max_column+1):highlights.column_dimensions[get_column_letter(i)].width=25
+        from progress import interface_rows
+        interface=workbook.create_sheet('Interface_measures')
+        measures=interface_rows(metrics,details,edges)
+        if measures:
+            headers=list(measures[0]);interface.append(headers)
+            for item in measures:interface.append([item.get(k) for k in headers])
+            interface.freeze_panes='B2';interface.auto_filter.ref=interface.dimensions
+            for i in range(1,interface.max_column+1):interface.column_dimensions[get_column_letter(i)].width=22
         output.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(prefix='.' + output.stem + '_', suffix='.xlsx',
                                          dir=output.parent, delete=False) as handle:

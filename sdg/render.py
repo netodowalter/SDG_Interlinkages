@@ -21,8 +21,12 @@ def scale(value, lo, hi, small, large):
     return (small + large) / 2 if lo == hi else small + (large-small)*(value-lo)/(hi-lo)
 
 
-# Borders retain the same category meaning in all views.
-BORDER_COLORS = ['#ffffff', '#f2c500', '#888888', '#d71920']
+# Borders retain the same role meaning in all views, in roles.ROLES order:
+# I-1 contributors, I-2 dependent contributors, I-3 isolated beneficiaries,
+# D-1 exposed targets, D-2 transmission bridges, D-3 deterioration relays.
+BORDER_COLORS = ['#ffffff', '#f2c500', '#1f6fd1', '#888888', '#d71920', '#f08a00']
+ROLE_LABELS = ['I-1 Contributors', 'I-2 Dependent contributors', 'I-3 Isolated beneficiaries',
+               'D-1 Exposed targets', 'D-2 Transmission bridges', 'D-3 Deterioration relays']
 PLOT = (80, 215, 3120, 1760)
 
 
@@ -176,16 +180,12 @@ def legend(draw, dataset):
         draw.text((x+86,y),label,font=font(23),fill='#334455')
     y += 73
     draw.text((70,y), 'ICON BORDER',font=font(24),fill='#163b49')
-    labels = ['Fast-achieving collaborators','Dependent collaborators','Resilient neglected indicators','Propagating neglected indicators']
-    if dataset != 'SDGIndex':
-        labels[0] = 'High-ambition collaborators'
-        labels[2] = 'Low-ambition neglected targets'
-    for j,(color,label) in enumerate(zip(BORDER_COLORS,labels)):
-        x = 310 if j%2==0 else 1730
-        yy = y+(j//2)*62
+    for j,(color,label) in enumerate(zip(BORDER_COLORS,ROLE_LABELS)):
+        x = (310, 1250, 2190)[j%3]
+        yy = y+(j//3)*62
         draw.rectangle((x,yy,x+32,yy+32),fill=color,outline='#536067',width=2)
         draw.text((x+50,yy+2),label,font=font(24),fill='#334455')
-    draw.text((70,2070),'Black border: other indicators. Highlights use the same four groups in every view.',font=font(23),fill='#465b63')
+    draw.text((70,2070),'Black border: other indicators. I = improving, D = deteriorating. Borders mark the same six roles in every view.',font=font(23),fill='#465b63')
     draw.text((70,2110),'Link thickness: |r|. Links from deterioration use 35% opacity. Component spacing is optimized for readability.',font=font(23),fill='#465b63')
 
 
@@ -218,7 +218,7 @@ def render_networks(folder, prefix, title, graph, groups, icons):
             extent = defaultdict(list)
             for i in ids:
                 extent[tiers[i]].append(scores[i])
-            ranges = {0:(58,68), 1:(66,76), 2:(58,68), 3:(66,76), -1:(44,56)}
+            ranges = {0:(58,68), 1:(66,76), 2:(66,76), 3:(58,68), 4:(66,76), 5:(58,68), -1:(44,56)}
             sizes = {i:int(scale(scores[i],min(extent[tiers[i]]),max(extent[tiers[i]]),*ranges[tiers[i]])) for i in ids}
             xy = positions(ids,edges,sizes)
             if mode == 'two_step_interface':
@@ -244,7 +244,7 @@ def render_networks(folder, prefix, title, graph, groups, icons):
             colors = BORDER_COLORS
             for i in sorted(ids,key=lambda i:sizes[i]):
                 node = nodes[i]; size = sizes[i]; x,y = map(int,xy[i]); tier = tiers[i]
-                border = colors[tier] if 0 <= tier < 4 else 'black'
+                border = colors[tier] if 0 <= tier < len(colors) else 'black'
                 left,top = x-size//2,y-size//2
                 margin = 5 if tier>=0 else 1
                 draw.rectangle((left-margin,top-margin,left+size+margin,top+size+margin),fill=border,outline='#536067')

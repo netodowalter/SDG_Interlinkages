@@ -28,47 +28,48 @@ def positions(nodes, field, direction, ascending=False, positive=False):
     return {n['id']: i for i, n in enumerate(pool, 1)}
 
 
+RANK_FIELDS = (
+    ('colab_rank', 'colab', 'forward', False, True),
+    ('neglect_rank', 'neglect', 'backward', False, True),
+    ('target_time_rank', 'years_to_target', 'forward', True, False),
+    ('zero_time_rank', 'years_to_zero', 'backward', False, False),
+    ('receiver_rank', 'tradeoff_received_from_backward', 'forward', False, True),
+    ('sender_rank', 'backward_synergy_sent', 'backward', False, True),
+    ('spreader_rank', 'forward_synergy_sent', 'forward', False, True),
+    ('cost_sender_rank', 'tradeoff_sent_to_backward', 'forward', False, True),
+    ('bridge_rank', 'bridge_flow', 'backward', False, True),
+    ('relay_rank', 'relay_flow', 'backward', False, True))
+RANK_KEYS = tuple(spec[0] for spec in RANK_FIELDS)
+CONTEXT = {'contributors': (' — shortest target times', 'target_time_rank'),
+           'exposed': (' — longest times to zero', 'zero_time_rank')}
+
+
 def highlight_groups(nodes, edges):
-    """Keep at most ten per group; break exact ties by stable node identifier."""
+    """Six interface roles; at most ten per ranking, exact ties broken by stable node ID."""
+    from roles import ROLES, interface_measures, select_roles
     byid = {n['id']: n for n in nodes}
+    measures = interface_measures({i: n['direction'] for i, n in byid.items()},
+                                  [(e['source'], e['target'], e['interaction'], e['weight']) for e in edges])
     for n in nodes:
-        n.update(tradeoff_received_from_backward=0.0, backward_synergy_sent=0.0)
-    for edge in edges:
-        a, b = byid[edge['source']], byid[edge['target']]
-        weight = abs(edge['weight'])
-        if edge['interaction'] == 'trade-off' and a['direction'] == 'backward' and b['direction'] == 'forward':
-            b['tradeoff_received_from_backward'] += weight
-        if edge['interaction'] == 'synergy' and a['direction'] == 'backward':
-            a['backward_synergy_sent'] += weight
-    specs = [('colab_rank', 'colab', 'forward', False, True),
-             ('neglect_rank', 'neglect', 'backward', False, True),
-             ('target_time_rank', 'years_to_target', 'forward', True, False),
-             ('zero_time_rank', 'years_to_zero', 'backward', False, False),
-             ('receiver_rank', 'tradeoff_received_from_backward', 'forward', False, True),
-             ('sender_rank', 'backward_synergy_sent', 'backward', False, True)]
-    ranks = {}
-    for rank, field, direction, ascending, positive in specs:
-        ranks[rank] = positions(nodes, field, direction, ascending, positive)
+        n.update(measures[n['id']])
+    field_rank, top = {}, {}
+    for rank, field, direction, ascending, positive in RANK_FIELDS:
+        ranking = positions(nodes, field, direction, ascending, positive)
         for n in nodes:
-            n[rank] = ranks[rank].get(n['id'])
-    top = {key: {i for i, rank in values.items() if rank <= TOP_N}
-           for key, values in ranks.items()}
-    selected = [(top['colab_rank'] & top['target_time_rank']) - top['receiver_rank'],
-                top['colab_rank'] & top['receiver_rank'],
-                (top['neglect_rank'] & top['zero_time_rank']) - top['sender_rank'],
-                top['neglect_rank'] & top['sender_rank']]
-    definitions = [
-        ('autonomous_collaborators', 'a · Collaborators — shortest target times, outside top receivers', 'colab', 'years_to_target'),
-        ('contextual_collaborators', 'b · Collaborators — top receivers of trade-offs from deterioration', 'colab', 'years_to_target'),
-        ('resilient_neglected', 'c · Resilient neglected indicators — longest times to zero, outside top senders', 'neglect', 'years_to_zero'),
-        ('propagating_neglected', 'd · Neglected indicators — top senders of synergies from deteriorating sources', 'neglect', 'years_to_zero')]
+            n[rank] = ranking.get(n['id'])
+        field_rank[field] = rank
+        top[rank] = {i for i, position in ranking.items() if position <= TOP_N}
+    selected = select_roles(lambda field, direction: top[field_rank[field]],
+                            lambda role: top[CONTEXT[role][1]],
+                            {i: n['forward_ratio'] for i, n in byid.items()})
     groups = []
-    for (slug, title, metric, time), ids in zip(definitions, selected):
-        ordered = sorted(ids, key=lambda i: (-byid[i][metric], i))
-        rows = [[byid[i][metric + '_rank'], i, byid[i][metric], byid[i]['description'],
+    for slug, title, metric, label, direction in ROLES:
+        time = 'years_to_target' if direction == 'forward' else 'years_to_zero'
+        ordered = sorted(selected[slug], key=lambda i: (-byid[i][metric], i))
+        rows = [[byid[i][field_rank[metric]], i, byid[i][metric], byid[i]['description'],
                  byid[i]['indicator'], byid[i]['description'], byid[i][time],
                  byid[i]['direction'], ''] for i in ordered]
-        groups.append(dict(id=slug, title=title, metric=metric, rows=rows,
+        groups.append(dict(id=slug, title=title + CONTEXT.get(slug, ('',))[0], metric=label, rows=rows,
                            base='Intersection of top 10 rankings; ties resolved by node ID.'))
     return groups
 

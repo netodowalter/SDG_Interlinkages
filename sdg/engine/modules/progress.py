@@ -109,34 +109,52 @@ def analyze_workbook(path,norm):
     finally:out.close()
     return trends
 
+def interface_nodes(metrics,details,edges=()):
+    'Colab, Neglect and interface measures per connected target (see roles.py).'
+    from roles import interface_measures
+    direction={t:details[t][5] for t in metrics}
+    measures=interface_measures(direction,[(str(e['TargetA']),str(e['TargetB']),e['interaction'],e['weight']) for e in edges])
+    return {t:dict(direction=direction[t],colab=metrics[t]['Colab'],neglect=metrics[t]['Neglect'],**measures[t]) for t in metrics}
+
+def _target_order(t):
+    goal,suffix=t.split('.',1)
+    return (int(goal),not suffix.isdigit(),int(suffix) if suffix.isdigit() else suffix)
+
+def top_ten(nodes,field,direction):
+    'Top ten positive values within a performance direction; exact ties at tenth place included.'
+    ordered=sorted((t for t,n in nodes.items() if n['direction']==direction and finite(n[field]) and n[field]>0),
+                   key=lambda t:(-nodes[t][field],_target_order(t)))
+    if not ordered:return set()
+    cutoff=nodes[ordered[min(9,len(ordered)-1)]][field]
+    return {t for t in ordered if nodes[t][field]>=cutoff}
+
+IGES_CONTEXT={'contributors':' — ambition > 0.6','exposed':' — ambition < 0.6'}
+
 def highlight_groups(metrics,details,edges=()):
     from ranking import ranked_rows
-    def direction(t):return details[t][5]
-    received=defaultdict(float);sent=defaultdict(float)
-    for e in edges:
-        a,b=str(e['TargetA']),str(e['TargetB']);w=abs(float(e['weight']))
-        if a not in details or b not in details:continue
-        if e['interaction']=='trade-off' and direction(a)=='backward' and direction(b)=='forward':received[b]+=w
-        if e['interaction']=='synergy' and direction(a)=='backward':sent[a]+=w
-    def top(items,score):
-        ordered=sorted((t for t in items if score(t)>0),key=lambda t:(-score(t),(int(t.split('.')[0]),not t.split('.')[1].isdigit(),int(t.split('.')[1]) if t.split('.')[1].isdigit() else t.split('.')[1])))
-        if not ordered:return set()
-        cutoff=score(ordered[min(9,len(ordered)-1)])
-        return {t for t in ordered if score(t)>=cutoff}
-    good=[t for t in metrics if direction(t)=='forward'];bad=[t for t in metrics if direction(t)=='backward']
-    cg=top(good,lambda t:metrics[t]['Colab']);ng=top(bad,lambda t:metrics[t]['Neglect'])
-    receivers=top(good,lambda t:received[t]);senders=top(bad,lambda t:sent[t])
-    sets=[cg-receivers,cg&receivers,ng-senders,ng&senders]
-    definitions=[('autonomous_collaborators','a · Collaborators — ambition > 0.6, outside the top receivers','Colab'),
-                 ('contextual_collaborators','b · Collaborators — top receivers of trade-offs from deterioration','Colab'),
-                 ('low_ambition_neglected','c · Neglected targets — ambition < 0.6, outside the top senders','Neglect'),
-                 ('propagating_neglected','d · Neglected targets — top senders of synergies from deteriorating sources','Neglect')]
+    from roles import ROLES,select_roles
+    nodes=interface_nodes(metrics,details,edges)
+    def context(role):
+        return {t for t in metrics if finite(details[t][4]) and (details[t][4]>.6 if role=='contributors' else details[t][4]<.6)}
+    selected=select_roles(lambda field,direction:top_ten(nodes,field,direction),context,{t:n['forward_ratio'] for t,n in nodes.items()})
+    scored={t:dict(metrics[t],**{label:nodes[t][field] for _,_,field,label,_ in ROLES}) for t in metrics}
     groups=[]
-    for i,((slug,title,metric),selected) in enumerate(zip(definitions,sets)):
-        if i in (0,2):selected={t for t in selected if finite(details[t][4]) and (details[t][4]>.6 if i==0 else details[t][4]<.6)}
-        rows=[r for r in ranked_rows(metrics,details,metric) if r[1] in selected]
-        groups.append(dict(id=slug,title=title,metric=metric,rows=rows,base='top ten by direction before filters; ties at tenth place included'))
+    for slug,title,field,label,_ in ROLES:
+        rows=[r for r in ranked_rows(scored,details,label) if r[1] in selected[slug]]
+        groups.append(dict(id=slug,title=title+IGES_CONTEXT.get(slug,''),metric=label,rows=rows,base='top ten by direction before filters; ties at tenth place included'))
     return groups
+
+def interface_rows(metrics,details,edges=()):
+    'One row per connected target: interface measures, ranks and assigned role.'
+    from roles import ROLES
+    nodes=interface_nodes(metrics,details,edges)
+    role={r[1]:g['title'] for g in highlight_groups(metrics,details,edges) for r in g['rows']}
+    fields=('colab','neglect','tradeoff_received_from_backward','forward_synergy_sent','forward_ratio','tradeoff_sent_to_backward',
+            'tradeoff_received_from_forward','synergy_received_from_backward','synergy_sent_to_backward','backward_synergy_sent','bridge_flow','relay_flow')
+    rows=[]
+    for t in sorted(nodes,key=_target_order):
+        n=nodes[t];rows.append(dict(TargetCode=t,progress_direction=n['direction'],role=role.get(t,''),**{f:n[f] for f in fields}))
+    return rows
 
 def workbook_edges(path):
     wb=load_workbook(path,read_only=True,data_only=True)

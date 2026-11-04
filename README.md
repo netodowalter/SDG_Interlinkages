@@ -15,7 +15,7 @@ The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and ope
 | IGES/JRC | Select a UNSD region or country. Optionally upload a previously collected UNSD CSV for the selected area. | Pearson |
 | SDGIndex | Select a region, aggregate, or country from the supplied annual-score workbooks. | Pearson, Spearman, or both |
 
-Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, trade-offs, and the experimental Two-step interface. All four PNGs use the same four highlight groups, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
+Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the six interface roles when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, trade-offs, and the experimental Two-step interface. All four PNGs use the same six role borders, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
 
 IGES/JRC tables show semantic **Ambitiousness**; SDGIndex tables show performance times in years. The IGES/JRC region selector additionally includes the UNSD catalog codes for OECD (198) and World Bank income groups (910, 911, 912, 914). Verification returned no observations for these aggregate codes, so listing them does not guarantee a runnable network. See [aggregate availability and comparability](docs/iges-comparison-regions.md). BRICS groups have no code in the verified UNSD catalog.
 
@@ -73,7 +73,7 @@ The numeric/ISO code remains the selection identifier and is recorded in the und
 | `*_synergy.png` | Synergy network |
 | `*_trade-off.png` | Trade-off network |
 
-The figure layout uses forces and a fixed random seed. Labels show target numbers. Distinct SDGIndex indicators mapped to the same target retain distinct composite node IDs in the tables. In the complete network, groups a/c have white/gray borders and groups b/d have yellow/red borders. Synergies from backward-moving sources use translucent burgundy; trade-offs from those sources use translucent gray.
+The figure layout uses forces and a fixed random seed. Labels show target numbers. Distinct SDGIndex indicators mapped to the same target retain distinct composite node IDs in the tables. Icon borders mark the six roles: I-1 white, I-2 yellow, I-3 blue, D-1 gray, D-2 red, D-3 orange. Synergies from backward-moving sources use translucent burgundy; trade-offs from those sources use translucent gray.
 
 ## Analytical procedure
 
@@ -100,18 +100,36 @@ The desired direction and local linear slope determine whether each node moves f
 
 **SDGIndex: performance-time rankings (no semantic ambition).** For each connected indicator, use its latest finite score S and the existing 2000–2025 slope v (score points/year). Forward indicators have `years_to_target = max(0, 100-S)/v`; deteriorating indicators have `years_to_zero = max(0, S)/abs(v)`. Scores already at the relevant boundary have zero remaining years. Stable/undetermined trends have no finite time and are excluded from time rankings. Times are conditional linear extrapolations, not forecasts, with no fixed deadline. Excel retains numeric precision and displays ordinary decimal years to three places; Gradio does likewise.
 
-Rank within performance direction, using all connected indicators. Colab/Neglect and receipt/sending rankings require positive weights or metric values. Each ranking has at most 10 entries; exact ties are resolved by stable node ID. Intersections are not refilled:
+Rank within performance direction, using all connected indicators. Rankings require positive values. Each ranking has at most 10 entries (SDGIndex: exact ties resolved by stable node ID; IGES/JRC: ties at the tenth position retained). Intersections are not refilled.
 
-| Group | Intersection and exclusions |
+After performance-based classification, synergies link indicators moving in the same direction and trade-offs link indicators moving in opposite directions. The six roles in `sdg/engine/modules/roles.py` separate what reaches each indicator across that interface from what it passes on:
+
+| Measure | Defined for | Meaning |
+|---|---|---|
+| R: `tradeoff_received_from_backward` | improving | trade-off weight received from deteriorating sources |
+| `forward_synergy_sent` | improving | synergy weight passed to improving indicators |
+| φ: `forward_ratio` | improving | `forward_synergy_sent / R` |
+| `tradeoff_sent_to_backward` | improving | trade-off weight sent to deteriorating indicators (cost downstream) |
+| T⁺: `tradeoff_received_from_forward` | deteriorating | trade-off weight received from improving sources |
+| S⁻: `synergy_received_from_backward` | deteriorating | synergy weight received from deteriorating sources |
+| `synergy_sent_to_backward` | deteriorating | synergy weight passed to deteriorating indicators |
+| `bridge_flow` | deteriorating | T⁺ × `synergy_sent_to_backward` = all two-step paths improving → k → deteriorating |
+| `relay_flow` | deteriorating | S⁻ × `synergy_sent_to_backward` |
+
+Links involving stable or undetermined indicators do not enter these measures.
+
+| Role | Selection |
 |---|---|
-| a · Collaborators with short target times | Top 10 Colab among improving nodes ∩ 10 shortest target times, excluding the top 10 receivers in group b |
-| b · Dependent collaborators | Top 10 Colab among improving nodes ∩ top 10 forward recipients of total weighted trade-offs from deteriorating sources |
-| c · Resilient neglected indicators | Top 10 Neglect among deteriorating nodes ∩ 10 longest times to zero, excluding the top 10 synergy from deteriorating sources senders in group d |
-| d · Propagating neglected indicators | Top 10 Neglect among deteriorating nodes ∩ top 10 synergy from deteriorating sources senders, irrespective of time to zero |
+| I-1 · Contributors | Top Colab ∩ context, excluding top R and top senders of trade-offs to deterioration |
+| I-2 · Dependent contributors | Top R with φ ≥ 1: gains associated with losses elsewhere, passed forward |
+| I-3 · Isolated beneficiaries | Top R with φ < 1: gains associated with losses elsewhere, not passed forward |
+| D-1 · Exposed targets | Top Neglect ∩ context, excluding top senders of synergy from deterioration, bridges and relays |
+| D-2 · Transmission bridges | Top `bridge_flow` |
+| D-3 · Deterioration relays | Top `relay_flow`, excluding bridges |
 
-“Dependent” is an exploratory network label, not evidence of a causal mechanism. Group membership, input scores/slopes, times, all six rank positions, and weighted receipts/sending are exported. The complete network highlights the four groups; the synergy and trade-off views retain those same category borders for highlighted nodes present in each view.
+Context: SDGIndex uses the 10 shortest times to target (I-1) and the 10 longest times to zero (D-1); IGES/JRC uses semantic ambitiousness > 0.6 (I-1) and < 0.6 (D-1). The isolation threshold φ < 1 is absolute because in dense networks almost every receiver also sends substantial synergy, so a relative cut-off would label strong spreaders as isolated.
 
-**IGES/JRC:** retain the current semantic-ambition criteria (>0.6 for group a; <0.6 for group c), direction filters, receiver/sender exclusions, and intersections. Only widen the ranking cutoffs from five to ten, retaining ties at the tenth position. No SDGIndex performance-time criterion is applied to IGES/JRC.
+“Dependent”, “bridge” and “relay” are exploratory network labels, not evidence of causal mechanisms. Role membership, all rank positions and every interface measure are exported (`Interface_measures`, `Highlights`). Icon borders mark the same six roles in all four PNGs.
 
 These associations and their exploratory orientations do not establish causality. Nominal p-values do not correct for autocorrelation. Supplied normalized series may contain carried/interpolated observations. These methodological conventions are preserved in the English migration.
 
@@ -152,7 +170,7 @@ print(countries["BRA"], folder)
 python -m unittest discover -s tests
 ```
 
-Tests cover measure identity, indicator directionality, temporal reclassification boundaries, highlight rules, and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
+Tests cover measure identity, indicator directionality, temporal reclassification boundaries, interface roles (including the worked example of the methodological article), and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
 
 ### Experimental network view
 

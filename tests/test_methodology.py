@@ -69,21 +69,23 @@ class Methodology(unittest.TestCase):
         details['2.1'][5]='backward'
         details['3.1'][4]=None
         groups={g['id']:g['rows'] for g in highlight_groups(metrics,details)}
-        self.assertEqual([r[1] for r in groups['autonomous_collaborators']],['4.1','5.1','6.1','7.1','8.1'])
-        self.assertFalse(groups['contextual_collaborators'])
-        self.assertFalse(groups['low_ambition_neglected'])
-        self.assertFalse(groups['propagating_neglected'])
-    def test_four_highlight_groups(self):
+        self.assertEqual([r[1] for r in groups['contributors']],['4.1','5.1','6.1','7.1','8.1'])
+        self.assertFalse(groups['dependent_contributors'])
+        self.assertFalse(groups['exposed'])
+        self.assertFalse(groups['transmission_bridges'])
+    def test_six_highlight_groups(self):
         from progress import highlight_groups
         metrics={'1.1':dict(Colab=1,Neglect=0),'2.1':dict(Colab=1.5,Neglect=0),'3.1':dict(Colab=0,Neglect=2),'4.1':dict(Colab=0,Neglect=.5)}
         details={t:[t,'name','indicator','description',amb,direction,'band'] for t,amb,direction in [('1.1',.8,'forward'),('2.1',.6,'forward'),('3.1',.5,'backward'),('4.1',.9,'backward')]}
         edges=[dict(TargetA='4.1',TargetB='2.1',interaction='trade-off',weight=1),dict(TargetA='4.1',TargetB='3.1',interaction='synergy',weight=1)]
-        self.assertEqual([[r[1] for r in g['rows']] for g in highlight_groups(metrics,details,edges)],[['1.1'],['2.1'],['3.1'],['4.1']])
+        # 2.1 gains from 4.1's deterioration and passes no synergy forward: I-3, not a contributor.
+        # 4.1 sends synergy to 3.1 but receives nothing from improving targets: neither bridge nor relay.
+        self.assertEqual([[r[1] for r in g['rows']] for g in highlight_groups(metrics,details,edges)],[['1.1'],[],['2.1'],['3.1'],[],[]])
         for value in details.values():value[4]=.6
         groups=highlight_groups(metrics,details,edges)
-        self.assertFalse(groups[0]['rows']);self.assertFalse(groups[2]['rows'])
-        self.assertEqual([r[1] for r in groups[1]['rows']],['2.1'])
-        self.assertEqual([r[1] for r in groups[3]['rows']],['4.1'])
+        self.assertFalse(groups[0]['rows']);self.assertFalse(groups[3]['rows'])
+        self.assertEqual([r[1] for r in groups[2]['rows']],['2.1'])
+        self.assertFalse(groups[4]['rows']);self.assertFalse(groups[5]['rows'])
     def test_adverse_policy_and_boundaries(self):
         from progress import divergent_decision,fit
         def f(direction,r2):return dict(progress_direction=direction,time_r2=r2)

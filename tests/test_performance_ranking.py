@@ -35,14 +35,18 @@ class PerformanceRanking(unittest.TestCase):
         edges += [dict(source=f'b{i:02}', target='b11', interaction='synergy', weight=i+1)
                   for i in range(6)]
         groups = {g['id']: {r[1] for r in g['rows']} for g in highlight_groups(nodes, edges)}
-        self.assertEqual(groups['autonomous_collaborators'], {'f06', 'f07', 'f08', 'f09'})
-        self.assertEqual(groups['contextual_collaborators'], {f'f{i:02}' for i in range(6)})
-        self.assertEqual(groups['resilient_neglected'], {'b06', 'b07', 'b08', 'b09'})
-        self.assertEqual(groups['propagating_neglected'], {f'b{i:02}' for i in range(6)})
+        self.assertEqual(groups['contributors'], {'f06', 'f07', 'f08', 'f09'})
+        # Receivers that pass no synergy forward are isolated beneficiaries, not dependent contributors.
+        self.assertEqual(groups['dependent_contributors'], set())
+        self.assertEqual(groups['isolated_beneficiaries'], {f'f{i:02}' for i in range(6)})
+        self.assertEqual(groups['exposed'], {'b06', 'b07', 'b08', 'b09'})
+        # No trade-off reaches the deteriorating nodes and b11 passes nothing on.
+        self.assertEqual(groups['transmission_bridges'], set())
+        self.assertEqual(groups['deterioration_relays'], set())
         # Times are ranked against everyone in the direction, not only top Colab.
         nodes[-1]['years_to_zero'] = 1000
         result = {g['id']: {r[1] for r in g['rows']} for g in highlight_groups(nodes, edges)}
-        self.assertNotIn('b09', result['resilient_neglected'])
+        self.assertNotIn('b09', result['exposed'])
         self.assertEqual(nodes[0]['tradeoff_received_from_backward'], 1)
 
     def test_exact_ties_have_reproducible_ten_entry_cutoff(self):
