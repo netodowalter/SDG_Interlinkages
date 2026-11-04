@@ -4,11 +4,11 @@ Walter Antonio Desiderá Neto · Draft, November 2026
 
 ## Abstract
 
-Synergies and trade-offs among Sustainable Development Goal (SDG) targets are usually inferred from the sign of associations between normatively oriented indicators. This article argues that such networks cannot be interpreted, nor their links correctly classified, without the direction of observed performance. Two indicators that deteriorate together are positively associated, yet their reinforcement is not a contribution to the 2030 Agenda. The argument originates in a self-correction: an application to Brazil's 2024 Voluntary National Review produced categories of "transversal collaboration" and "transversal neglect" that, once progress was examined, proved conceptually inconsistent (Desiderá Neto et al., 2025).
+Synergies and trade-offs among Sustainable Development Goal (SDG) targets are usually inferred from the sign of associations between normatively oriented indicators. This article argues that such networks cannot be interpreted, nor their links correctly classified, without the direction of observed performance. Two indicators that deteriorate together are positively associated, yet their reinforcement is not a contribution to the 2030 Agenda. The argument builds on an application to Brazil's 2024 Voluntary National Review, which used the approaches then available, the IGES tool and the JRC compilation, and, on examining target progress, raised the point that neither considers the direction of performance when classifying interlinkages (Desiderá Neto et al., 2025).
 
 We propose a framework in which performance direction enters link classification, node metrics and role selection. Once links are classified this way, synergies connect targets moving in the same direction, and trade-offs become the only links crossing between an improving and a deteriorating subsystem. The main contribution of network analysis then lies at this interface. It can identify transmission bridges, deteriorating targets that receive trade-offs from improving targets and pass deterioration on through synergies, and isolated beneficiaries, improving targets that gain through trade-offs from deteriorating targets while passing forward less synergy than they receive. Neither role is visible to centrality measures or to target-by-target monitoring.
 
-The framework is implemented in an open repository with two procedures: literature-based IGES/JRC relationships with United Nations indicators, and annual SDG Index component scores with exploratory temporal orientation. A synthetic worked example shows how the earlier categories misclassify nodes and how the new roles correct them. An application to Brazil's SDG Index components identifies ten transmission bridges, with very different times to the lower boundary, and no isolated beneficiaries. The roles are hypotheses for causal investigation and policy adjustment, not estimated effects.
+The framework is implemented in an open repository with two procedures: literature-based IGES/JRC relationships with United Nations indicators, and annual SDG Index component scores with exploratory temporal orientation. A synthetic worked example shows how the reading of each target changes once performance direction enters the classification. An application to Brazil's SDG Index components identifies ten transmission bridges, with very different times to the lower boundary, and no isolated beneficiaries. The roles are hypotheses for causal investigation and policy adjustment, not estimated effects.
 
 **Keywords:** Sustainable Development Goals; synergies; trade-offs; policy coherence; network analysis; transmission; monitoring and evaluation.
 
@@ -23,11 +23,11 @@ This gap has two consequences, which structure the article.
 1. **Without performance direction, the network cannot be operationalised meaningfully, nor can its links be properly classified.** A positive association between two deteriorating targets is labelled a synergy, and a target that drags its neighbours backwards is ranked as a leading contributor. Rankings built on such links answer a question nobody asked.
 2. **With performance direction, network analysis gains a contribution of its own.** Classified links separate an improving subsystem from a deteriorating one and expose the trade-off arcs that connect them. Two roles at this interface matter most for policy: **transmission bridges**, which carry the cost of others' gains into the deteriorating subsystem and propagate it, and **isolated beneficiaries**, whose improvement is associated with others' deterioration and is not passed on.
 
-The argument builds on an earlier application to Brazil's 2024 Voluntary National Review (VNR), documented in Ipea's Technical Note Dinte 77 (Desiderá Neto et al., 2025). That note proposed two network categories and then showed, once target progress was examined, that they were inconsistent with their intended meaning. This article turns that diagnosis into a complete operational framework and shows where its added value lies.
+The argument builds on an application to Brazil's 2024 Voluntary National Review (VNR), documented in Ipea's Technical Note Dinte 77 (Desiderá Neto et al., 2025). The note applied the approaches recommended to countries at the time, the IGES tool and the JRC compilation, and proposed two network categories based on weighted degree. When target progress could be examined, it raised a point that neither framework addresses: the meaning of synergy and trade-off depends on whether the targets involved are improving or deteriorating. This article develops that finding into a complete operational framework and shows where its added value lies.
 
-Section 2 reconstructs the earlier exercise and the correction it made necessary. Section 3 positions the framework within the literature and examines the evidential basis of literature-derived networks. Section 4 sets out the analytical design. Section 5 defines the metrics and roles, with emphasis on the interface roles. Section 6 presents a worked illustration and an application to Brazil. Sections 7 and 8 discuss implications for investigation and policy, and limitations. Section 9 concludes.
+Section 2 reconstructs the VNR exercise and the finding that motivates this article. Section 3 positions the framework within the literature and examines the evidential basis of literature-derived networks. Section 4 sets out the analytical design. Section 5 defines the metrics and roles, with emphasis on the interface roles. Section 6 presents a worked illustration and an application to Brazil. Sections 7 and 8 discuss implications for investigation and policy, and limitations. Section 9 concludes.
 
-## 2 Origin of the problem: the Brazilian VNR exercise and its correction
+## 2 Starting point: the Brazilian VNR exercise and its finding
 
 ### 2.1 The original application
 
@@ -45,15 +45,15 @@ Targets with positive SL.Out were labelled *transversal collaboration* ("helping
 
 ### 2.2 What the examination of progress revealed
 
-When target-level progress data became available, the categories proved inconsistent with their intended meaning. The note reasoned through a hypothetical network in which 90% of targets were strongly synergistic with one another while one target held trade-offs with all of them. If the synergistic targets were regressing together while the isolated target advanced rapidly, the "transversal collaborators" would be dragging the system backwards. Their synergy would operate in the direction opposite to the one desired.
+When target-level progress data became available, the note examined what the categories could and could not show. The note reasoned through a hypothetical network in which 90% of targets were strongly synergistic with one another while one target held trade-offs with all of them. If the synergistic targets were regressing together while the isolated target advanced rapidly, the "transversal collaborators" would be dragging the system backwards. Their synergy would operate in the direction opposite to the one desired.
 
 The reverse also held. A target with high TL.In but improving performance could not be described as neglected. It was more plausibly pursued through individualised strategies, indifferent to the rest of the plan, such that deterioration elsewhere contributed to its own progress. The note read this as a possible sign of concentrated misallocation of scarce resources (Desiderá Neto et al., 2025).
 
-The note drew two conclusions. First, positive performance is not an intrinsic attribute of synergy: the data and the way links were classified were insufficient for inferring the roles the categories claimed. Second, performance has three dimensions that must be kept apart: **stage** (distance to the target), **direction** (approaching or moving away) and **pace** (speed of change). Its literature search found studies that consider the stage of achievement as a limit on a target's capacity to transmit synergies. It found none that examined how the *direction* of performance changes the meaning of synergy and trade-off.
+The note drew two conclusions. First, positive performance is not an intrinsic attribute of synergy: with links classified by the sign of association alone, as in the available methods, network positions cannot be read as contribution or neglect. Second, performance has three dimensions that must be kept apart: **stage** (distance to the target), **direction** (approaching or moving away) and **pace** (speed of change). Its literature search found studies that consider the stage of achievement as a limit on a target's capacity to transmit synergies. It found none that examined how the *direction* of performance changes the meaning of synergy and trade-off.
 
 ### 2.3 From diagnosis to framework
 
-The note identified the problem but did not solve it. The present framework takes the correction through every stage of the analysis. The changes are summarised below; Sections 4 and 5 justify each one.
+This was the note's central contribution. The IGES tool and the JRC compilation were the interlinkage approaches suggested to countries preparing VNRs, and neither incorporates the direction of target performance into the classification of interlinkages. By applying them in full, reporting openly what their metrics could and could not support, and identifying performance as the missing element, the note took the first step towards the framework presented here. The present framework carries that step through every stage of the analysis. The changes are summarised below; Sections 4 and 5 justify each one.
 
 | Element | NT Dinte 77 (2025) | Present framework |
 | --- | --- | --- |
@@ -67,7 +67,7 @@ The note identified the problem but did not solve it. The present framework take
 | Context | None | Semantic ambitiousness (IGES/JRC) or conditional time to boundary (SDG Index), reported for every role, not used as a filter |
 | Coverage bias | Link-share weighting factor | Same factor, IGES/JRC only, produced as a parallel weighted version with a rank comparison (Section 5.6) |
 
-The change in the exposure metric is the clearest consequence of the correction. TL.In *subtracted* incoming synergies on the assumption that any synergy is help. Neglect *adds* incoming synergies from deteriorating sources, because reinforcement from a deteriorating neighbour is a source of pressure, not support.
+The change in the exposure metric is the clearest consequence of incorporating performance. TL.In *subtracted* incoming synergies on the assumption that any synergy is help. Neglect *adds* incoming synergies from deteriorating sources, because reinforcement from a deteriorating neighbour is a source of pressure, not support.
 
 The link-share weighting factor is retained for the IGES/JRC procedure, where links come from literature inventories and coverage bias can arise. It is applied as a parallel version rather than a correction, so that positions that change markedly can be flagged (Section 5.6).
 
@@ -146,7 +146,7 @@ Let *m* be the smaller of the two trend R² values and |r| the absolute associat
 
 *Note:* Interpretations are hypotheses about relationships, not estimated causal effects. Arcs keep their literature-based or temporal evidential status.
 
-The last two rows describe opposite situations. In the third, the improving node is the source and the cost falls downstream. In the fourth, the improving node is the recipient, and its improvement may depend on deterioration upstream. This is the configuration the earlier note read as possible concentrated misallocation. Keeping the two rows distinct is what allows the interface roles of Section 5.
+The last two rows describe opposite situations. In the third, the improving node is the source and the cost falls downstream. In the fourth, the improving node is the recipient, and its improvement may depend on deterioration upstream. This is the configuration NT Dinte 77 identified as possible concentrated misallocation. Keeping the two rows distinct is what allows the interface roles of Section 5.
 
 ### 4.4 What the network adds beyond co-movement
 
@@ -167,7 +167,7 @@ The last item is where network analysis contributes something that target-by-tar
 
 With links classified by performance, each metric is read only within the performance group where its meaning is unambiguous. Let *w(i,j)* be the weight of the arc from *i* to *j*, and let *I* and *D* denote the improving and deteriorating subsystems.
 
-**Collaboration** keeps the form of the earlier SL.Out but is read only among improving nodes, where outgoing synergies reach other improving nodes and outgoing trade-offs reach deteriorating ones:
+**Collaboration** keeps the form of the SL.Out metric of NT Dinte 77 but is read only among improving nodes, where outgoing synergies reach other improving nodes and outgoing trade-offs reach deteriorating ones:
 
 ```latex
 \mathrm{Colab}(i) = \sum_{j:\,\text{synergy}} w(i,j) - \sum_{j:\,\text{trade-off}} w(i,j), \qquad i \in I
@@ -231,7 +231,7 @@ In the SDG Index procedure, the common scale allows a measure of **stage and pac
 T_{100} = \frac{\max(0,\,100 - S)}{\beta}, \;\; \beta > 0; \qquad T_{0} = \frac{\max(0,\,S)}{|\beta|}, \;\; \beta < 0
 ```
 
-Every selected node is reported with its T₁₀₀ or T₀. Used as filters, as in an earlier version of the implementation, these times selected near-achieved contributors and slowly deteriorating exposed targets, and pointed in the opposite direction to the ambitiousness criterion. Reported alongside every role, they rank urgency within it: a transmission bridge close to the lower boundary is more urgent than one deteriorating slowly. These are conditional extrapolations at the fitted pace, not forecasts. A long T₀ means slow deterioration relative to the remaining score, not demonstrated resilience to shocks.
+Every selected node is reported with its T₁₀₀ or T₀. Used as filters, these times would select near-achieved contributors and slowly deteriorating exposed targets, and would point in the opposite direction to the ambitiousness criterion. Reported alongside every role, they rank urgency within it: a transmission bridge close to the lower boundary is more urgent than one deteriorating slowly. These are conditional extrapolations at the fitted pace, not forecasts. A long T₀ means slow deterioration relative to the remaining score, not demonstrated resilience to shocks.
 
 ### 5.5 The interface roles as the main contribution
 
@@ -265,11 +265,11 @@ The weighted version is a check, not a substitute. A comparison sheet reports or
 
 ### 6.1 Synthetic network
 
-A synthetic network shows how the earlier categories misclassify nodes and how the new roles correct them. It has eight hypothetical targets, A–H: A, B, C and D are deteriorating; E, F, G and H are improving. All 14 retained links are already consistent with the trajectories, as after reclassification. Because the network is small, rankings use the top 3 instead of the top 10; the roles are identical with the top 10.
+A synthetic network shows how the reading of each node changes once performance direction enters the classification, compared with degree-based categories such as those of NT Dinte 77. It has eight hypothetical targets, A–H: A, B, C and D are deteriorating; E, F, G and H are improving. All 14 retained links are already consistent with the trajectories, as after reclassification. Because the network is small, rankings use the top 3 instead of the top 10; the roles are identical with the top 10.
 
 The links form a sequence across the interface. Improving targets F and E send trade-offs to A (0.4) and B (0.6). A and B pass deterioration on through synergies: A to B (0.8) and C (0.5), B to C (0.7) and D (0.4), C to D (0.6). Deteriorating targets C and D send trade-offs to improving G (0.6 and 0.7), and D to improving E (0.5). Within the improving subsystem, E sends synergies to F (0.8) and H (0.6), F to E (0.5); H sends a trade-off to D (0.3). G sends nothing.
 
-**Table 3.** Earlier and present metrics for the synthetic network
+**Table 3.** Degree-based and performance-based metrics for the synthetic network
 
 | Node | Direction | SL.Out (NT) | TL.In (NT) | Colab | R | C | φ | Neglect | T⁺ | B | Bridge | Role |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -284,11 +284,11 @@ The links form a sequence across the interface. Improving targets F and E send t
 
 *Note:* Bold marks the nodes the NT Dinte 77 categories would select: the top three positive SL.Out values (transversal collaboration) and the positive TL.In values (transversal neglect). Present metrics are shown only for the performance group in which they are read. Rankings use the top 3 positive values; precedence as in Section 5.3.
 
-**Misclassification under the earlier categories.** The two leading "transversal collaborators", A and B, are deteriorating. Their large outgoing synergies spread deterioration, which is the case the hypothetical example in NT Dinte 77 anticipated. The leading "neglected" target, G, is improving: its high TL.In reflects gains associated with losses in C and D, not neglect. A is also selected as "neglected", although its main role is to pass deterioration on.
+**Reading without performance direction.** The two leading "transversal collaborators", A and B, are deteriorating. Their large outgoing synergies spread deterioration, which is precisely the case NT Dinte 77 anticipated in its hypothetical example. The leading "neglected" target, G, is improving: its high TL.In reflects gains associated with losses in C and D, not neglect. A is also selected as "neglected", although its main role is to pass deterioration on.
 
 **What the new roles show.** E remains a contributor, but a dependent one: it spreads synergies to F and H while receiving a trade-off from deteriorating D (R = 0.50). G is an isolated beneficiary: it receives 1.30 of trade-off weight from C and D and passes nothing forward (φ = 0), whereas E passes forward 2.8 times what it receives. F receives no role. Its Colab is positive (0.10), but it is among the top senders of costs to deteriorating targets: its trade-off to A is the entry point of a bridge. A rule based on Colab alone would have called it a contributor.
 
-**Why the interface measures matter.** Under the earlier group d rule (top Neglect ∩ top B), B and C would be selected and A would not, because A's Neglect (0.40) is the lowest among deteriorating nodes. Yet A is the entry point for F's trade-off and the largest propagator of deterioration (B = 1.30). Bridge(k) identifies A and B as the two points where the cost of gains in F and E enters the deteriorating subsystem. C, by contrast, receives deterioration only from other deteriorating nodes and passes it on: it is a relay, not a bridge.
+**Why the interface measures matter.** Under a rule combining top Neglect with top senders (top Neglect ∩ top B), B and C would be selected and A would not, because A's Neglect (0.40) is the lowest among deteriorating nodes. Yet A is the entry point for F's trade-off and the largest propagator of deterioration (B = 1.30). Bridge(k) identifies A and B as the two points where the cost of gains in F and E enters the deteriorating subsystem. C, by contrast, receives deterioration only from other deteriorating nodes and passes it on: it is a relay, not a bridge.
 
 The illustration shows the full sequence the framework is designed to reveal. Gains in F and E are associated with losses in A and B; these spread to C and D; and losses in C and D are associated with gains in G, which keeps them. Each link is a hypothesis. The sequence specifies which links an investigation should examine first.
 
@@ -358,7 +358,7 @@ Roles that persist across these variations are stronger candidates for investiga
 
 ## 9 Conclusion
 
-SDG interlinkage networks cannot be operationalised meaningfully without the direction of observed performance. Without it, reinforcing deterioration is counted as synergy, deteriorating targets rank as leading collaborators, and improving targets that gain from losses elsewhere appear neglected. The Brazilian VNR exercise produced exactly these misreadings, and NT Dinte 77 recorded them. The framework presented here carries the correction through link classification, metrics and role selection, while keeping the established vocabulary of synergy and trade-off.
+SDG interlinkage networks cannot be operationalised meaningfully without the direction of observed performance. Without it, reinforcing deterioration is counted as synergy, deteriorating targets rank as leading collaborators, and improving targets that gain from losses elsewhere appear neglected. NT Dinte 77 raised this point when applying the IGES and JRC approaches to Brazil's VNR, since neither considers performance in classifying interlinkages. The framework presented here carries performance direction through link classification, metrics and role selection, while keeping the established vocabulary of synergy and trade-off.
 
 Once performance enters classification, the network splits into an improving and a deteriorating subsystem connected only by trade-offs. The specific contribution of network analysis lies at that interface. Transmission bridges show where the cost of gains elsewhere enters the deteriorating subsystem and spreads. Isolated beneficiaries show where improvement is associated with others' losses and is not passed on. Neither can be seen by monitoring targets one by one or by ranking centrality. In Brazil's SDG Index network, ten transmission bridges and no isolated beneficiaries emerge: gains associated with losses elsewhere are passed on, and deterioration is consistently connected to improvement elsewhere. Conditional times then separate bridges deteriorating within a decade from those that would take centuries to reach the lower boundary.
 
