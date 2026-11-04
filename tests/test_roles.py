@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'sdg/engine/modules'))
-from roles import interface_measures
+from roles import interface_measures, link_shares, ponderate
 from performance_ranking import highlight_groups as sdg_highlights
 from progress import highlight_groups as iges_highlights
 
@@ -94,6 +94,32 @@ class InterfaceRoles(unittest.TestCase):
             nodes, [dict(source=a, target=b, interaction=k, weight=w) for a, b, k, w in edges])}
         self.assertEqual(groups['isolated_beneficiaries'], {'P'})
         self.assertEqual(groups['dependent_contributors'], {'Q'})
+
+    def test_link_shares_and_ponderation(self):
+        shares = link_shares(DIRECTION, EDGES)
+        self.assertEqual((shares['B']['links_out'], shares['B']['links_in']), (2, 2))
+        self.assertAlmostEqual(shares['B']['share_out'], 2 / 14)
+        self.assertAlmostEqual(sum(s['share_in'] for s in shares.values()), 1)
+        m = interface_measures(DIRECTION, EDGES)
+        b = ponderate(dict(m['B'], colab=1.1, neglect=1.4), shares['B'])
+        relative = 2 / 14 * 8  # share x number of nodes; the mean node has 1
+        self.assertAlmostEqual(shares['B']['relative_out'], relative)
+        self.assertAlmostEqual(b['colab'], 1.1 / relative)
+        self.assertAlmostEqual(b['neglect'], 1.4 / relative)
+        self.assertAlmostEqual(b['bridge_flow'], m['B']['bridge_flow'] / relative ** 2)
+        g = ponderate(dict(m['G'], colab=0.0, neglect=0.0), shares['G'])
+        self.assertEqual(g['forward_ratio'], m['G']['forward_ratio'])
+        self.assertEqual(g['forward_synergy_sent'], 0)  # no sent links: share zero, measure zero
+
+    def test_weighted_iges_roles_run(self):
+        colab, neglect = colab_neglect()
+        names = {k: f'{i}.1' for i, k in enumerate(DIRECTION, 1)}
+        metrics = {names[k]: dict(Colab=colab[k], Neglect=neglect[k]) for k in DIRECTION}
+        details = {names[k]: [names[k], 'n', 'i', 'd', .5, d, 'b'] for k, d in DIRECTION.items()}
+        edges = [dict(TargetA=names[a], TargetB=names[b], interaction=k, weight=w) for a, b, k, w in EDGES]
+        groups = {g['id']: {r[1] for r in g['rows']} for g in iges_highlights(metrics, details, edges, pond=True)}
+        # Small network: every positive value is in the top ten, so weighting leaves membership unchanged.
+        self.assertEqual(groups, {k: {names[i] for i in v} for k, v in EXPECTED.items()})
 
     def test_stable_sources_do_not_create_bridges(self):
         direction = dict(S='stable', K='backward', L='backward')

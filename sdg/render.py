@@ -189,7 +189,7 @@ def legend(draw, dataset):
     draw.text((70,2110),'Link thickness: |r|. Links from deterioration use 35% opacity. Component spacing is optimized for readability.',font=font(23),fill='#465b63')
 
 
-def render_networks(folder, prefix, title, graph, groups, icons):
+def render_networks(folder, prefix, title, graph, groups, icons, suffix=''):
     nodes = {n['id']: n for n in graph['nodes']}
     categories = {row[1]: i for i, g in enumerate(groups) for row in g['rows']}
     for mode, label in [('full', 'Improvement and deterioration'), ('synergy', 'Synergies'), ('trade-off', 'Trade-offs'), ('two_step_interface', 'Two-step interface')]:
@@ -258,4 +258,4 @@ def render_networks(folder, prefix, title, graph, groups, icons):
         legend(draw,graph.get('dataset','IGES_JRC'))
         if mode == 'two_step_interface':
             draw.text((70,2160), NOTE, font=font(20), fill='#465b63')
-        image.save(folder / f"{prefix}_{mode}.png")
+        image.save(folder / f"{prefix}_{mode}{suffix}.png")

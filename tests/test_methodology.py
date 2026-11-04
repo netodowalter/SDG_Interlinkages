@@ -160,6 +160,18 @@ class Methodology(unittest.TestCase):
                 inter=load_workbook(next(output.glob('*_interlinkages.xlsx')),read_only=True,data_only=True)
                 try:self.assertEqual(list(wb['Adverse cases'].values),list(inter['Adverse cases'].values))
                 finally:inter.close()
+                # The link-share weighted version is always produced, with its own workbook.
+                pond=load_workbook(next(output.glob('*_interlinkages_pond.xlsx')),read_only=True,data_only=True)
+                try:
+                    self.assertTrue({'Weighting_method','Weighting','Highlights','Interface_measures','TopCollaborators'}<=set(pond.sheetnames))
+                    weighting=list(ranking.rows(pond['Weighting']))
+                    self.assertTrue(weighting)
+                    for r in weighting:
+                        if r['share_out']:self.assertAlmostEqual(r['Colab_pond'],r['Colab']/(r['share_out']*len(weighting)))
+                        if r['share_in']:self.assertAlmostEqual(r['Neglect_pond'],r['Neglect']/(r['share_in']*len(weighting)))
+                    self.assertAlmostEqual(sum(r['share_out'] for r in weighting),1)
+                    self.assertAlmostEqual(sum(r['share_in'] for r in weighting),1)
+                finally:pond.close()
                 trends={r['TargetCode']:r for r in data('Local_trends')}
                 self.assertEqual(trends['1.1']['progress_direction'],'backward')
                 metric_rows={r['TargetCode']:r for r in data('cytoscape_nodes')}

@@ -109,12 +109,18 @@ def analyze_workbook(path,norm):
     finally:out.close()
     return trends
 
-def interface_nodes(metrics,details,edges=()):
-    'Colab, Neglect and interface measures per connected target (see roles.py).'
-    from roles import interface_measures
+def interface_nodes(metrics,details,edges=(),pond=False):
+    '''Colab, Neglect and interface measures per connected target (see roles.py).
+    pond=True divides each measure by the target's share of sent or received links (NT Dinte 77, eq. 1).'''
+    from roles import interface_measures,link_shares,ponderate
     direction={t:details[t][5] for t in metrics}
-    measures=interface_measures(direction,[(str(e['TargetA']),str(e['TargetB']),e['interaction'],e['weight']) for e in edges])
-    return {t:dict(direction=direction[t],colab=metrics[t]['Colab'],neglect=metrics[t]['Neglect'],**measures[t]) for t in metrics}
+    arcs=[(str(e['TargetA']),str(e['TargetB']),e['interaction'],e['weight']) for e in edges]
+    measures=interface_measures(direction,arcs)
+    nodes={t:dict(direction=direction[t],colab=metrics[t]['Colab'],neglect=metrics[t]['Neglect'],**measures[t]) for t in metrics}
+    if pond:
+        shares=link_shares(metrics,arcs)
+        nodes={t:ponderate(n,shares[t]) for t,n in nodes.items()}
+    return nodes
 
 def _target_order(t):
     goal,suffix=t.split('.',1)
@@ -128,10 +134,10 @@ def top_ten(nodes,field,direction):
     cutoff=nodes[ordered[min(9,len(ordered)-1)]][field]
     return {t for t in ordered if nodes[t][field]>=cutoff}
 
-def highlight_groups(metrics,details,edges=()):
+def highlight_groups(metrics,details,edges=(),pond=False):
     from ranking import ranked_rows
     from roles import ROLES,select_roles
-    nodes=interface_nodes(metrics,details,edges)
+    nodes=interface_nodes(metrics,details,edges,pond)
     # Semantic ambitiousness characterises each selected target in its row; it does not filter roles.
     selected=select_roles(lambda field,direction:top_ten(nodes,field,direction),{t:n['forward_ratio'] for t,n in nodes.items()})
     scored={t:dict(metrics[t],**{label:nodes[t][field] for _,_,field,label,_ in ROLES}) for t in metrics}
@@ -141,16 +147,40 @@ def highlight_groups(metrics,details,edges=()):
         groups.append(dict(id=slug,title=title,metric=label,rows=rows,base='top ten by direction before filters; ties at tenth place included'))
     return groups
 
-def interface_rows(metrics,details,edges=()):
+def interface_rows(metrics,details,edges=(),pond=False):
     'One row per connected target: interface measures, ranks and assigned role.'
-    from roles import ROLES
-    nodes=interface_nodes(metrics,details,edges)
-    role={r[1]:g['title'] for g in highlight_groups(metrics,details,edges) for r in g['rows']}
+    nodes=interface_nodes(metrics,details,edges,pond)
+    role={r[1]:g['title'] for g in highlight_groups(metrics,details,edges,pond) for r in g['rows']}
     fields=('colab','neglect','tradeoff_received_from_backward','forward_synergy_sent','forward_ratio','tradeoff_sent_to_backward',
             'tradeoff_received_from_forward','synergy_received_from_backward','synergy_sent_to_backward','backward_synergy_sent','bridge_flow','relay_flow')
     rows=[]
     for t in sorted(nodes,key=_target_order):
-        n=nodes[t];rows.append(dict(TargetCode=t,progress_direction=n['direction'],role=role.get(t,''),**{f:n[f] for f in fields}))
+        n=nodes[t];rows.append(dict(TargetCode=t,progress_direction=n['direction'],role=role.get(t,''),**{f:n[f] for f in fields},
+            **({k:n[k] for k in ('links_out','links_in','share_out','share_in','relative_out','relative_in')} if pond else {})))
+    return rows
+
+def weighting_rows(metrics,details,edges=()):
+    '''Compare original and link-share weighted rankings (NT Dinte 77). A large shift suggests that a
+    position may reflect how many links the literature records for a target rather than their strength.'''
+    from roles import link_shares
+    weighted=interface_nodes(metrics,details,edges,True)
+    def ranks(values):
+        ordered=sorted(values,key=lambda t:(-values[t],_target_order(t)));out={};previous=None
+        for position,t in enumerate(ordered,1):
+            if previous is None or values[t]!=previous[1]:previous=(position,values[t])
+            out[t]=previous[0]
+        return out
+    cr,nr=ranks({t:metrics[t]['Colab'] for t in metrics}),ranks({t:metrics[t]['Neglect'] for t in metrics})
+    cw,nw=ranks({t:weighted[t]['colab'] for t in metrics}),ranks({t:weighted[t]['neglect'] for t in metrics})
+    rows=[]
+    for t in sorted(metrics,key=_target_order):
+        w=weighted[t]
+        rows.append(dict(TargetCode=t,progress_direction=details[t][5],links_out=w['links_out'],links_in=w['links_in'],
+            share_out=w['share_out'],share_in=w['share_in'],relative_out=w['relative_out'],relative_in=w['relative_in'],Colab=metrics[t]['Colab'],Colab_pond=w['colab'],
+            Colab_rank=cr[t],Colab_pond_rank=cw[t],Colab_rank_shift=cr[t]-cw[t],
+            Neglect=metrics[t]['Neglect'],Neglect_pond=w['neglect'],Neglect_rank=nr[t],Neglect_pond_rank=nw[t],
+            Neglect_rank_shift=nr[t]-nw[t],
+            top10_Colab_and_top10_Neglect_pond=cr[t]<=10 and nw[t]<=10))
     return rows
 
 def workbook_edges(path):

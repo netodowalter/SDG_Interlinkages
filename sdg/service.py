@@ -116,8 +116,16 @@ def iges_run(folder, code, title, csv_path, work, modules):
                              neglect=v['Neglect']) for t, v in metrics.items()],
                  edges=[dict(source=str(e['TargetA']), target=str(e['TargetB']),
                              weight=abs(float(e['weight'])), interaction=e['interaction']) for e in edges])
-    render_networks(folder, full.stem.removesuffix('_full'), title, graph,
-                    highlight_groups(metrics, details, edges), DATA / 'icons')
+    prefix = full.stem.removesuffix('_full')
+    render_networks(folder, prefix, title, graph, highlight_groups(metrics, details, edges), DATA / 'icons')
+    # Link-share weighted version (NT Dinte 77): same network, weighted measures, sizes and roles.
+    from progress import interface_nodes
+    weighted = interface_nodes(metrics, details, edges, pond=True)
+    graph_pond = dict(graph, nodes=[dict(n, colab=weighted[n['id']]['colab'], neglect=weighted[n['id']]['neglect'],
+                                         interface_scale=weighted[n['id']]['relative_out'] * weighted[n['id']]['relative_in'])
+                                    for n in graph['nodes']])
+    render_networks(folder, prefix, title + ' · weighted by link share', graph_pond,
+                    highlight_groups(metrics, details, edges, pond=True), DATA / 'icons', suffix='_pond')
 
 
 def run_analysis(version, scope, code, *, method=None, csv_path=None, output_dir=None):

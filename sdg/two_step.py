@@ -18,7 +18,9 @@ def two_step_scores(nodes, edges):
             pressure[b] += w
         elif e['interaction'] == 'synergy' and da == db:
             sending[a] += w
-    return {i: pressure[i]*sending[i] for i in by_id}
+    # A weighted (_pond) graph divides the two-step flow by the node's sent x received link shares.
+    scale = {i: n.get('interface_scale', 1) or 0 for i, n in by_id.items()}
+    return {i: pressure[i]*sending[i]/scale[i] if scale[i] > 0 else 0.0 for i in by_id}
 
 
 def interface_positions(nodes, edges, sizes, baseline, bounds):

@@ -198,6 +198,8 @@ def run_pipeline(modules, folder, region, csv_path, output_parent):
     ready.mkdir()
     from progress import read_cases
     ranking.save_rankings(ready/(name+'_interlinkages.xlsx'), metrics, details,read_cases(final),__import__('progress').workbook_edges(final))
+    # Link-share weighted version (NT Dinte 77): own workbook, always produced for IGES/JRC.
+    ranking.save_rankings(ready/(name+'_interlinkages_pond.xlsx'), metrics, details,read_cases(final),__import__('progress').workbook_edges(final),pond=True)
     # Preserve the audit inside the final workbook.
     from openpyxl import load_workbook
     workbook = load_workbook(final)

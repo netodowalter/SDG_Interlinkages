@@ -100,6 +100,64 @@ def interface_measures(direction, edges):
     return values
 
 
+def link_shares(ids, edges):
+    """NT Dinte 77 link-share factor, P_i = L_i / sum_j L_j, for sent and received arcs.
+
+    Counts every arc of the final network between listed nodes, whatever its type.
+    Returns {id: dict(links_out, links_in, share_out, share_in, relative_out, relative_in)}.
+    ``relative_*`` = share x number of nodes, so a node with the mean number of links has 1.
+    Dividing by the relative share orders nodes exactly as dividing by the share, but keeps
+    weighted values on the scale of the unweighted ones.
+    """
+    ids = set(ids)
+    out, inc = dict.fromkeys(ids, 0), dict.fromkeys(ids, 0)
+    total = 0
+    for source, target, *_ in edges:
+        if source in ids and target in ids and source != target:
+            out[source] += 1
+            inc[target] += 1
+            total += 1
+    n = len(ids)
+    result = {}
+    for i in ids:
+        share_out = out[i] / total if total else 0.0
+        share_in = inc[i] / total if total else 0.0
+        result[i] = dict(links_out=out[i], links_in=inc[i], share_out=share_out, share_in=share_in,
+                         relative_out=share_out * n, relative_in=share_in * n)
+    return result
+
+
+# Which link-count share divides each measure in the weighted (_pond) version.
+SENT = ('colab', 'tradeoff_sent_to_backward', 'forward_synergy_sent', 'synergy_sent_to_backward',
+        'backward_synergy_sent')
+RECEIVED = ('neglect', 'tradeoff_received_from_backward', 'tradeoff_received_from_forward',
+            'synergy_received_from_backward')
+TWO_STEP = ('bridge_flow', 'relay_flow')
+
+
+def ponderate(node, shares):
+    """Divide each measure by the node's relative share of sent or received links (NT Dinte 77, eq. 1).
+
+    The relative share (share x number of nodes) gives the same ordering as the share itself
+    and keeps values comparable with the unweighted version. Two-step flows combine a received and a sent component and are divided by both
+    shares. The forward ratio phi is a ratio of flows at the same node and is left
+    unchanged. A measure whose share is zero is zero.
+    """
+    def divide(value, share):
+        return value / share if share > 0 and value is not None else 0.0
+    result = dict(node, **shares)
+    for field in SENT:
+        if field in node:
+            result[field] = divide(node[field], shares['relative_out'])
+    for field in RECEIVED:
+        if field in node:
+            result[field] = divide(node[field], shares['relative_in'])
+    for field in TWO_STEP:
+        if field in node:
+            result[field] = divide(node[field], shares['relative_out'] * shares['relative_in'])
+    return result
+
+
 def select_roles(top, ratio):
     """Return {role id: set of node ids}.
 

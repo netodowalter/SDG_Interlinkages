@@ -24,6 +24,7 @@ def tab(version, title):
             choices = areas(version, 'region')
             area = gr.Dropdown(choices, value='1' if version == 'IGES_JRC' else 'World', label='Area')
         if version == 'IGES_JRC':
+            gr.Markdown('Each IGES/JRC run also produces a version weighted by link share (files ending in _pond, rows marked “weighted”). It divides each measure by the target’s share of sent or received links, to flag positions that may reflect how often the literature records a target rather than the strength of its links. Compare both versions; large shifts are alerts, not corrections.')
             gr.Markdown('OECD and World Bank income groups are listed by their UNSD API codes. Verification returned no aggregate observations for these codes; live collection can be retried. Coverage and membership can differ from SDGIndex. BRICS groups have no UNSD catalog code.')
             option = gr.File(label='UNSD CSV (optional)', file_types=['.csv'], type='filepath')
         else:

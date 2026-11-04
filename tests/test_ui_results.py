@@ -46,6 +46,16 @@ class ResultTables(unittest.TestCase):
             self.assertTrue(all(len(r[:6] + r[7:]) == len(headers) for r in ranked))
             self.assertEqual(ranked[0][6], '11.1.1')
 
+    def test_iges_weighted_version_is_listed_separately(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp)
+            self.workbook(folder, 'IGES_JRC')
+            (folder / 'test_interlinkages.xlsx').rename(folder / 'test_interlinkages_pond.xlsx')
+            self.workbook(folder, 'IGES_JRC')
+            ranked, groups, *_ = results(folder, 'IGES_JRC')
+            self.assertEqual({r[0] for r in ranked}, {'pearson', 'pearson · weighted'})
+            self.assertEqual(sum(r[0] == 'pearson · weighted' for r in groups), 2)
+
     def test_sdgindex_years_remain_separate_and_three_decimal_places(self):
         with tempfile.TemporaryDirectory() as temp:
             folder = Path(temp)

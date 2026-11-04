@@ -181,15 +181,30 @@ def ranked_rows(metrics, details, metric):
         yield [rank, target, metrics[target][metric]] + details[target][1:]
 
 
-def save_rankings(output, metrics, details, adverse_cases=(), edges=()):
+WEIGHTING_NOTE = [
+    ('Version', 'Weighted by link share (_pond). Same network, edges and classifications as the unweighted workbook.'),
+    ('Factor', 'P_i = L_i / sum_j L_j, computed separately for sent (P_out) and received (P_in) arcs of the final network (Desiderá Neto et al., 2025, NT Dinte 77, eq. 1).'),
+    ('Weighted measures', 'Sent measures (Colab, synergy and trade-off sent) are divided by the relative sent share; received measures (Neglect, trade-off and synergy received) by the relative received share; bridge and relay flows by both. The relative share is P_i × number of targets, so a target with the mean number of links keeps its unweighted value; rankings are identical to dividing by P_i. The forward ratio phi is unchanged. Roles are reselected from the weighted measures.'),
+    ('Purpose', 'Literature-derived networks may connect well-studied targets more often. Weighting reduces the advantage of many links over strong links. It is not a correction: compare positions with the unweighted workbook (Weighting sheet) and treat large shifts as alerts.'),
+    ('Scope', 'IGES/JRC only. SDGIndex links are estimated from data for every eligible pair, so literature coverage does not determine them.'),
+]
+
+
+def save_rankings(output, metrics, details, adverse_cases=(), edges=(), pond=False):
+    'pond=True writes the link-share weighted version (rankings, roles and interface measures), plus a Weighting sheet.'
     workbook = Workbook()
     workbook.remove(workbook.active)
     temporary = None
+    ranked_metrics = metrics
+    if pond:
+        from progress import interface_nodes
+        weighted = interface_nodes(metrics, details, edges, True)
+        ranked_metrics = {t: dict(Colab=weighted[t]['colab'], Neglect=weighted[t]['neglect']) for t in metrics}
     try:
         for name, metric in [('TopCollaborators', 'Colab'), ('TopNeglected', 'Neglect')]:
             sheet = workbook.create_sheet(name)
             sheet.append(COLUMNS[:2] + [metric] + COLUMNS[2:])
-            for row in ranked_rows(metrics, details, metric):
+            for row in ranked_rows(ranked_metrics, details, metric):
                 sheet.append(row)
             sheet.freeze_panes = 'C2'
             sheet.auto_filter.ref = sheet.dimensions
@@ -225,19 +240,34 @@ def save_rankings(output, metrics, details, adverse_cases=(), edges=()):
             ds.freeze_panes='B2';ds.auto_filter.ref=ds.dimensions
         highlights=workbook.create_sheet('Highlights')
         highlights.append(['Group','Metric']+COLUMNS[:2]+['Score']+COLUMNS[2:])
-        for group in highlight_groups(metrics,details,edges):
+        for group in highlight_groups(metrics,details,edges,pond):
             if not group['rows']:highlights.append([group['title'],group['metric'],'No eligible target'])
             for row in group['rows']:highlights.append([group['title'],group['metric']]+row)
         highlights.freeze_panes='E2';highlights.auto_filter.ref=highlights.dimensions
         for i in range(1,highlights.max_column+1):highlights.column_dimensions[get_column_letter(i)].width=25
         from progress import interface_rows
         interface=workbook.create_sheet('Interface_measures')
-        measures=interface_rows(metrics,details,edges)
+        measures=interface_rows(metrics,details,edges,pond)
         if measures:
             headers=list(measures[0]);interface.append(headers)
             for item in measures:interface.append([item.get(k) for k in headers])
             interface.freeze_panes='B2';interface.auto_filter.ref=interface.dimensions
             for i in range(1,interface.max_column+1):interface.column_dimensions[get_column_letter(i)].width=22
+        if pond:
+            from progress import weighting_rows
+            comparison=workbook.create_sheet('Weighting')
+            rows=weighting_rows(metrics,details,edges)
+            if rows:
+                headers=list(rows[0]);comparison.append(headers)
+                for item in rows:comparison.append([item.get(k) for k in headers])
+                comparison.freeze_panes='B2';comparison.auto_filter.ref=comparison.dimensions
+                for i in range(1,comparison.max_column+1):comparison.column_dimensions[get_column_letter(i)].width=18
+            note=workbook.create_sheet('Weighting_method',0)
+            note.append(['Field','Definition'])
+            for row in WEIGHTING_NOTE:note.append(list(row))
+            note.column_dimensions['A'].width=20;note.column_dimensions['B'].width=120
+            for row in note.iter_rows(min_row=2):
+                for cell in row:cell.alignment=Alignment(vertical='top',wrap_text=True)
         output.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(prefix='.' + output.stem + '_', suffix='.xlsx',
                                          dir=output.parent, delete=False) as handle:

@@ -38,9 +38,10 @@ def results(folder, version):
     for path in files:
         if path.suffix == '.png':
             images.append((str(path), path.stem))
-        if not path.name.endswith('_interlinkages.xlsx'):
+        pond = path.name.endswith('_interlinkages_pond.xlsx')
+        if not (pond or path.name.endswith('_interlinkages.xlsx')):
             continue
-        method = path.parent.name if path.parent != folder else 'pearson'
+        method = (path.parent.name if path.parent != folder else 'pearson') + (' · weighted' if pond else '')
         book = load_workbook(path, read_only=True, data_only=True)
         try:
             for sheet, metric in [('TopCollaborators', 'Colab'), ('TopNeglected', 'Neglect')]:

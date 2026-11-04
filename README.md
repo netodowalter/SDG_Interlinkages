@@ -2,7 +2,7 @@
 
 Explore directed networks of collaboration and neglect among Sustainable Development Goal (SDG) targets using IGES/JRC relationships and UNSD observations, or annual SDGIndex indicator scores.
 
-The Gradio application and command-line interface use the same Python analysis service. Local SDGIndex inputs cover 169 countries and 14 regions or aggregates. Each execution exports workbooks, node and edge tables, and four network images.
+The Gradio application and command-line interface use the same Python analysis service. Local SDGIndex inputs cover 169 countries and 14 regions or aggregates. Each execution exports workbooks, node and edge tables, and four network images; IGES/JRC runs add a link-share weighted workbook and four weighted images (`_pond`).
 
 ## Windows application
 
@@ -72,6 +72,9 @@ The numeric/ISO code remains the selection identifier and is recorded in the und
 | `*_full.png` | Complete network |
 | `*_synergy.png` | Synergy network |
 | `*_trade-off.png` | Trade-off network |
+| `*_two_step_interface.png` | Two-step interface view (experimental layout) |
+| `*_interlinkages_pond.xlsx` | IGES/JRC only: link-share weighted rankings, roles, interface measures and the `Weighting` comparison sheet |
+| `*_full_pond.png`, `*_synergy_pond.png`, `*_trade-off_pond.png`, `*_two_step_interface_pond.png` | IGES/JRC only: the four views drawn from the weighted measures |
 
 The figure layout uses forces and a fixed random seed. Labels show target numbers. Distinct SDGIndex indicators mapped to the same target retain distinct composite node IDs in the tables. Icon borders mark the six roles: I-1 white, I-2 yellow, I-3 blue, D-1 gray, D-2 red, D-3 orange. Synergies from backward-moving sources use translucent burgundy; trade-offs from those sources use translucent gray.
 
@@ -130,6 +133,14 @@ Links involving stable or undetermined indicators do not enter these measures.
 Context characterises roles but does not filter them. Every selected indicator is exported with its years to target (improving) or years to zero (deteriorating) in SDGIndex, or its semantic ambitiousness in IGES/JRC, so priorities can be set within each role (for example, a transmission bridge close to zero is more urgent than one deteriorating slowly). The previous filters selected near-achieved contributors and slowly deteriorating exposed indicators, and pointed in opposite directions in the two procedures. The isolation threshold φ < 1 is absolute because in dense networks almost every receiver also sends substantial synergy, so a relative cut-off would label strong spreaders as isolated.
 
 “Dependent”, “bridge” and “relay” are exploratory network labels, not evidence of causal mechanisms. Role membership, all rank positions and every interface measure are exported (`Interface_measures`, `Highlights`). Icon borders mark the same six roles in all four PNGs.
+
+### Link-share weighted version (IGES/JRC)
+
+Every IGES/JRC run also writes a weighted version, with its own workbook and figures ending in `_pond`. It applies the factor of NT Dinte 77 (eq. 1): P_i = L_i / Σ L_j, the target's share of the arcs it sends (P_out) or receives (P_in) in the final network. Sent measures (Colab, synergy and trade-off sent) are divided by the sent share, received measures (Neglect, trade-off and synergy received) by the received share, and bridge and relay flows by both; φ is unchanged. Roles, node sizes and Two-step positions are recomputed from the weighted measures.
+
+Shares are reported relative to the mean (P_i × number of targets), so a target with the mean number of links keeps its unweighted value; rankings are identical to dividing by P_i itself.
+
+Literature-derived networks can connect well-studied targets more often. The weighted version reduces the advantage of many links over strong ones. It is a check, not a correction: the `Weighting` sheet compares original and weighted ranks for Colab and Neglect, and flags targets in the top 10 of Colab that enter the top 10 of weighted Neglect, the most serious discrepancy identified by the NT. SDGIndex has no weighted version, because its links are estimated from data for every eligible pair rather than recorded by the literature.
 
 These associations and their exploratory orientations do not establish causality. Nominal p-values do not correct for autocorrelation. Supplied normalized series may contain carried/interpolated observations. These methodological conventions are preserved in the English migration.
 

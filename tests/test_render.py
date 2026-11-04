@@ -51,6 +51,8 @@ class NetworkRendering(unittest.TestCase):
         edges = [dict(source=a,target=b,weight=w,interaction=t) for a,b,w,t in [('a','b',-.5,'trade-off'),('b','c',.4,'synergy'),('c','b',.7,'synergy'),('u','b',1,'trade-off'),('b','b',1,'synergy')]]
         result = two_step_scores(nodes,edges)
         self.assertAlmostEqual(result['b'], .2)
+        scaled = two_step_scores([dict(n, interface_scale=.5) for n in nodes], edges)
+        self.assertAlmostEqual(scaled['b'], .4)
         self.assertEqual(result['a'], 0)
         self.assertEqual(result['c'], 0)
         sizes = {n['id']:76 for n in nodes}
