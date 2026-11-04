@@ -2,7 +2,7 @@
 
 ## Purpose and scope
 
-The **Two-step interface** is an additional view of the complete directed network. The existing complete, synergy and trade-off views remain available. This view changes positions only: it keeps all linked nodes and arcs, arrow directions, weights, interaction classifications, four highlight categories, icon-size rules and legends of the complete progress/regression view. It is available for SDGIndex and IGES/JRC, including newly calculated results.
+The **Two-step interface** is an additional view of the complete directed network. The existing complete, synergy and trade-off views remain available. This view changes positions only: it keeps all linked nodes and arcs, arrow directions, weights, interaction classifications, six interface-role borders, icon-size rules and legends of the complete progress/regression view. It is available for SDGIndex and IGES/JRC, including newly calculated results.
 
 Every interface PNG and the web view display:
 
@@ -20,7 +20,7 @@ Use the final conceptual interaction type after the analysis has applied its exc
 
 This product equals the sum of weight products over the relevant directed two-step channels `source → i → destination`. Self-arcs are excluded. The source is in the opposite direction group; `i` and the destination share a direction. Stable or undetermined directions do not contribute to these channels. Parallel recorded arcs, if present, each contribute their weight. A node missing either part has score zero.
 
-The score is computed for all nodes, without consulting highlight colors. It is used only to arrange the drawing; it does not replace Colab, Neglect, time-to-target, ambition, category membership or any reported substantive ranking. Its alignment with dependent collaborators and propagating neglected nodes is partly expected from shared ingredients in those categories, and is not independent validation of them.
+The score is computed for all nodes, without consulting highlight colors. It is used only to arrange the drawing; it does not replace Colab, Neglect, time-to-target, ambition, category membership or any reported substantive ranking. For deteriorating nodes the score equals the bridge flow used to select D-2 transmission bridges; for improving nodes it is the trade-off received from deteriorating sources multiplied by synergy passed forward, the two ingredients of I-2 and I-3. Its alignment with those roles is therefore expected by construction and is not independent validation of them.
 
 ## Positioning
 
