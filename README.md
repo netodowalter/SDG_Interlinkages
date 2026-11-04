@@ -17,6 +17,8 @@ The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and ope
 
 Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the four direction-based highlight groups when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, trade-offs, and the experimental Two-step interface. All four PNGs use the same four highlight groups, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
 
+IGES/JRC tables show semantic **Ambitiousness**; SDGIndex tables show performance times in years. The IGES/JRC region selector additionally includes the UNSD catalog codes for OECD (198) and World Bank income groups (910, 911, 912, 914). Verification returned no observations for these aggregate codes, so listing them does not guarantee a runnable network. See [aggregate availability and comparability](docs/iges-comparison-regions.md). BRICS groups have no code in the verified UNSD catalog.
+
 The two tabs share a calculation queue. Choosing **Both** produces separate results for each method. Completed runs remain in `output/`; Gradio also keeps temporary copies of files served to the browser.
 
 ## Linux and macOS application
@@ -155,3 +157,4 @@ Tests cover measure identity, indicator directionality, temporal reclassificatio
 ### Experimental network view
 
 The existing complete network is retained alongside an additional **Two-step interface** view, with the same legends and an experimental-layout note. See [the layout documentation](docs/two-step-interface-layout.md) for its display score, positioning and interpretation.
+

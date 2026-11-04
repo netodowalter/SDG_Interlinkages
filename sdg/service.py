@@ -35,7 +35,11 @@ def list_areas(version, scope):
         from .engine.modules.collection import continental_regions
         tree = read_json(DATA / 'areas.json')
         areas = iges.countries_from_tree(tree) if scope == 'country' else continental_regions(tree)
-        return {str(code): row['name'] for code, row in areas.items()}
+        result = {str(code): row['name'] for code, row in areas.items()}
+        if scope == 'region':
+            for group in read_json(DATA / 'iges_comparison_regions.json')['groups']:
+                result[str(group['code'])] = group['name']
+        return result
     country = scope == 'country'
     records = read_json(DATA / 'SDGIndex' / ('countries.json' if country else 'catalog.json'))
     return {r['code' if country else 'region']: r['title'] for r in records}
@@ -143,3 +147,4 @@ def run_analysis(version, scope, code, *, method=None, csv_path=None, output_dir
                 sdg_run(ready / selected, code, areas[code], scope, selected)
         ready.rename(destination)
     return destination
+

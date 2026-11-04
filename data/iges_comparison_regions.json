@@ -1,0 +1,51 @@
+{
+  "source": "https://unstats.un.org/sdgs/UNSDGAPIV5/v1/sdg/GeoArea/List",
+  "verified_date": "2026-11-04",
+  "groups": [
+    {
+      "code": 198,
+      "name": "OECD member states",
+      "sdgindex_region": "OECD",
+      "api_name": "Organisation for Economic Co-operation and Development (OECD) Member States",
+      "availability": "catalog_only",
+      "availability_note": "No observations returned by the verification query. Availability may change; analysis always queries UNSD again."
+    },
+    {
+      "code": 910,
+      "name": "High income economies (WB)",
+      "sdgindex_region": "HIC",
+      "api_name": "High income economies (WB)",
+      "availability": "catalog_only",
+      "availability_note": "No observations returned by the verification query. Availability may change; analysis always queries UNSD again."
+    },
+    {
+      "code": 911,
+      "name": "Low income economies (WB)",
+      "sdgindex_region": "LIC",
+      "api_name": "Low income economies (WB)",
+      "availability": "catalog_only",
+      "availability_note": "No observations returned by the verification query. Availability may change; analysis always queries UNSD again."
+    },
+    {
+      "code": 912,
+      "name": "Lower middle income economies (WB)",
+      "sdgindex_region": "LMIC",
+      "api_name": "Lower middle economies (WB)",
+      "availability": "catalog_only",
+      "availability_note": "No observations returned by the verification query. Availability may change; analysis always queries UNSD again."
+    },
+    {
+      "code": 914,
+      "name": "Upper middle income economies (WB)",
+      "sdgindex_region": "UMIC",
+      "api_name": "Upper middle economies (WB)",
+      "availability": "catalog_only",
+      "availability_note": "No observations returned by the verification query. Availability may change; analysis always queries UNSD again."
+    }
+  ],
+  "notes": [
+    "Catalog codes are not a guarantee of observations or sufficient analysis coverage.",
+    "Membership and aggregation can differ from the supplied SDGIndex groups.",
+    "BRICS and BRICSplus are absent from the verified UNSD area catalog."
+  ]
+}

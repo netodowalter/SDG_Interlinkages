@@ -23,6 +23,7 @@ def tab(version, title):
             choices = areas(version, 'region')
             area = gr.Dropdown(choices, value='1' if version == 'IGES_JRC' else 'World', label='Area')
         if version == 'IGES_JRC':
+            gr.Markdown('OECD and World Bank income groups are listed by their UNSD API codes. Verification returned no aggregate observations for these codes; live collection can be retried. Coverage and membership can differ from SDGIndex. BRICS groups have no UNSD catalog code.')
             option = gr.File(label='UNSD CSV (optional)', file_types=['.csv'], type='filepath')
         else:
             option = gr.Radio([('Pearson', 'pearson'), ('Spearman', 'spearman'), ('Both', 'both')],
