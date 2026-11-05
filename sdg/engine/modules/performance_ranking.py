@@ -43,7 +43,7 @@ RANK_KEYS = tuple(spec[0] for spec in RANK_FIELDS)
 
 
 def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
-    """Six interface roles; at most ten per ranking, exact ties broken by stable node ID.
+    """Six interface roles; at most three per role, selected independently, ties broken by node ID.
 
     Years to target (improving) or to zero (deteriorating) characterise each selected
     node in its row; they do not filter role membership."""
@@ -59,13 +59,16 @@ def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
         for n in nodes:
             n[rank] = ranking.get(n['id'])
         field_rank[field] = rank
-        top[rank] = {i for i, position in ranking.items() if position <= (top_n or TOP_N)}
+        top[rank] = {i for i, position in ranking.items() if position <= TOP_N}
         order[rank] = ranking
-    def pick(field, direction, n=None):
+    def pick(field, direction, n=None, keep=None):
         rank = field_rank[field]
-        return top[rank] if n is None else {i for i, p in order[rank].items() if p <= n}
-    selected = select_roles(pick,
-                            {i: n['forward_ratio'] for i, n in byid.items()}, isolation=isolation)
+        if n is None:
+            return top[rank]
+        ranked = [i for i, _ in sorted(order[rank].items(), key=lambda x: x[1]) if keep is None or keep(i)]
+        return set(ranked[:n])
+    selected = select_roles(pick, {i: n['forward_ratio'] for i, n in byid.items()},
+                            isolation=isolation, n=top_n)
     groups = []
     for slug, title, metric, label, direction in ROLES:
         time = 'years_to_target' if direction == 'forward' else 'years_to_zero'
@@ -74,8 +77,7 @@ def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
                  byid[i]['indicator'], byid[i]['description'], byid[i][time],
                  byid[i]['direction'], ''] for i in ordered]
         groups.append(dict(id=slug, title=title, metric=label, rows=rows,
-                           base=('Three largest flows; ties resolved by node ID.' if slug in ('transmission_bridges', 'deterioration_relays')
-                                 else 'Intersection of top 10 rankings; ties resolved by node ID.')))
+                           base='Three highest values of the role score; roles selected independently; ties resolved by node ID.'))
     return groups
 
 

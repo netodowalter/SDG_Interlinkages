@@ -19,9 +19,9 @@ FORWARD, BACKWARD = 'forward', 'backward'
 # every receiver also sends substantial synergy.
 ISOLATION_RATIO = 1.0
 
-# Two-step roles list the largest flows only, ranked independently: a node may be both a
-# transmission bridge and a deterioration relay. The order within each list is the insight.
-TWO_STEP_TOP = 3
+# Each role lists only its three highest-ranked nodes, selected independently: a node may hold
+# more than one role. The order within each list is the insight.
+ROLE_TOP = 3
 
 # Edge-derived measures. Weights are absolute coefficients.
 MEASURES = (
@@ -50,18 +50,18 @@ ROLES = (
 )
 
 RULES = {
-    'contributors': 'Top Colab among improving nodes, excluding top receivers of trade-offs from '
-                    'deterioration and top senders of trade-offs to deterioration.',
-    'dependent_contributors': 'Top receivers of trade-offs from deteriorating sources that pass at least as '
-                              'much synergy weight forward to improving nodes (phi >= 1).',
-    'isolated_beneficiaries': 'Top receivers of trade-offs from deteriorating sources that pass less synergy '
-                              'weight forward to improving nodes than they receive (phi < 1).',
-    'exposed': 'Top Neglect among deteriorating nodes, excluding top senders of synergies from '
-               'deterioration, transmission bridges and relays.',
+    'contributors': 'Three highest Colab among improving nodes, excluding the top senders of trade-offs '
+                    'to deterioration.',
+    'dependent_contributors': 'Three largest receivers of trade-offs from deteriorating sources among those that '
+                              'pass at least as much synergy weight forward to improving nodes (phi >= 1).',
+    'isolated_beneficiaries': 'Three largest receivers of trade-offs from deteriorating sources among those that '
+                              'pass less synergy weight forward than they receive (phi < 1).',
+    'exposed': 'Three highest Neglect among deteriorating nodes, excluding the top senders of synergies '
+               'from deterioration.',
     'transmission_bridges': 'Three largest bridge flows: trade-off received from improving sources multiplied by '
                             'synergy sent to deteriorating nodes (all two-step paths improving → k → deteriorating).',
     'deterioration_relays': 'Three largest relay flows: synergy received from deteriorating sources multiplied by '
-                            'synergy sent to deteriorating nodes, ranked independently of bridges (a node may be both).',
+                            'synergy sent to deteriorating nodes.',
 }
 
 
@@ -162,28 +162,33 @@ def ponderate(node, shares):
     return result
 
 
-def select_roles(top, ratio, isolation='ratio'):
+def select_roles(top, ratio, isolation='ratio', n=None):
     """Return {role id: set of node ids}.
 
-    ``top(field, direction, n)`` returns the top ``n`` positive values of ``field`` among
-    nodes with that performance direction (``n=None``: the procedure's default cut-off).
-    Bridges and relays take the ``TWO_STEP_TOP`` largest flows each, independently. ``ratio`` maps node
-    id to forward_ratio (phi).
-    Intersections are not refilled. ``isolation='zero'`` counts as isolated only receivers that
-    pass no synergy forward (phi == 0), a stricter alternative to phi < 1.
+    ``top(field, direction, n=None, keep=None)`` returns the ``n`` highest positive values of
+    ``field`` among nodes with that performance direction, after dropping nodes for which
+    ``keep(id)`` is false (``n=None``: the procedure's default ranking cut-off, used only for the
+    exclusions below). ``ratio`` maps node id to forward_ratio (phi).
+
+    Every role lists at most ``ROLE_TOP`` nodes (or ``n``), ranked by its own score. Roles are
+    selected independently, so a node can hold more than one (for example contributor and
+    dependent contributor, or bridge and relay). Two exclusions remain, because they concern
+    rankings that are not roles: contributors exclude the top senders of costs to deteriorating
+    nodes, and exposed targets exclude the top senders of synergies from deterioration.
+    ``isolation='zero'`` counts as isolated only receivers that pass no synergy forward (phi == 0),
+    a stricter alternative to phi < 1.
     """
-    colab, receivers = top('colab', FORWARD), top('tradeoff_received_from_backward', FORWARD)
-    cost = top('tradeoff_sent_to_backward', FORWARD)
+    k = n or ROLE_TOP
     cut = (lambda r: r == 0) if isolation == 'zero' else (lambda r: r < ISOLATION_RATIO)
-    isolated = {i for i in receivers if ratio[i] is not None and cut(ratio[i])}
-    neglect, senders = top('neglect', BACKWARD), top('backward_synergy_sent', BACKWARD)
-    bridges = top('bridge_flow', BACKWARD, TWO_STEP_TOP)
-    relays = top('relay_flow', BACKWARD, TWO_STEP_TOP)
+    isolated = lambda i: ratio[i] is not None and cut(ratio[i])
+    cost = top('tradeoff_sent_to_backward', FORWARD)
+    senders = top('backward_synergy_sent', BACKWARD)
+    receivers = 'tradeoff_received_from_backward'
     return dict(
-        contributors=colab - receivers - cost,
-        dependent_contributors=receivers - isolated,
-        isolated_beneficiaries=isolated,
-        exposed=neglect - senders - bridges - relays,
-        transmission_bridges=bridges,
-        deterioration_relays=relays,
+        contributors=top('colab', FORWARD, k, lambda i: i not in cost),
+        dependent_contributors=top(receivers, FORWARD, k, lambda i: not isolated(i)),
+        isolated_beneficiaries=top(receivers, FORWARD, k, isolated),
+        exposed=top('neglect', BACKWARD, k, lambda i: i not in senders),
+        transmission_bridges=top('bridge_flow', BACKWARD, k),
+        deterioration_relays=top('relay_flow', BACKWARD, k),
     )

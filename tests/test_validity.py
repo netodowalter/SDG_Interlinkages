@@ -49,7 +49,9 @@ class Validity(unittest.TestCase):
         self.assertLessEqual(arcs(run(selection='q')), arcs(self.main))
 
     def test_isolation_zero_is_stricter(self):
-        top = lambda field, direction, n=None: {'a', 'b'} if field == 'tradeoff_received_from_backward' else set()
+        def top(field, direction, n=None, keep=None):
+            pool = ['a', 'b'] if field == 'tradeoff_received_from_backward' else []
+            return {i for i in pool if keep is None or keep(i)}
         ratio = {'a': 0.0, 'b': 0.5}
         self.assertEqual(select_roles(top, ratio)['isolated_beneficiaries'], {'a', 'b'})
         self.assertEqual(select_roles(top, ratio, isolation='zero')['isolated_beneficiaries'], {'a'})

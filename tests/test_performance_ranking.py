@@ -35,18 +35,20 @@ class PerformanceRanking(unittest.TestCase):
         edges += [dict(source=f'b{i:02}', target='b11', interaction='synergy', weight=i+1)
                   for i in range(6)]
         groups = {g['id']: {r[1] for r in g['rows']} for g in highlight_groups(nodes, edges)}
-        self.assertEqual(groups['contributors'], {'f06', 'f07', 'f08', 'f09'})
-        # Receivers that pass no synergy forward are isolated beneficiaries, not dependent contributors.
+        # Three per role, selected independently: f00-f02 are contributors even though they also
+        # receive trade-offs; the three largest receivers (all with phi = 0) are isolated beneficiaries.
+        self.assertEqual(groups['contributors'], {'f00', 'f01', 'f02'})
         self.assertEqual(groups['dependent_contributors'], set())
-        self.assertEqual(groups['isolated_beneficiaries'], {f'f{i:02}' for i in range(6)})
-        self.assertEqual(groups['exposed'], {'b06', 'b07', 'b08', 'b09'})
+        self.assertEqual(groups['isolated_beneficiaries'], {'f03', 'f04', 'f05'})
+        # Exposed still excludes the top senders of synergy from deterioration (b00-b05).
+        self.assertEqual(groups['exposed'], {'b06', 'b07', 'b08'})
         # No trade-off reaches the deteriorating nodes and b11 passes nothing on.
         self.assertEqual(groups['transmission_bridges'], set())
         self.assertEqual(groups['deterioration_relays'], set())
         # Times characterise roles but no longer filter them.
         nodes[-1]['years_to_zero'] = 1000
         result = {g['id']: {r[1] for r in g['rows']} for g in highlight_groups(nodes, edges)}
-        self.assertIn('b09', result['exposed'])
+        self.assertIn('b06', result['exposed'])
         self.assertEqual(nodes[-1]['zero_time_rank'], 1)
         self.assertEqual(nodes[0]['tradeoff_received_from_backward'], 1)
 
@@ -58,13 +60,12 @@ class PerformanceRanking(unittest.TestCase):
     def test_iges_ambition_does_not_filter_and_extends_to_tenth(self):
         metrics = {f'{i}.1': dict(Colab=30-i, Neglect=0) for i in range(1, 13)}
         details = {t: [t, 'Test', 'indicator', 'Test', .8, 'forward', 'high'] for t in metrics}
-        details['9.1'][4] = .5
+        details['3.1'][4] = .5
         groups = iges_highlights(metrics, details)
         ids = {r[1] for r in groups[0]['rows']}
-        self.assertIn('10.1', ids)
-        self.assertNotIn('11.1', ids)
-        self.assertIn('9.1', ids)  # low ambition is reported, not excluded
-        self.assertEqual(next(r for r in groups[0]['rows'] if r[1] == '9.1')[6], .5)
+        self.assertEqual(ids, {'1.1', '2.1', '3.1'})  # three per role
+        self.assertIn('3.1', ids)  # low ambition is reported, not excluded
+        self.assertEqual(next(r for r in groups[0]['rows'] if r[1] == '3.1')[6], .5)
         # The diagnostic uses the same widened intersection.
         details['12.1'][5] = 'backward'
         edges = [dict(TargetA='12.1', TargetB=t, interaction='trade-off', weight=1)
