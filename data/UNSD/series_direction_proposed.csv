@@ -1,0 +1,67 @@
+series,direction,note
+SI_POV_DAY1,-1,
+SI_COV_LMKT,1,
+SP_ACS_BSRVH2O,1,
+DC_ODA_POVLG,1,flow received by Brazil; SDG intent is more flows to developing countries
+SH_STA_STNT,-1,
+ER_GRF_ANIMKPT,1,
+AG_PRD_AGVAS,1,indicator file (2.a.1); the series is the agriculture share of GDP used in the orientation index
+AG_FPA_CFPI,-1,
+SH_STA_BRTC,1,
+SH_DYN_IMRT,-1,
+SH_HIV_INCD,-1,
+SH_ALC_CONSPT,-1,
+SH_ACS_UNHC_25,1,
+DC_TOF_HLTHL,1,flow received
+SE_PRE_PARTN,1,
+SE_GPI_PTNPRE,1,parity index: optimum is 1; increasing taken as desired (indicator file)
+DC_TOF_SCHIPSL,1,flow received
+SH_H2O_SAFE,1,
+SH_SAN_DEFECT,-1,open defecation; indicator file gives +1 for 6.2.1 (safely managed sanitation)
+ER_H2O_STRESS,-1,
+EN_RVR_MNRVFLC,1,indicator file
+DC_TOF_WASHL,1,flow received
+EG_ACS_ELEC,1,
+EG_FEC_RNEW,1,
+EG_EGY_PRIM,-1,
+EG_IFF_RANDN,1,flow received
+EG_EGY_RNEW,1,
+NY_GDP_PCAP,1,growth rate
+SL_EMP_PCAP,1,growth rate
+SL_ISV_IFEM,-1,
+SL_EMP_EARN,1,nominal local currency
+SL_TLF_NEET,-1,
+ST_EMP_TRSMN,1,
+FB_ATM_TOTL,1,
+DC_TOF_TRDCML,1,flow received
+EN_ATM_CO2,-1,
+GB_XPD_RSDV,1,
+DC_TOF_INFRAL,1,flow received
+IT_MOB_3GNTWK,1,
+SL_EMP_GTOTL,1,
+FI_FSI_FSANL,-1,
+SM_POP_REFG_OR,-1,
+DC_TRF_TOTL,1,flow received
+SI_RMT_COST,-1,
+EN_ATM_PM25,-1,
+ST_EEV_ACCTSA,1,
+ER_FFS_CMPT_CD,-1,
+EN_MAR_CHLDEV,-1,
+ER_MRN_MPA,1,
+ER_PTD_FRHWTR,1,
+ER_PTD_MTN,1,
+ER_RSK_LST,1,
+ER_CBD_PTYPGRFA,1,
+DC_ODA_BDVL,1,flow received
+VC_IHR_PSRC,-1,
+VC_PRS_UNSNT,-1,
+GC_GOB_TAXD,1,
+BX_TRF_PWKR,1,
+DT_TDS_DECT,-1,
+IT_NET_BBND,1,
+DC_ENVTECH_EXP,1,
+IT_USE_ii99,1,
+DC_FTA_TOTAL,1,flow received
+TX_EXP_GBMRCH,1,share of global exports; indicator file gives -1 for 17.11.1
+BN_CAB_XOKA_GD_ZS,1,indicator file
+SG_STT_CAPTY,1,flow received
