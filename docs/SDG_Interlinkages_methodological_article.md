@@ -452,9 +452,10 @@ The implementation, operational inputs, regression tests and methodological docu
 | Orientation        | IGES/JRC evidence rules, each direction evaluated separately (Section 3.4)                           | Lagged and conditional tests, both p \< 0.10; otherwise two arcs         |
 | Trend              | Linear, ≥ 3 distinct years; negligible change = stable                                               | Same                                                                     |
 | Reclassification   | Exclude discordant link if min R² \< 0.10, or min R² \< 0.20 and \|r\| \< 0.40; otherwise reclassify | Same                                                                     |
-| Rankings           | Top 10 positive values within direction, exact ties at position 10 included                          | Top 10 positive values within direction, ties resolved by stable node ID |
+| Roles | Three highest positive values of each role score within its performance group; exact ties at third place included | Three highest positive values of each role score within its performance group; ties resolved by stable node ID |
+| Exclusion rankings (top C, top B) | Top 10 positive values within direction, exact ties at position 10 included | Top 10 positive values within direction, ties resolved by stable node ID |
 | Interface measures | Links between nodes with defined directions only                                                     | Same                                                                     |
-| Isolation          | φ \< 1 among top receivers R                                                                         | Same                                                                     |
+| Isolation | Three highest R among nodes with φ \< 1 | Same |
 | Context            | Semantic ambitiousness, reported for every role                                                      | Years to target or to zero, reported for every role                      |
 | Role overlap       | Roles are selected independently; a node may hold more than one role (Section 5.3).                  | Same                                                                     |
 
