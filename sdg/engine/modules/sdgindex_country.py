@@ -45,8 +45,14 @@ def sheet(w,name,items):
  s.freeze_panes='B2';s.auto_filter.ref=s.dimensions
  return s
 
-def analyze(path,mapping_path,method,country,title,output,scope='country'):
+def analyze(path,mapping_path,method,country,title,output,scope='country',*,start=2000,end=2025,basis='levels',selection='p',top_n=None,isolation='ratio'):
+ """Sensitivity options (defaults reproduce the main specification):
+ start/end: window for associations and trends; basis: 'levels' or 'changes' (first differences of
+ scores for associations and orientation tests; progress directions still from levels);
+ selection: 'p' (p<0.10) or 'q' (BH q<0.10); top_n: ranking cut-off for roles;
+ isolation: 'ratio' (phi<1) or 'zero' (no forward synergy). output=None skips the workbook."""
  if method not in ('pearson','spearman'):raise ValueError('Invalid method')
+ if basis not in ('levels','changes') or selection not in ('p','q') or isolation not in ('ratio','zero'):raise ValueError('Invalid sensitivity option')
  from sdg.compat import normalize_source_workbook
  w=normalize_source_workbook(load_workbook(path))
  # Old delta-based outputs remain source evidence, never active analysis.
@@ -56,16 +62,18 @@ def analyze(path,mapping_path,method,country,title,output,scope='country'):
  years=defaultdict(dict);descriptions={}
  for row in obs:
   code=row['indicator'];year=row['year']
-  if code in mapping and 2000<=year<=2025:
+  if code in mapping and start<=year<=end:
    years[code][year]=row['indicator_score'];descriptions[code]=row['description']
- codes=sorted(years);series={c:np.array([years[c].get(y) if years[c].get(y) is not None else np.nan for y in range(2000,2026)],dtype=float) for c in codes};trends={c:fit(list(years[c].items()),1) for c in codes};pairs=[]
+ codes=sorted(years);series={c:np.array([years[c].get(y) if years[c].get(y) is not None else np.nan for y in range(start,end+1)],dtype=float) for c in codes};trends={c:fit(list(years[c].items()),1) for c in codes};pairs=[]
  excluded=[]
  for i,(a,b) in enumerate(combinations(codes,2)):
   if i%500==0:print(f'Scores: examining pair {i+1} of {len(codes)*(len(codes)-1)//2}…',flush=True)
   ma,mb=mapping[a],mapping[b]
   if ma['goal']==mb['goal'] or ma['target']==mb['target']:
    excluded.append(dict(IndicatorA=a,IndicatorB=b,TargetA=ma['target'],TargetB=mb['target'],Reason='same target' if ma['target']==mb['target'] else 'same SDG'));continue
-  x,y=series[a],series[b];r,p,n=contemporaneous(x,y,method)
+  x,y=series[a],series[b]
+  if basis=='changes':x,y=np.diff(x),np.diff(y)
+  r,p,n=contemporaneous(x,y,method)
   if r is None:continue
   rab,pab,nab=contemporaneous(x[:-1],y[1:],method);rba,pba,nba=contemporaneous(y[:-1],x[1:],method)
   cab,pcab,_=conditional(x[:-1],y[:-1],y[1:],method);cba,pcba,_=conditional(y[:-1],x[:-1],x[1:],method)
@@ -76,7 +84,7 @@ def analyze(path,mapping_path,method,country,title,output,scope='country'):
  bh(pairs);edges=[];cases=[];changes=[];original_edges=0
  ids={c:mapping[c]['target']+'::'+c.split('_',2)[2] for c in codes}
  for pair in pairs:
-  if pair['p']>=.1 or pair['r']==0:continue
+  if (pair['p'] if selection=='p' else pair['q_BH'])>=.1 or pair['r']==0:continue
   a,b=pair['indicator_source'],pair['indicator_target'];dr=pair['direction'];arcs=[(a,b)] if dr=='A_to_B' else [(b,a)] if dr=='B_to_A' else [(a,b),(b,a)]
   original='synergy' if pair['r']>0 else 'trade-off'
   action,kind,reason=divergent_decision(original,trends[a],trends[b],pair['r'])
@@ -97,7 +105,9 @@ def analyze(path,mapping_path,method,country,title,output,scope='country'):
  pyedges=[dict(TargetA=e['source'],TargetB=e['target'],interaction=e['interaction'],weight=e['weight'],orientation=e['orientation']) for e in edges];metrics0=node_metrics([n['id'] for n in nodes],pyedges,{n['id']:n['direction'] for n in nodes});metrics={};details={}
  for node in nodes:
   v=metrics0[node['id']];node.update(colab=v['collaboration'],neglect=v['neglect']);metrics[node['id']]=dict(Colab=node['colab'],Neglect=node['neglect']);details[node['id']]=[node['id'],node['description'],node['indicator'],node['description'],None,node['direction'],None]
- highlights=highlight_groups(nodes,edges);diagnostics=dependence_diagnostics(metrics,details,pyedges)
+ highlights=highlight_groups(nodes,edges,top_n=top_n,isolation=isolation)
+ if output is None:return dict(nodes=nodes,edges=edges,highlights=highlights,pairs=pairs,trends=trends,codes=codes,ids=ids,series=series,excluded=excluded,cases=cases)
+ diagnostics=dependence_diagnostics(metrics,details,pyedges)
  for diagnostic in diagnostics:
   n=next(n for n in nodes if n['id']==diagnostic['TargetCode']);diagnostic.update(colab_rank=n['colab_rank'],receiver_rank=n['receiver_rank'],strict_highlight=bool(n['colab_rank'] and n['colab_rank']<=10 and n['receiver_rank'] and n['receiver_rank']<=10))
  sheet(w,'Excluded_within_SDG_pairs',excluded);sheet(w,'Score_relationships',pairs);sheet(w,'Score_network',edges);sheet(w,'Recomputed_attributes',nodes);sheet(w,'Dependence_diagnostics',diagnostics);sheet(w,'Adverse cases',cases);sheet(w,'Local_trends',[dict(indicator=c,**t) for c,t in trends.items()]);sheet(w,'Targets_indicators',[{k:v for k,v in mapping[c].items() if k != 'ambition'} for c in codes]);sheet(w,'Highlights',[dict(Group=g['title'],Indicator=r[1],Score=r[2],Years=r[6],**{k:n[k] for k in RANK_KEYS}) for g in highlights for r in g['rows'] for n in nodes if n['id']==r[1]]);sheet(w,'App_method',[dict(Field=k,Definition=v) for k,v in [('Unit','Country' if scope=='country' else 'Region or aggregate') ,('Correlation basis','Annual normalized scores for 2000–2025, using levels. All pairs within the same SDG or target are excluded before tests and degree calculations.'),('Selection','p<0.10, nonzero coefficient, at least 8 pairs; BH q-values for valid cross-SDG pairs support sensitivity analysis.'),('Direction','Scores A(t−1) and B(t), controlling for B(t−1). Both lagged and conditional p-values must be <0.10 in each direction; other pairs receive two arcs. This does not establish causality.'),('Types','The coefficient sign defines the original statistical association. Progress directions define the final interaction. For discordant pairs, exclude if either time R²<0.1, or if either time R²<0.2 and |coefficient|<0.4. Reclassify other discordant pairs. Preserve the coefficient and absolute weight. This is conceptual classification, not a test of spurious correlation.'),('Neglect','Incoming trade-offs plus incoming synergies from sources in regression.'),('Performance times','Latest finite annual score and 2000–2025 linear slope: years_to_target=max(0,100-score)/slope for forward indicators; years_to_zero=max(0,score)/abs(slope) for backward indicators. Stable or undetermined trends have no finite time. Conditional extrapolations, not forecasts. Display: three decimal places.'),('Highlights','Six interface roles from top 10 positive rankings within each performance direction. Improving: I-1 contributors = top Colab, excluding top receivers of trade-offs from deterioration and top senders of trade-offs to deterioration; I-2 dependent contributors = top receivers that pass at least as much synergy weight to improving indicators as they receive (phi ≥ 1); I-3 isolated beneficiaries = top receivers with phi < 1. Deteriorating: D-2 transmission bridges = top bridge flow (trade-off received from improving sources × synergy sent to deteriorating indicators); D-3 relays = top relay flow (synergy received from deteriorating sources × synergy sent to deteriorating indicators), excluding bridges; D-1 exposed = top Neglect, excluding top senders of synergies from deterioration, bridges and relays. Years to target or to zero characterise every selected indicator; they do not filter roles. Ties resolved by node ID; no backfilling. Semantic ambition is not used.'),('Limitations','Supplied normalized series may include carried values; nominal p-values do not adjust for autocorrelation.')]])

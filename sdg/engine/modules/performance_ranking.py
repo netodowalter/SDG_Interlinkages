@@ -42,7 +42,7 @@ RANK_FIELDS = (
 RANK_KEYS = tuple(spec[0] for spec in RANK_FIELDS)
 
 
-def highlight_groups(nodes, edges):
+def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
     """Six interface roles; at most ten per ranking, exact ties broken by stable node ID.
 
     Years to target (improving) or to zero (deteriorating) characterise each selected
@@ -59,9 +59,9 @@ def highlight_groups(nodes, edges):
         for n in nodes:
             n[rank] = ranking.get(n['id'])
         field_rank[field] = rank
-        top[rank] = {i for i, position in ranking.items() if position <= TOP_N}
+        top[rank] = {i for i, position in ranking.items() if position <= (top_n or TOP_N)}
     selected = select_roles(lambda field, direction: top[field_rank[field]],
-                            {i: n['forward_ratio'] for i, n in byid.items()})
+                            {i: n['forward_ratio'] for i, n in byid.items()}, isolation=isolation)
     groups = []
     for slug, title, metric, label, direction in ROLES:
         time = 'years_to_target' if direction == 'forward' else 'years_to_zero'

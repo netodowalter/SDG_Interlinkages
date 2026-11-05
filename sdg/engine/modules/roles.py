@@ -158,17 +158,19 @@ def ponderate(node, shares):
     return result
 
 
-def select_roles(top, ratio):
+def select_roles(top, ratio, isolation='ratio'):
     """Return {role id: set of node ids}.
 
     ``top(field, direction)`` returns the selected top set of positive values of
     ``field`` among nodes with that performance direction. ``ratio`` maps node
     id to forward_ratio (phi).
-    Intersections are not refilled.
+    Intersections are not refilled. ``isolation='zero'`` counts as isolated only receivers that
+    pass no synergy forward (phi == 0), a stricter alternative to phi < 1.
     """
     colab, receivers = top('colab', FORWARD), top('tradeoff_received_from_backward', FORWARD)
     cost = top('tradeoff_sent_to_backward', FORWARD)
-    isolated = {i for i in receivers if ratio[i] is not None and ratio[i] < ISOLATION_RATIO}
+    cut = (lambda r: r == 0) if isolation == 'zero' else (lambda r: r < ISOLATION_RATIO)
+    isolated = {i for i in receivers if ratio[i] is not None and cut(ratio[i])}
     neglect, senders = top('neglect', BACKWARD), top('backward_synergy_sent', BACKWARD)
     bridges = top('bridge_flow', BACKWARD)
     relays = top('relay_flow', BACKWARD) - bridges
