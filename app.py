@@ -39,7 +39,7 @@ Select a row to see the indicator.""")
         indicators = gr.State([])
         indicator = gr.Textbox(label='Selected indicator', interactive=False)
         gr.Markdown("""### Highlights by performance direction
-Six roles from top 10 intersections; transmission bridges and deterioration relays list the three largest flows each, independently (an indicator may be both). Improving: I-1 contributors, I-2 dependent contributors, I-3 isolated beneficiaries. Deteriorating: D-1 exposed targets, D-2 transmission bridges, D-3 deterioration relays. Context characterises each role without filtering it: years to target or to zero (SDGIndex), ambitiousness (IGES/JRC).""")
+Six roles, listing the top 3 positive values of each measure independently without exclusions or backfilling (an indicator may hold more than one role). Improving: Improvement sender (trade-off sent from i in I to D), Improvement receiver (trade-off received by i in I from D), Improvement relay (synergy degree of i within I). Deteriorating: Deterioration sender (trade-off sent from k in D to I), Deterioration receiver (trade-off received by k in D from I), Deterioration relay (synergy degree of k within D). Context characterises each role without filtering it: years to target or to zero (SDGIndex), ambitiousness (IGES/JRC).""")
         groups = gr.Dataframe(headers=highlight_headers, interactive=False)
         gallery = gr.Gallery(label='Networks', columns=3, height='auto')
         bundle = gr.File(label='Download all results as ZIP')
@@ -85,4 +85,3 @@ Networks of collaboration and neglect among SDG targets.""")
 
 if __name__ == '__main__':
     build_app().launch(inbrowser=True, share=False)
-

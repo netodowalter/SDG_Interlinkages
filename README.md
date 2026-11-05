@@ -4,7 +4,7 @@ Explore directed networks of collaboration and neglect among Sustainable Develop
 
 ## Status (November 2026)
 
-Development of the package has stopped. The statistical tests reported in Section 7 of the methodological article ([`docs/SDG_Interlinkages_methodological_article.md`](docs/SDG_Interlinkages_methodological_article.md)) were run for Brazil, Finland and Norway with SDG Index normalised scores, SDR raw values, UN series and the IGES/JRC procedure. They show that correlations between the published national annual series cannot support valid inference about interlinkages, and that network analysis built on them cannot identify the roles: in levels, independent surrogate series pass the significance filter in 24% to 50% of pairs and roles follow each indicator's direction, degree and trend linearity; in annual changes, what remains is small and indistinguishable from artefacts of filling, carried values and bounded scales. Finland and Norway, among the countries with the best-rated statistical systems, show the same pattern.
+Development of the package has stopped. The statistical tests reported in Section 7 of the methodological article ([`docs/SDG_Interlinkages_methodological_article.md`](docs/SDG_Interlinkages_methodological_article.md)) were run for Brazil, Finland and Norway with SDG Index normalised scores, SDR raw values, UN series and the IGES/JRC procedure. They show that correlations between the published national annual series cannot support valid inference about interlinkages, and that network analysis built on them cannot reliably identify the roles: in levels, independent surrogate series pass the significance filter in 24% to 50% of pairs and roles follow each indicator's direction, degree and trend linearity; in annual changes, what remains is small and indistinguishable from artefacts of filling, carried values and bounded scales. Finland and Norway, among the countries with the best-rated statistical systems, show the same pattern.
 
 The performance-based reading of synergies and trade-offs remains a conceptual requirement for any interlinkage analysis. The package is kept as an open, documented implementation for verification and replication of these results, not as a tool for prioritising targets. Test scripts and results: [`docs/validity_sdgindex.md`](docs/validity_sdgindex.md) and the section [Validity tests](#validity-tests) below. Open items are in [`TODO.md`](TODO.md).
 
@@ -23,7 +23,7 @@ The launcher creates or reuses `.venv`, installs `requirements-app.txt`, and ope
 | IGES/JRC | Select a UNSD region or country. Optionally upload a previously collected UNSD CSV for the selected area. | Pearson |
 | SDGIndex | Select a region, aggregate, or country from the supplied annual-score workbooks. | Pearson, Spearman, or both |
 
-Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the six interface roles when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, trade-offs, and the experimental Two-step interface. All four PNGs use the same six role borders, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
+Choose the scope and area, then select **Run analysis**. The application displays the first ten rows of each ranking and the six roles when eligible targets exist. Click a ranking row to see its indicator. The gallery displays the complete network, synergies, trade-offs, and the experimental Two-step interface. All four PNGs use the same six role borders, smaller maximum icon sizes, collision-aware spacing, and a complete legend for link colors and icon borders. Disconnected components are laid out separately and packed with compact gaps; their displayed separation does not encode a statistical distance. Download individual files or the complete execution ZIP.
 
 IGES/JRC tables show semantic **Ambitiousness**; SDGIndex tables show performance times in years. The IGES/JRC region selector additionally includes the UNSD catalog codes for OECD (198) and World Bank income groups (910, 911, 912, 914). Verification returned no observations for these aggregate codes, so listing them does not guarantee a runnable network. See [aggregate availability and comparability](docs/iges-comparison-regions.md). BRICS groups have no code in the verified UNSD catalog.
 
@@ -84,7 +84,7 @@ The numeric/ISO code remains the selection identifier and is recorded in the und
 | `*_interlinkages_pond.xlsx` | IGES/JRC only: link-share weighted rankings, roles, interface measures and the `Weighting` comparison sheet |
 | `*_full_pond.png`, `*_synergy_pond.png`, `*_trade-off_pond.png`, `*_two_step_interface_pond.png` | IGES/JRC only: the four views drawn from the weighted measures |
 
-The figure layout uses forces and a fixed random seed. Labels show target numbers. Distinct SDGIndex indicators mapped to the same target retain distinct composite node IDs in the tables. Icon borders mark the six roles: I-1 white, I-2 yellow, I-3 blue, D-1 gray, D-2 red, D-3 orange. Synergies from backward-moving sources use translucent burgundy; trade-offs from those sources use translucent gray.
+The figure layout uses forces and a fixed random seed. Labels show target numbers. Distinct SDGIndex indicators mapped to the same target retain distinct composite node IDs in the tables. Icon borders mark the six roles: Improvement sender (white), Improvement receiver (yellow), Improvement relay (blue), Deterioration sender (gray), Deterioration receiver (red), Deterioration relay (orange). Synergies from backward-moving sources use translucent burgundy; trade-offs from those sources use translucent gray.
 
 ## Analytical procedure
 
@@ -111,40 +111,28 @@ The desired direction and local linear slope determine whether each node moves f
 
 **SDGIndex: performance-time rankings (no semantic ambition).** For each connected indicator, use its latest finite score S and the existing 2000–2025 slope v (score points/year). Forward indicators have `years_to_target = max(0, 100-S)/v`; deteriorating indicators have `years_to_zero = max(0, S)/abs(v)`. Scores already at the relevant boundary have zero remaining years. Stable/undetermined trends have no finite time and are excluded from time rankings. Times are conditional linear extrapolations, not forecasts, with no fixed deadline. Excel retains numeric precision and displays ordinary decimal years to three places; Gradio does likewise.
 
-Rank within performance direction, using all connected indicators. Rankings require positive values. Each role lists at most three indicators, the three highest values of its own score, selected independently, so an indicator can hold more than one role (SDGIndex: exact ties resolved by stable node ID; IGES/JRC: ties at third place retained). The top 10 is used only for the two exclusion rankings below (top senders of trade-offs to deterioration, C, and top senders of synergy from deterioration, B). Intersections are not refilled.
+Rank within performance direction, using all connected indicators. Rankings require positive values. Each role lists at most three indicators, the three highest positive values of its own measure, selected independently with no exclusions and no backfilling, so an indicator can hold more than one role (SDGIndex: exact ties resolved by stable node ID; IGES/JRC: ties at third place retained).
 
-After performance-based classification, synergies link indicators moving in the same direction and trade-offs link indicators moving in opposite directions. The six roles in `sdg/engine/modules/roles.py` separate what reaches each indicator across that interface from what it passes on:
+After performance-based classification, synergies link indicators moving in the same direction and trade-offs link indicators moving in opposite directions. The six roles in `sdg/engine/modules/roles.py` capture the trade-offs sent and received across the interface between the improving (*I*) and deteriorating (*D*) subsystems and the synergy degree within each subsystem:
 
-| Measure | Defined for | Meaning |
-|---|---|---|
-| R: `tradeoff_received_from_backward` | improving | trade-off weight received from deteriorating sources |
-| `forward_synergy_sent` | improving | synergy weight passed to improving indicators |
-| φ: `forward_ratio` | improving | `forward_synergy_sent / R` |
-| `tradeoff_sent_to_backward` | improving | trade-off weight sent to deteriorating indicators (cost downstream) |
-| T⁺: `tradeoff_received_from_forward` | deteriorating | trade-off weight received from improving sources |
-| S⁻: `synergy_received_from_backward` | deteriorating | synergy weight received from deteriorating sources |
-| `synergy_sent_to_backward` | deteriorating | synergy weight passed to deteriorating indicators |
-| `bridge_flow` | deteriorating | T⁺ × `synergy_sent_to_backward` = all two-step paths improving → k → deteriorating |
-| `relay_flow` | deteriorating | S⁻ × `synergy_sent_to_backward` |
+| Role | Measure |
+|---|---|
+| Improvement sender | trade-off sent from *i* ∈ *I* to *D* (`tradeoff_sent_to_backward`) |
+| Improvement receiver | trade-off received by *i* ∈ *I* from *D* (`tradeoff_received_from_backward`) |
+| Improvement relay | synergy degree of *i* within *I* (`forward_synergy_degree`) |
+| Deterioration sender | trade-off sent from *k* ∈ *D* to *I* (`tradeoff_sent_to_forward`) |
+| Deterioration receiver | trade-off received by *k* ∈ *D* from *I* (`tradeoff_received_from_forward`) |
+| Deterioration relay | synergy degree of *k* within *D* (`backward_synergy_degree`) |
 
 Links involving stable or undetermined indicators do not enter these measures.
 
-| Role | Selection |
-|---|---|
-| I-1 · Contributors | Three highest Colab among improving indicators, excluding the top 10 senders of trade-offs to deterioration (C) |
-| I-2 · Dependent contributors | Three highest R among improving indicators with φ ≥ 1: gains associated with losses elsewhere, passed forward |
-| I-3 · Isolated beneficiaries | Three highest R among improving indicators with φ < 1: gains associated with losses elsewhere, not passed forward |
-| D-1 · Exposed targets | Three highest Neglect among deteriorating indicators, excluding the top 10 senders of synergy from deterioration (B) |
-| D-2 · Transmission bridges | Three highest `bridge_flow` |
-| D-3 · Deterioration relays | Three highest `relay_flow` |
+Context characterises roles but does not filter them. Every selected indicator is exported with its years to target (improving) or years to zero (deteriorating) in SDGIndex, or its semantic ambitiousness in IGES/JRC, so priorities can be set within each role.
 
-Context characterises roles but does not filter them. Every selected indicator is exported with its years to target (improving) or years to zero (deteriorating) in SDGIndex, or its semantic ambitiousness in IGES/JRC, so priorities can be set within each role (for example, a transmission bridge close to zero is more urgent than one deteriorating slowly). The isolation threshold φ < 1 is absolute because in dense networks almost every receiver also sends substantial synergy, so a relative cut-off would label strong spreaders as isolated.
-
-“Dependent”, “bridge” and “relay” are exploratory network labels, not evidence of causal mechanisms. Role membership, all rank positions and every interface measure are exported (`Interface_measures`, `Highlights`). Icon borders mark the same six roles in all four PNGs.
+“Sender”, “receiver” and “relay” are exploratory network labels, not evidence of causal mechanisms. Role membership, all rank positions and every interface measure are exported (`Interface_measures`, `Highlights`). Icon borders mark the same six roles in all four PNGs.
 
 ### Link-share weighted version (IGES/JRC)
 
-Every IGES/JRC run also writes a weighted version, with its own workbook and figures ending in `_pond`. It applies the factor of NT Dinte 77 (eq. 1): P_i = L_i / Σ L_j, the target's share of the arcs it sends (P_out) or receives (P_in) in the final network. Sent measures (Colab, synergy and trade-off sent) are divided by the sent share, received measures (Neglect, trade-off and synergy received) by the received share, and bridge and relay flows by both; φ is unchanged. Roles, node sizes and Two-step positions are recomputed from the weighted measures.
+Every IGES/JRC run also writes a weighted version, with its own workbook and figures ending in `_pond`. It applies the factor of NT Dinte 77 (eq. 1): P_i = L_i / Σ L_j, the target's share of the arcs it sends (P_out) or receives (P_in) in the final network. Sent measures (Colab, synergy and trade-off sent) are divided by the sent share, received measures (Neglect, trade-off and synergy received) by the received share, and internal synergy degrees sum the weighted received and sent synergy components. Roles, node sizes and Two-step positions are recomputed from the weighted measures.
 
 Shares are reported relative to the mean (P_i × number of targets), so a target with the mean number of links keeps its unweighted value; rankings are identical to dividing by P_i itself.
 
@@ -189,7 +177,7 @@ print(countries["BRA"], folder)
 python -m unittest discover -s tests
 ```
 
-Tests cover measure identity, indicator directionality, temporal reclassification boundaries, interface roles (including a synthetic worked example), and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
+Tests cover measure identity, indicator directionality, temporal reclassification boundaries, roles (including a synthetic worked example), and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
 
 ## Validity tests
 
@@ -204,12 +192,11 @@ The scripts below reproduce Section 7 of the methodological article (ISO3 = BRA,
 | `scripts/validity_iges.py CSV AREA` | IGES/JRC procedure in levels and annual changes |
 | `scripts/iges_nofilter.py CSV AREA` | IGES/JRC with and without the significance filter |
 | `scripts/unsd_coverage.py CSV` | UN targets covered with and without the normative-direction table |
-| `scripts/figure1_brazil.py` | Figure 1 of the article (Brazil's bridge and isolated beneficiary) |
+| `scripts/figure1_brazil.py` | Figure 1 of the article (Brazil's six roles) |
 
 ### Experimental network view
 
 The existing complete network is retained alongside an additional **Two-step interface** view, with the same legends and an experimental-layout note. See [the layout documentation](docs/two-step-interface-layout.md) for its display score, positioning and interpretation.
-
 
 ### Performance terminology
 

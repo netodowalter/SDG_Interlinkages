@@ -1,4 +1,4 @@
-"""Performance times, rank intersections, precedence, and cutoff regressions."""
+"""Performance times, role rankings, and cutoff regressions."""
 import sys
 import unittest
 from pathlib import Path
@@ -22,7 +22,7 @@ class PerformanceRanking(unittest.TestCase):
             self.assertIsNone(value['years_to_target'])
             self.assertIsNone(value['years_to_zero'])
 
-    def test_intersections_precedence_and_tenth_place(self):
+    def test_top_three_per_role_without_exclusions(self):
         nodes = []
         for direction, prefix in [('forward', 'f'), ('backward', 'b')]:
             for i in range(12):
@@ -32,23 +32,21 @@ class PerformanceRanking(unittest.TestCase):
                     years_to_zero=100-i if direction == 'backward' else None))
         edges = [dict(source=f'b{i:02}', target=f'f{i:02}', interaction='trade-off', weight=i+1)
                  for i in range(6)]
+        edges += [dict(source=f'f{i:02}', target=f'b{i:02}', interaction='trade-off', weight=10-i)
+                  for i in range(4)]
         edges += [dict(source=f'b{i:02}', target='b11', interaction='synergy', weight=i+1)
                   for i in range(6)]
         groups = {g['id']: {r[1] for r in g['rows']} for g in highlight_groups(nodes, edges)}
-        # Three per role, selected independently: f00-f02 are contributors even though they also
-        # receive trade-offs; the three largest receivers (all with phi = 0) are isolated beneficiaries.
-        self.assertEqual(groups['contributors'], {'f00', 'f01', 'f02'})
-        self.assertEqual(groups['dependent_contributors'], set())
-        self.assertEqual(groups['isolated_beneficiaries'], {'f03', 'f04', 'f05'})
-        # Exposed still excludes the top senders of synergy from deterioration (b00-b05).
-        self.assertEqual(groups['exposed'], {'b06', 'b07', 'b08'})
-        # No trade-off reaches the deteriorating nodes and b11 passes nothing on.
-        self.assertEqual(groups['transmission_bridges'], set())
-        self.assertEqual(groups['deterioration_relays'], set())
-        # Times characterise roles but no longer filter them.
+        self.assertEqual(groups['improvement_sender'], {'f00', 'f01', 'f02'})
+        self.assertEqual(groups['improvement_receiver'], {'f03', 'f04', 'f05'})
+        self.assertEqual(groups['improvement_relay'], set())
+        self.assertEqual(groups['deterioration_sender'], {'b03', 'b04', 'b05'})
+        self.assertEqual(groups['deterioration_receiver'], {'b00', 'b01', 'b02'})
+        self.assertEqual(groups['deterioration_relay'], {'b11', 'b04', 'b05'})
+        # Times characterise roles but do not filter them.
         nodes[-1]['years_to_zero'] = 1000
         result = {g['id']: {r[1] for r in g['rows']} for g in highlight_groups(nodes, edges)}
-        self.assertIn('b06', result['exposed'])
+        self.assertEqual(result['deterioration_relay'], {'b11', 'b04', 'b05'})
         self.assertEqual(nodes[-1]['zero_time_rank'], 1)
         self.assertEqual(nodes[0]['tradeoff_received_from_backward'], 1)
 
@@ -61,15 +59,16 @@ class PerformanceRanking(unittest.TestCase):
         metrics = {f'{i}.1': dict(Colab=30-i, Neglect=0) for i in range(1, 13)}
         details = {t: [t, 'Test', 'indicator', 'Test', .8, 'forward', 'high'] for t in metrics}
         details['3.1'][4] = .5
-        groups = iges_highlights(metrics, details)
+        details['12.1'][5] = 'backward'
+        edges = [dict(TargetA=t, TargetB='12.1', interaction='trade-off', weight=30-int(t.split('.')[0]))
+                 for t in ('1.1', '2.1', '3.1', '4.1')]
+        groups = iges_highlights(metrics, details, edges)
         ids = {r[1] for r in groups[0]['rows']}
         self.assertEqual(ids, {'1.1', '2.1', '3.1'})  # three per role
         self.assertIn('3.1', ids)  # low ambition is reported, not excluded
         self.assertEqual(next(r for r in groups[0]['rows'] if r[1] == '3.1')[6], .5)
-        # The diagnostic uses the same widened intersection.
-        details['12.1'][5] = 'backward'
-        edges = [dict(TargetA='12.1', TargetB=t, interaction='trade-off', weight=1)
-                 for t in metrics if t != '12.1']
-        diagnostic = {r['TargetCode']: r for r in dependence_diagnostics(metrics, details, edges)}
+        edges_in = [dict(TargetA='12.1', TargetB=t, interaction='trade-off', weight=1)
+                    for t in metrics if t != '12.1']
+        diagnostic = {r['TargetCode']: r for r in dependence_diagnostics(metrics, details, edges_in)}
         self.assertTrue(diagnostic['10.1']['strict_highlight'])
         self.assertFalse(diagnostic['11.1']['strict_highlight'])

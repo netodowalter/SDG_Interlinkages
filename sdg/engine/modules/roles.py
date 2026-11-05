@@ -1,67 +1,61 @@
-"""Network roles at the interface between improving and deteriorating targets.
+"""Network roles at the interface and within improving and deteriorating subsystems.
 
 After performance-based classification, synergies link nodes moving in the same
-direction and trade-offs link nodes moving in opposite directions. The roles
-below separate what arrives at each node across that interface from what it
-passes on. They are exploratory hypotheses, not estimates of causal effects.
+direction and trade-offs link nodes moving in opposite directions. The six roles
+below measure the trade-offs sent and received across the interface between the
+improving (I) and deteriorating (D) subsystems and the synergy degree within each
+subsystem. They are exploratory hypotheses, not estimates of causal effects.
 
 Both procedures share these definitions and supply their own ranking rule
-(``top``). Context (semantic ambitiousness in IGES/JRC; conditional years to
-target or to zero in SDGIndex) does not filter roles: it is exported alongside
-every selected node to characterise and prioritise within each role.
+(``top``). Each role lists its three highest positive values, with no exclusions
+and no backfilling. Context (semantic ambitiousness in IGES/JRC; conditional
+years to target or to zero in SDGIndex) does not filter roles: it is exported
+alongside every selected node to characterise and prioritise within each role.
 """
-from collections import defaultdict
 
 FORWARD, BACKWARD = 'forward', 'backward'
-# An improving node is isolated when it passes forward less synergy weight than the
-# trade-off weight it receives from deteriorating sources (phi < 1). A relative
-# cut-off (outside the top senders) is unsuitable in dense networks, where almost
-# every receiver also sends substantial synergy.
-ISOLATION_RATIO = 1.0
 
-# Each role lists only its three highest-ranked nodes, selected independently: a node may hold
-# more than one role. The order within each list is the insight.
+# Each role lists only its three highest-ranked nodes, selected independently
+# without exclusions or backfilling: a node may hold more than one role.
 ROLE_TOP = 3
 
 # Edge-derived measures. Weights are absolute coefficients.
 MEASURES = (
-    'tradeoff_received_from_backward',  # R: improving node, gains associated with losses upstream
-    'tradeoff_sent_to_backward',        # improving node, gains associated with losses downstream
-    'forward_synergy_sent',             # improving node, synergies passed to improving nodes
-    'tradeoff_received_from_forward',   # T+: deteriorating node, cost of gains upstream
-    'synergy_received_from_backward',   # S-: deteriorating node, deterioration received
-    'synergy_sent_to_backward',         # deteriorating node, deterioration passed on
-    'backward_synergy_sent',            # B: deteriorating source, synergy to any destination
-    'bridge_flow',                      # T+ x synergy_sent_to_backward
-    'relay_flow',                       # S- x synergy_sent_to_backward
-    'forward_ratio',                    # phi = forward_synergy_sent / R (None when R = 0)
+    'tradeoff_sent_to_backward',        # Improvement sender: trade-off sent from i in I to D
+    'tradeoff_received_from_backward',  # Improvement receiver: trade-off received by i in I from D
+    'forward_synergy_received',         # synergy received by i in I from I
+    'forward_synergy_sent',             # synergy sent by i in I to I
+    'forward_synergy_degree',           # Improvement relay: synergy degree of i within I (in + out)
+    'tradeoff_sent_to_forward',         # Deterioration sender: trade-off sent from k in D to I
+    'tradeoff_received_from_forward',   # Deterioration receiver: trade-off received by k in D from I
+    'synergy_received_from_backward',   # synergy received by k in D from D
+    'synergy_sent_to_backward',         # synergy sent by k in D to D
+    'backward_synergy_degree',          # Deterioration relay: synergy degree of k within D (in + out)
 )
 
 # (id, title, score field, score label, performance direction)
 ROLES = (
-    ('contributors', 'I-1 · Contributors', 'colab', 'Colab', FORWARD),
-    ('dependent_contributors', 'I-2 · Dependent contributors', 'tradeoff_received_from_backward',
+    ('improvement_sender', 'Improvement sender', 'tradeoff_sent_to_backward',
+     'Trade-off sent to deterioration', FORWARD),
+    ('improvement_receiver', 'Improvement receiver', 'tradeoff_received_from_backward',
      'Trade-off received from deterioration', FORWARD),
-    ('isolated_beneficiaries', 'I-3 · Isolated beneficiaries', 'tradeoff_received_from_backward',
-     'Trade-off received from deterioration', FORWARD),
-    ('exposed', 'D-1 · Exposed targets', 'neglect', 'Neglect', BACKWARD),
-    ('transmission_bridges', 'D-2 · Transmission bridges', 'bridge_flow', 'Bridge flow', BACKWARD),
-    ('deterioration_relays', 'D-3 · Deterioration relays', 'relay_flow', 'Relay flow', BACKWARD),
+    ('improvement_relay', 'Improvement relay', 'forward_synergy_degree',
+     'Synergy degree within improvement', FORWARD),
+    ('deterioration_sender', 'Deterioration sender', 'tradeoff_sent_to_forward',
+     'Trade-off sent to improvement', BACKWARD),
+    ('deterioration_receiver', 'Deterioration receiver', 'tradeoff_received_from_forward',
+     'Trade-off received from improvement', BACKWARD),
+    ('deterioration_relay', 'Deterioration relay', 'backward_synergy_degree',
+     'Synergy degree within deterioration', BACKWARD),
 )
 
 RULES = {
-    'contributors': 'Three highest Colab among improving nodes, excluding the top senders of trade-offs '
-                    'to deterioration.',
-    'dependent_contributors': 'Three largest receivers of trade-offs from deteriorating sources among those that '
-                              'pass at least as much synergy weight forward to improving nodes (phi >= 1).',
-    'isolated_beneficiaries': 'Three largest receivers of trade-offs from deteriorating sources among those that '
-                              'pass less synergy weight forward than they receive (phi < 1).',
-    'exposed': 'Three highest Neglect among deteriorating nodes, excluding the top senders of synergies '
-               'from deterioration.',
-    'transmission_bridges': 'Three largest bridge flows: trade-off received from improving sources multiplied by '
-                            'synergy sent to deteriorating nodes (all two-step paths improving → k → deteriorating).',
-    'deterioration_relays': 'Three largest relay flows: synergy received from deteriorating sources multiplied by '
-                            'synergy sent to deteriorating nodes.',
+    'improvement_sender': 'Three highest senders of trade-off weight from improving nodes (i in I) to deteriorating nodes (D).',
+    'improvement_receiver': 'Three highest receivers of trade-off weight at improving nodes (i in I) from deteriorating nodes (D).',
+    'improvement_relay': 'Three highest synergy degrees (incoming plus outgoing synergy weight) of improving nodes (i in I) within I.',
+    'deterioration_sender': 'Three highest senders of trade-off weight from deteriorating nodes (k in D) to improving nodes (I).',
+    'deterioration_receiver': 'Three highest receivers of trade-off weight at deteriorating nodes (k in D) from improving nodes (I).',
+    'deterioration_relay': 'Three highest synergy degrees (incoming plus outgoing synergy weight) of deteriorating nodes (k in D) within D.',
 }
 
 
@@ -70,9 +64,7 @@ def interface_measures(direction, edges):
 
     ``direction`` maps node id to 'forward', 'backward', 'stable' or 'undetermined'.
     ``edges`` yields (source, target, interaction, weight). Links involving stable
-    or undetermined nodes, and self-loops, do not enter interface measures, except
-    ``backward_synergy_sent``, which keeps its established definition (synergies
-    sent by a deteriorating source to any destination).
+    or undetermined nodes, and self-loops, do not enter interface measures.
     """
     values = {i: dict.fromkeys(MEASURES, 0.0) for i in direction}
     for source, target, interaction, weight in edges:
@@ -80,27 +72,25 @@ def interface_measures(direction, edges):
             continue
         w = abs(float(weight))
         da, db = direction[source], direction[target]
-        if interaction == 'synergy' and da == BACKWARD:
-            values[source]['backward_synergy_sent'] += w
         if da not in (FORWARD, BACKWARD) or db not in (FORWARD, BACKWARD):
             continue
         if interaction == 'trade-off' and da != db:
-            if da == BACKWARD:
-                values[target]['tradeoff_received_from_backward'] += w
-            else:
+            if da == FORWARD:
                 values[source]['tradeoff_sent_to_backward'] += w
                 values[target]['tradeoff_received_from_forward'] += w
+            else:
+                values[source]['tradeoff_sent_to_forward'] += w
+                values[target]['tradeoff_received_from_backward'] += w
         elif interaction == 'synergy' and da == db:
             if da == FORWARD:
                 values[source]['forward_synergy_sent'] += w
+                values[target]['forward_synergy_received'] += w
             else:
                 values[source]['synergy_sent_to_backward'] += w
                 values[target]['synergy_received_from_backward'] += w
-    for i, v in values.items():
-        v['bridge_flow'] = v['tradeoff_received_from_forward'] * v['synergy_sent_to_backward']
-        v['relay_flow'] = v['synergy_received_from_backward'] * v['synergy_sent_to_backward']
-        received = v['tradeoff_received_from_backward']
-        v['forward_ratio'] = v['forward_synergy_sent'] / received if received > 0 else None
+    for v in values.values():
+        v['forward_synergy_degree'] = v['forward_synergy_received'] + v['forward_synergy_sent']
+        v['backward_synergy_degree'] = v['synergy_received_from_backward'] + v['synergy_sent_to_backward']
     return values
 
 
@@ -132,20 +122,18 @@ def link_shares(ids, edges):
 
 
 # Which link-count share divides each measure in the weighted (_pond) version.
-SENT = ('colab', 'tradeoff_sent_to_backward', 'forward_synergy_sent', 'synergy_sent_to_backward',
-        'backward_synergy_sent')
+SENT = ('colab', 'tradeoff_sent_to_backward', 'tradeoff_sent_to_forward',
+        'forward_synergy_sent', 'synergy_sent_to_backward')
 RECEIVED = ('neglect', 'tradeoff_received_from_backward', 'tradeoff_received_from_forward',
-            'synergy_received_from_backward')
-TWO_STEP = ('bridge_flow', 'relay_flow')
+            'forward_synergy_received', 'synergy_received_from_backward')
 
 
 def ponderate(node, shares):
     """Divide each measure by the node's relative share of sent or received links (NT Dinte 77, eq. 1).
 
     The relative share (share x number of nodes) gives the same ordering as the share itself
-    and keeps values comparable with the unweighted version. Two-step flows combine a received and a sent component and are divided by both
-    shares. The forward ratio phi is a ratio of flows at the same node and is left
-    unchanged. A measure whose share is zero is zero.
+    and keeps values comparable with the unweighted version. Internal synergy degrees sum the
+    weighted received and sent components within the subsystem. A measure whose share is zero is zero.
     """
     def divide(value, share):
         return value / share if share > 0 and value is not None else 0.0
@@ -156,39 +144,20 @@ def ponderate(node, shares):
     for field in RECEIVED:
         if field in node:
             result[field] = divide(node[field], shares['relative_in'])
-    for field in TWO_STEP:
-        if field in node:
-            result[field] = divide(node[field], shares['relative_out'] * shares['relative_in'])
+    if 'forward_synergy_degree' in node:
+        result['forward_synergy_degree'] = result.get('forward_synergy_received', 0.0) + result.get('forward_synergy_sent', 0.0)
+    if 'backward_synergy_degree' in node:
+        result['backward_synergy_degree'] = result.get('synergy_received_from_backward', 0.0) + result.get('synergy_sent_to_backward', 0.0)
     return result
 
 
-def select_roles(top, ratio, isolation='ratio', n=None):
+def select_roles(top, n=None):
     """Return {role id: set of node ids}.
 
-    ``top(field, direction, n=None, keep=None)`` returns the ``n`` highest positive values of
-    ``field`` among nodes with that performance direction, after dropping nodes for which
-    ``keep(id)`` is false (``n=None``: the procedure's default ranking cut-off, used only for the
-    exclusions below). ``ratio`` maps node id to forward_ratio (phi).
-
-    Every role lists at most ``ROLE_TOP`` nodes (or ``n``), ranked by its own score. Roles are
-    selected independently, so a node can hold more than one (for example contributor and
-    dependent contributor, or bridge and relay). Two exclusions remain, because they concern
-    rankings that are not roles: contributors exclude the top senders of costs to deteriorating
-    nodes, and exposed targets exclude the top senders of synergies from deterioration.
-    ``isolation='zero'`` counts as isolated only receivers that pass no synergy forward (phi == 0),
-    a stricter alternative to phi < 1.
+    ``top(field, direction, n=None)`` returns the ``n`` highest positive values of
+    ``field`` among nodes with that performance direction. Every role lists at most
+    ``ROLE_TOP`` nodes (or ``n``), ranked by its own score, with no exclusions and
+    no backfilling. Roles are selected independently, so a node can hold more than one.
     """
     k = n or ROLE_TOP
-    cut = (lambda r: r == 0) if isolation == 'zero' else (lambda r: r < ISOLATION_RATIO)
-    isolated = lambda i: ratio[i] is not None and cut(ratio[i])
-    cost = top('tradeoff_sent_to_backward', FORWARD)
-    senders = top('backward_synergy_sent', BACKWARD)
-    receivers = 'tradeoff_received_from_backward'
-    return dict(
-        contributors=top('colab', FORWARD, k, lambda i: i not in cost),
-        dependent_contributors=top(receivers, FORWARD, k, lambda i: not isolated(i)),
-        isolated_beneficiaries=top(receivers, FORWARD, k, isolated),
-        exposed=top('neglect', BACKWARD, k, lambda i: i not in senders),
-        transmission_bridges=top('bridge_flow', BACKWARD, k),
-        deterioration_relays=top('relay_flow', BACKWARD, k),
-    )
+    return {slug: top(field, direction, k) for slug, _, field, _, direction in ROLES}

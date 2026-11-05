@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / 'sdg/engine/modules')]
 from sdgindex_country import analyze  # noqa: E402
 from roles import select_roles  # noqa: E402
-from validity import _roles, phase_surrogate, rewire, role_sets  # noqa: E402
+from validity import _roles, null_model, phase_surrogate, rewire, role_sets  # noqa: E402
 
 SOURCE = ROOT / 'data/SDGIndex/countries/BRA_Brazil.xlsx'
 MAPPING = ROOT / 'data/SDGIndex/mapping.json'
@@ -48,13 +48,9 @@ class Validity(unittest.TestCase):
         arcs = lambda d: {(e['source'], e['target']) for e in d['edges']}
         self.assertLessEqual(arcs(run(selection='q')), arcs(self.main))
 
-    def test_isolation_zero_is_stricter(self):
-        def top(field, direction, n=None, keep=None):
-            pool = ['a', 'b'] if field == 'tradeoff_received_from_backward' else []
-            return {i for i in pool if keep is None or keep(i)}
-        ratio = {'a': 0.0, 'b': 0.5}
-        self.assertEqual(select_roles(top, ratio)['isolated_beneficiaries'], {'a', 'b'})
-        self.assertEqual(select_roles(top, ratio, isolation='zero')['isolated_beneficiaries'], {'a'})
+    def test_null_model_shares_never_exceed_one(self):
+        _, members = null_model(self.main['nodes'], self.main['edges'], replicates=5)
+        self.assertTrue(all(0.0 <= m['share_null_same_role'] <= 1.0 for m in members))
 
     def test_rewiring_preserves_degrees_and_rules(self):
         direction = {n['id']: n['direction'] for n in self.main['nodes']}

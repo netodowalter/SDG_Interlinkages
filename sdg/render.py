@@ -22,11 +22,11 @@ def scale(value, lo, hi, small, large):
 
 
 # Borders retain the same role meaning in all views, in roles.ROLES order:
-# I-1 contributors, I-2 dependent contributors, I-3 isolated beneficiaries,
-# D-1 exposed targets, D-2 transmission bridges, D-3 deterioration relays.
+# Improvement sender, Improvement receiver, Improvement relay,
+# Deterioration sender, Deterioration receiver, Deterioration relay.
 BORDER_COLORS = ['#ffffff', '#f2c500', '#1f6fd1', '#888888', '#d71920', '#f08a00']
-ROLE_LABELS = ['I-1 Contributors', 'I-2 Dependent contributors', 'I-3 Isolated beneficiaries',
-               'D-1 Exposed targets', 'D-2 Transmission bridges', 'D-3 Deterioration relays']
+ROLE_LABELS = ['Improvement sender', 'Improvement receiver', 'Improvement relay',
+               'Deterioration sender', 'Deterioration receiver', 'Deterioration relay']
 PLOT = (80, 215, 3120, 1760)
 
 
@@ -185,7 +185,7 @@ def legend(draw, dataset):
         yy = y+(j//3)*62
         draw.rectangle((x,yy,x+32,yy+32),fill=color,outline='#536067',width=2)
         draw.text((x+50,yy+2),label,font=font(24),fill='#334455')
-    draw.text((70,2070),'Black border: other indicators. I = improving, D = deteriorating. Same six roles in every view; a node with several roles has nested borders in the order above.',font=font(23),fill='#465b63')
+    draw.text((70,2070),'Black border: other indicators. Same six roles in every view; a node with several roles has nested borders in the order above.',font=font(23),fill='#465b63')
     draw.text((70,2110),'Link thickness: |r|. Links from deterioration use 35% opacity. Component spacing is optimized for readability.',font=font(23),fill='#465b63')
 
 

@@ -26,10 +26,9 @@ from scipy import stats
 
 from networks import node_metrics
 from performance_ranking import highlight_groups
+from roles import ROLES
 
-SCORES = dict(contributors='colab', dependent_contributors='tradeoff_received_from_backward',
-              isolated_beneficiaries='tradeoff_received_from_backward', exposed='neglect',
-              transmission_bridges='bridge_flow', deterioration_relays='relay_flow')
+SCORES = {slug: field for slug, _, field, _, _ in ROLES}
 INTERFACE = ('forward', 'backward')
 
 
@@ -89,7 +88,7 @@ def null_model(nodes, edges, replicates=500, seed=1, **options):
     rng = np.random.default_rng(seed)
     direction = {n['id']: n['direction'] for n in nodes}
     observed, obs_nodes = _roles(nodes, edges, **options)
-    same = {i: 0 for members in observed.values() for i in members}
+    same = {(r, i): 0 for r, members in observed.items() for i in members}
     exceed = {(r, i): 0 for r, members in observed.items() for i in members}
     sizes = {r: [] for r in observed}
     overlap = {r: [] for r in observed}
@@ -101,7 +100,7 @@ def null_model(nodes, edges, replicates=500, seed=1, **options):
             overlap[r].append(len(members & roles[r]) / len(union) if union else 1.0)
             field = SCORES[r]
             for i in members:
-                same[i] += i in roles[r]
+                same[r, i] += i in roles[r]
                 exceed[r, i] += (null_nodes[i][field] or 0) >= (obs_nodes[i][field] or 0)
     summary = [dict(role=r, observed_members=len(m), null_mean_members=float(np.mean(sizes[r])),
                     mean_jaccard_with_null=float(np.mean(overlap[r])),
@@ -109,7 +108,7 @@ def null_model(nodes, edges, replicates=500, seed=1, **options):
                     replicates=replicates) for r, m in observed.items()]
     members = [dict(role=r, node=i, direction=direction[i], score_field=SCORES[r],
                     observed_score=obs_nodes[i][SCORES[r]],
-                    share_null_same_role=same[i] / replicates,
+                    share_null_same_role=same[r, i] / replicates,
                     p_null_score_ge_observed=(exceed[r, i] + 1) / (replicates + 1))
                for r, m in observed.items() for i in sorted(m)]
     return summary, members

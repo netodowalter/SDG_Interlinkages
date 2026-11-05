@@ -1,4 +1,4 @@
-"""SDGIndex performance times and intersections of direction-specific top tens."""
+"""SDGIndex performance times and role rankings."""
 import math
 
 TOP_N = 10
@@ -33,17 +33,18 @@ RANK_FIELDS = (
     ('neglect_rank', 'neglect', 'backward', False, True),
     ('target_time_rank', 'years_to_target', 'forward', True, False),
     ('zero_time_rank', 'years_to_zero', 'backward', False, False),
-    ('receiver_rank', 'tradeoff_received_from_backward', 'forward', False, True),
-    ('sender_rank', 'backward_synergy_sent', 'backward', False, True),
-    ('spreader_rank', 'forward_synergy_sent', 'forward', False, True),
-    ('cost_sender_rank', 'tradeoff_sent_to_backward', 'forward', False, True),
-    ('bridge_rank', 'bridge_flow', 'backward', False, True),
-    ('relay_rank', 'relay_flow', 'backward', False, True))
+    ('improvement_sender_rank', 'tradeoff_sent_to_backward', 'forward', False, True),
+    ('improvement_receiver_rank', 'tradeoff_received_from_backward', 'forward', False, True),
+    ('improvement_relay_rank', 'forward_synergy_degree', 'forward', False, True),
+    ('deterioration_sender_rank', 'tradeoff_sent_to_forward', 'backward', False, True),
+    ('deterioration_receiver_rank', 'tradeoff_received_from_forward', 'backward', False, True),
+    ('deterioration_relay_rank', 'backward_synergy_degree', 'backward', False, True),
+)
 RANK_KEYS = tuple(spec[0] for spec in RANK_FIELDS)
 
 
-def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
-    """Six interface roles; at most three per role, selected independently, ties broken by node ID.
+def highlight_groups(nodes, edges, top_n=None):
+    """Six roles; at most three per role, selected independently without exclusions or backfilling, ties broken by node ID.
 
     Years to target (improving) or to zero (deteriorating) characterise each selected
     node in its row; they do not filter role membership."""
@@ -61,14 +62,15 @@ def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
         field_rank[field] = rank
         top[rank] = {i for i, position in ranking.items() if position <= TOP_N}
         order[rank] = ranking
-    def pick(field, direction, n=None, keep=None):
+
+    def pick(field, direction, n=None):
         rank = field_rank[field]
         if n is None:
             return top[rank]
-        ranked = [i for i, _ in sorted(order[rank].items(), key=lambda x: x[1]) if keep is None or keep(i)]
+        ranked = [i for i, _ in sorted(order[rank].items(), key=lambda x: x[1])]
         return set(ranked[:n])
-    selected = select_roles(pick, {i: n['forward_ratio'] for i, n in byid.items()},
-                            isolation=isolation, n=top_n)
+
+    selected = select_roles(pick, n=top_n)
     groups = []
     for slug, title, metric, label, direction in ROLES:
         time = 'years_to_target' if direction == 'forward' else 'years_to_zero'
@@ -77,7 +79,7 @@ def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
                  byid[i]['indicator'], byid[i]['description'], byid[i][time],
                  byid[i]['direction'], ''] for i in ordered]
         groups.append(dict(id=slug, title=title, metric=label, rows=rows,
-                           base='Three highest values of the role score; roles selected independently; ties resolved by node ID.'))
+                           base='Three highest positive values of the role score; roles selected independently without exclusions or backfilling; ties resolved by node ID.'))
     return groups
 
 

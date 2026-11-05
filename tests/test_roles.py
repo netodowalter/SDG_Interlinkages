@@ -1,4 +1,4 @@
-"""Interface roles: the worked example of the methodological article, in both procedures."""
+"""Interface and subsystem roles: worked example in both procedures."""
 import sys
 import unittest
 from pathlib import Path
@@ -8,7 +8,7 @@ from roles import interface_measures, link_shares, ponderate
 from performance_ranking import highlight_groups as sdg_highlights
 from progress import highlight_groups as iges_highlights
 
-# Eight hypothetical targets: A-D deteriorating, E-H improving (article, Section 6).
+# Eight hypothetical targets: A-D deteriorating, E-H improving.
 DIRECTION = dict(A='backward', B='backward', C='backward', D='backward',
                  E='forward', F='forward', G='forward', H='forward')
 EDGES = [('A', 'B', 'synergy', .8), ('A', 'C', 'synergy', .5), ('B', 'C', 'synergy', .7),
@@ -16,8 +16,14 @@ EDGES = [('A', 'B', 'synergy', .8), ('A', 'C', 'synergy', .5), ('B', 'C', 'syner
          ('E', 'F', 'synergy', .8), ('F', 'E', 'synergy', .5), ('E', 'H', 'synergy', .6),
          ('E', 'B', 'trade-off', .6), ('F', 'A', 'trade-off', .4), ('H', 'D', 'trade-off', .3),
          ('D', 'G', 'trade-off', .7), ('C', 'G', 'trade-off', .6), ('D', 'E', 'trade-off', .5)]
-EXPECTED = dict(contributors=set(), dependent_contributors={'E'}, isolated_beneficiaries={'G'},
-                exposed={'D'}, transmission_bridges={'A', 'B'}, deterioration_relays={'B', 'C'})
+EXPECTED = dict(
+    improvement_sender={'E', 'F', 'H'},
+    improvement_receiver={'G', 'E'},
+    improvement_relay={'E', 'F', 'H'},
+    deterioration_sender={'D', 'C'},
+    deterioration_receiver={'B', 'A', 'D'},
+    deterioration_relay={'B', 'C', 'A'},
+)
 
 
 def colab_neglect():
@@ -33,15 +39,14 @@ def colab_neglect():
 class InterfaceRoles(unittest.TestCase):
     def test_measures(self):
         m = interface_measures(DIRECTION, EDGES)
-        self.assertAlmostEqual(m['A']['bridge_flow'], .4 * 1.3)
-        self.assertAlmostEqual(m['B']['bridge_flow'], .6 * 1.1)
-        self.assertAlmostEqual(m['C']['bridge_flow'], 0)
-        self.assertAlmostEqual(m['B']['relay_flow'], .8 * 1.1)
-        self.assertAlmostEqual(m['C']['relay_flow'], 1.2 * .6)
-        self.assertAlmostEqual(m['G']['tradeoff_received_from_backward'], 1.3)
-        self.assertEqual(m['G']['forward_ratio'], 0)
-        self.assertIsNone(m['F']['forward_ratio'])
+        self.assertAlmostEqual(m['E']['tradeoff_sent_to_backward'], .6)
         self.assertAlmostEqual(m['F']['tradeoff_sent_to_backward'], .4)
+        self.assertAlmostEqual(m['G']['tradeoff_received_from_backward'], 1.3)
+        self.assertAlmostEqual(m['E']['forward_synergy_degree'], 1.9)
+        self.assertAlmostEqual(m['D']['tradeoff_sent_to_forward'], 1.2)
+        self.assertAlmostEqual(m['B']['tradeoff_received_from_forward'], .6)
+        self.assertAlmostEqual(m['B']['backward_synergy_degree'], 1.9)
+        self.assertAlmostEqual(m['C']['backward_synergy_degree'], 1.8)
 
     def test_sdgindex_roles(self):
         colab, neglect = colab_neglect()
@@ -62,38 +67,17 @@ class InterfaceRoles(unittest.TestCase):
         groups = {g['id']: {r[1] for r in g['rows']} for g in iges_highlights(metrics, details, edges)}
         self.assertEqual(groups, {k: {names[i] for i in v} for k, v in EXPECTED.items()})
 
-    def test_old_rule_misses_bridge_with_low_neglect(self):
-        # A has the lowest Neglect among deteriorating nodes but is a transmission bridge.
-        _, neglect = colab_neglect()
-        self.assertEqual(min(('A', 'B', 'C', 'D'), key=neglect.get), 'A')
-        self.assertIn('A', EXPECTED['transmission_bridges'])
-
-    def test_isolation_uses_synergy_sent_not_colab_balance(self):
-        # X passes forward as much synergy as it receives (phi = 1) but also sends 0.9 of
-        # trade-off: low Colab, still not isolated.
-        direction = dict(X='forward', Y='forward', Z='backward', W='backward')
-        edges = [('Z', 'X', 'trade-off', 1.0), ('X', 'Y', 'synergy', 1.0), ('X', 'W', 'trade-off', .9)]
-        nodes = [dict(id=i, indicator=i, description='T', direction=d,
-                      colab=sum((w if k == 'synergy' else -w) for a, _, k, w in edges if a == i),
-                      neglect=sum(w for a, b, k, w in edges if b == i and k == 'trade-off'),
-                      years_to_target=1.0 if d == 'forward' else None,
-                      years_to_zero=1.0 if d == 'backward' else None) for i, d in direction.items()]
-        groups = {g['id']: {r[1] for r in g['rows']} for g in sdg_highlights(
-            nodes, [dict(source=a, target=b, interaction=k, weight=w) for a, b, k, w in edges])}
-        self.assertEqual(groups['dependent_contributors'], {'X'})
-        self.assertEqual(groups['isolated_beneficiaries'], set())
-
-    def test_isolation_is_absolute_not_relative(self):
-        # Both receivers pass synergy forward; only the one passing less than it receives is isolated.
-        direction = dict(P='forward', Q='forward', R='forward', Z='backward')
-        edges = [('Z', 'P', 'trade-off', 1.0), ('Z', 'Q', 'trade-off', 1.0),
-                 ('P', 'R', 'synergy', .5), ('Q', 'R', 'synergy', 2.0)]
+    def test_top_three_without_exclusions_or_backfilling(self):
+        direction = dict(I1='forward', I2='forward', I3='forward', I4='forward', D1='backward')
+        edges = [('I1', 'D1', 'trade-off', 4.0), ('I2', 'D1', 'trade-off', 3.0),
+                 ('I3', 'D1', 'trade-off', 2.0), ('I4', 'D1', 'trade-off', 1.0)]
         nodes = [dict(id=i, indicator=i, description='T', direction=d, colab=0.0, neglect=0.0,
                       years_to_target=None, years_to_zero=None) for i, d in direction.items()]
-        groups = {g['id']: {r[1] for r in g['rows']} for g in sdg_highlights(
+        groups = {g['id']: [r[1] for r in g['rows']] for g in sdg_highlights(
             nodes, [dict(source=a, target=b, interaction=k, weight=w) for a, b, k, w in edges])}
-        self.assertEqual(groups['isolated_beneficiaries'], {'P'})
-        self.assertEqual(groups['dependent_contributors'], {'Q'})
+        self.assertEqual(groups['improvement_sender'], ['I1', 'I2', 'I3'])
+        self.assertEqual(groups['deterioration_receiver'], ['D1'])
+        self.assertEqual(groups['improvement_receiver'], [])
 
     def test_link_shares_and_ponderation(self):
         shares = link_shares(DIRECTION, EDGES)
@@ -106,9 +90,8 @@ class InterfaceRoles(unittest.TestCase):
         self.assertAlmostEqual(shares['B']['relative_out'], relative)
         self.assertAlmostEqual(b['colab'], 1.1 / relative)
         self.assertAlmostEqual(b['neglect'], 1.4 / relative)
-        self.assertAlmostEqual(b['bridge_flow'], m['B']['bridge_flow'] / relative ** 2)
+        self.assertAlmostEqual(b['backward_synergy_degree'], m['B']['backward_synergy_degree'] / relative)
         g = ponderate(dict(m['G'], colab=0.0, neglect=0.0), shares['G'])
-        self.assertEqual(g['forward_ratio'], m['G']['forward_ratio'])
         self.assertEqual(g['forward_synergy_sent'], 0)  # no sent links: share zero, measure zero
 
     def test_weighted_iges_roles_run(self):
@@ -118,13 +101,14 @@ class InterfaceRoles(unittest.TestCase):
         details = {names[k]: [names[k], 'n', 'i', 'd', .5, d, 'b'] for k, d in DIRECTION.items()}
         edges = [dict(TargetA=names[a], TargetB=names[b], interaction=k, weight=w) for a, b, k, w in EDGES]
         groups = {g['id']: {r[1] for r in g['rows']} for g in iges_highlights(metrics, details, edges, pond=True)}
-        # Small network: every positive value is in the top ten, so weighting leaves membership unchanged.
-        self.assertEqual(groups, {k: {names[i] for i in v} for k, v in EXPECTED.items()})
+        self.assertEqual(set(groups), set(EXPECTED))
+        self.assertEqual(len(groups['deterioration_relay']), 3)
 
-    def test_stable_sources_do_not_create_bridges(self):
+    def test_stable_sources_do_not_enter_role_measures(self):
         direction = dict(S='stable', K='backward', L='backward')
         m = interface_measures(direction, [('S', 'K', 'trade-off', 1), ('K', 'L', 'synergy', 1)])
-        self.assertEqual(m['K']['bridge_flow'], 0)
+        self.assertEqual(m['K']['tradeoff_received_from_forward'], 0)
+        self.assertEqual(m['K']['backward_synergy_degree'], 1)
 
 
 if __name__ == '__main__':

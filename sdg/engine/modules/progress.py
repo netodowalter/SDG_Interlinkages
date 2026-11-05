@@ -126,10 +126,10 @@ def _target_order(t):
     goal,suffix=t.split('.',1)
     return (int(goal),not suffix.isdigit(),int(suffix) if suffix.isdigit() else suffix)
 
-def top_ten(nodes,field,direction,n=None,keep=None):
-    'Top n (default ten) positive values within a performance direction, after keep(); exact ties at the last place included.'
+def top_ten(nodes,field,direction,n=None):
+    'Top n (default ten) positive values within a performance direction; exact ties at the last place included.'
     n=n or 10
-    ordered=sorted((t for t,x in nodes.items() if x['direction']==direction and finite(x[field]) and x[field]>0 and (keep is None or keep(t))),
+    ordered=sorted((t for t,x in nodes.items() if x['direction']==direction and finite(x[field]) and x[field]>0),
                    key=lambda t:(-nodes[t][field],_target_order(t)))
     if not ordered:return set()
     cutoff=nodes[ordered[min(n-1,len(ordered)-1)]][field]
@@ -140,22 +140,22 @@ def highlight_groups(metrics,details,edges=(),pond=False):
     from roles import ROLES,select_roles
     nodes=interface_nodes(metrics,details,edges,pond)
     # Semantic ambitiousness characterises each selected target in its row; it does not filter roles.
-    selected=select_roles(lambda field,direction,n=None,keep=None:top_ten(nodes,field,direction,n,keep),{t:n['forward_ratio'] for t,n in nodes.items()})
+    selected=select_roles(lambda field,direction,n=None:top_ten(nodes,field,direction,n))
     scored={t:dict(metrics[t],**{label:nodes[t][field] for _,_,field,label,_ in ROLES}) for t in metrics}
     groups=[]
     for slug,title,field,label,_ in ROLES:
         rows=[r for r in ranked_rows(scored,details,label) if r[1] in selected[slug]]
-        groups.append(dict(id=slug,title=title,metric=label,rows=rows,base='three highest values of the role score; roles selected independently; ties at third place included'))
+        groups.append(dict(id=slug,title=title,metric=label,rows=rows,base='three highest positive values of the role score; roles selected independently without exclusions or backfilling; ties at third place included'))
     return groups
 
 def interface_rows(metrics,details,edges=(),pond=False):
     'One row per connected target: interface measures, ranks and assigned role.'
+    from roles import MEASURES
     nodes=interface_nodes(metrics,details,edges,pond)
     role={}
     for g in highlight_groups(metrics,details,edges,pond):
         for r in g['rows']:role[r[1]]=role[r[1]]+'; '+g['title'] if r[1] in role else g['title']
-    fields=('colab','neglect','tradeoff_received_from_backward','forward_synergy_sent','forward_ratio','tradeoff_sent_to_backward',
-            'tradeoff_received_from_forward','synergy_received_from_backward','synergy_sent_to_backward','backward_synergy_sent','bridge_flow','relay_flow')
+    fields=('colab','neglect',*MEASURES)
     rows=[]
     for t in sorted(nodes,key=_target_order):
         n=nodes[t];rows.append(dict(TargetCode=t,progress_direction=n['direction'],role=role.get(t,''),**{f:n[f] for f in fields},
@@ -165,7 +165,6 @@ def interface_rows(metrics,details,edges=(),pond=False):
 def weighting_rows(metrics,details,edges=()):
     '''Compare original and link-share weighted rankings (NT Dinte 77). A large shift suggests that a
     position may reflect how many links the literature records for a target rather than their strength.'''
-    from roles import link_shares
     weighted=interface_nodes(metrics,details,edges,True)
     def ranks(values):
         ordered=sorted(values,key=lambda t:(-values[t],_target_order(t)));out={};previous=None

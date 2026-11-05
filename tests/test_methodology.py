@@ -68,28 +68,26 @@ class Methodology(unittest.TestCase):
         details['1.1'][4]=.6
         details['2.1'][5]='backward'
         details['3.1'][4]=None
-        groups={g['id']:g['rows'] for g in highlight_groups(metrics,details)}
-        # Ambition no longer filters contributors; 2.1 is deteriorating and stays out.
-        # Three per role; low or missing ambition does not exclude.
-        self.assertEqual([r[1] for r in groups['contributors']],['1.1','3.1','4.1'])
-        self.assertFalse(groups['dependent_contributors'])
-        self.assertEqual([r[1] for r in groups['exposed']],['2.1'])
-        self.assertFalse(groups['transmission_bridges'])
+        edges=[dict(TargetA=t,TargetB='2.1',interaction='trade-off',weight=10-i) for i,t in enumerate(('1.1','3.1','4.1','5.1'))]
+        groups={g['id']:g['rows'] for g in highlight_groups(metrics,details,edges)}
+        # Ambition no longer filters roles; 2.1 is deteriorating and stays out of improvement_sender.
+        self.assertEqual([r[1] for r in groups['improvement_sender']],['1.1','3.1','4.1'])
+        self.assertFalse(groups['improvement_receiver'])
+        self.assertEqual([r[1] for r in groups['deterioration_receiver']],['2.1'])
+        self.assertFalse(groups['deterioration_sender'])
     def test_six_highlight_groups(self):
         from progress import highlight_groups
         metrics={'1.1':dict(Colab=1,Neglect=0),'2.1':dict(Colab=1.5,Neglect=0),'3.1':dict(Colab=0,Neglect=2),'4.1':dict(Colab=0,Neglect=.5)}
         details={t:[t,'name','indicator','description',amb,direction,'band'] for t,amb,direction in [('1.1',.8,'forward'),('2.1',.6,'forward'),('3.1',.5,'backward'),('4.1',.9,'backward')]}
         edges=[dict(TargetA='4.1',TargetB='2.1',interaction='trade-off',weight=1),dict(TargetA='4.1',TargetB='3.1',interaction='synergy',weight=1)]
-        # 2.1 gains from 4.1's deterioration and passes no synergy forward: I-3, and also a contributor
-        # (roles are independent). 4.1 sends synergy to 3.1 but receives nothing from improving
-        # targets: neither bridge nor relay; it is a top synergy sender, so not exposed.
-        self.assertEqual([[r[1] for r in g['rows']] for g in highlight_groups(metrics,details,edges)],[['2.1','1.1'],[],['2.1'],['3.1'],[],[]])
+        self.assertEqual([[r[1] for r in g['rows']] for g in highlight_groups(metrics,details,edges)],[[],['2.1'],[],['4.1'],[],['3.1','4.1']])
         for value in details.values():value[4]=.6
         groups=highlight_groups(metrics,details,edges)
         # Ambition characterises; membership is unchanged.
-        self.assertEqual([r[1] for r in groups[0]['rows']],['2.1','1.1']);self.assertEqual([r[1] for r in groups[3]['rows']],['3.1'])
-        self.assertEqual([r[1] for r in groups[2]['rows']],['2.1'])
-        self.assertFalse(groups[4]['rows']);self.assertFalse(groups[5]['rows'])
+        self.assertEqual([r[1] for r in groups[1]['rows']],['2.1'])
+        self.assertEqual([r[1] for r in groups[3]['rows']],['4.1'])
+        self.assertEqual([r[1] for r in groups[5]['rows']],['3.1','4.1'])
+        self.assertFalse(groups[0]['rows']);self.assertFalse(groups[2]['rows']);self.assertFalse(groups[4]['rows'])
     def test_adverse_policy_and_boundaries(self):
         from progress import divergent_decision,fit
         def f(direction,r2):return dict(progress_direction=direction,time_r2=r2)

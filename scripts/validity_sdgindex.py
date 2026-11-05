@@ -28,7 +28,7 @@ from sdgindex_country import analyze  # noqa: E402
 from validity import null_model, role_sets, surrogate_density  # noqa: E402
 
 DATA = ROOT / 'data' / 'SDGIndex'
-MAIN = dict(method='pearson', start=2000, end=2025, basis='levels', selection='p', top_n=10, isolation='ratio')
+MAIN = dict(method='pearson', start=2000, end=2025, basis='levels', selection='p', top_n=10)
 VARIANTS = [
     ('main', {}),
     ('spearman', dict(method='spearman')),
@@ -38,7 +38,6 @@ VARIANTS = [
     ('bh_q', dict(selection='q')),
     ('top_5', dict(top_n=5)),
     ('top_15', dict(top_n=15)),
-    ('isolation_zero', dict(isolation='zero')),
 ]
 
 
