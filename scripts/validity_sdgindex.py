@@ -1,6 +1,9 @@
 """Validity and sensitivity of SDGIndex roles for one country (TODO.md, "Before submission").
 
-Usage: python scripts/validity_sdgindex.py [ISO3] [--replicates N] [--surrogates N] [--out FILE]
+Usage: python scripts/validity_sdgindex.py [ISO3] [--replicates N] [--surrogates N] [--top-n N] [--out FILE]
+
+Stability variants use a cut-off of --top-n per role (default 10, more favourable to stability);
+the null model uses the Section 5 cut-off of three (roles.ROLE_TOP).
 
 Writes one workbook with:
   Variants        network size and role membership for each specification
@@ -77,7 +80,10 @@ def main():
     parser.add_argument('--replicates', type=int, default=500)
     parser.add_argument('--surrogates', type=int, default=200)
     parser.add_argument('--out')
+    parser.add_argument('--top-n', type=int, default=10,
+                        help='role cut-off of the stability variants (the null model always uses ROLE_TOP = 3)')
     args = parser.parse_args()
+    MAIN['top_n'] = args.top_n
     record = next(r for r in json.loads((DATA / 'countries.json').read_text(encoding='utf-8'))
                   if r['code'] == args.country)
     source = DATA / 'countries' / Path(record['url']).name

@@ -1,6 +1,8 @@
-# Validity and sensitivity of SDGIndex roles: Brazil
+# Validity and sensitivity of SDGIndex roles: Brazil, Finland and Norway
 
 Results of `python scripts/validity_sdgindex.py BRA --replicates 500 --surrogates 200` (branch `validity-tests`, November 2026). The workbook is written to `output/validity/BRA_validity.xlsx` (not versioned). Main specification: Pearson, levels, 2000–2025, p < 0.10, top 10, φ < 1.
+
+Sections 1–4 were run for Brazil before roles were limited to three per role (commit 3d8b2d1). Section 5 reruns Brazil with the current code and adds Finland and Norway; the article reports Section 5.
 
 ## 1. Surrogates: how much link density comes from persistence
 
@@ -70,3 +72,43 @@ The three options agree on 45 of 50 directions. The five disagreements are flat 
 **Surrogates.** Levels: 80.2% observed vs 50.5% for surrogates (excess 29.7 pp). First differences: 20.0% vs 10.3% (excess 9.6 pp), more than with the normalised scores (3.7 pp), which have many carried values.
 
 **Null model.** Bridges are reproduced by degree and direction even more closely than in the main specification (mean Jaccard with the null 0.87; no bridge above the null). Dependent contributors: 4 to 6 members above the null at p < 0.05, depending on the option; contributors: 3.
+
+## 5. Brazil, Finland and Norway (article, Section 7)
+
+Finland and Norway were added because their national statistical systems are among the best rated by the World Bank's Statistical Performance Index (SDR indicator 17.18 statperf): Norway is first of 187 countries in 2024, the value used by the SDR 2026; Finland was among the five highest every year from 2016 to 2023 (first in 2020) and ties with Sweden for the highest 2016–2024 mean. Brazil is 54th in 2024. All three countries were run with the same code (revision of this commit). Brazil reproduces the earlier figures above.
+
+Commands (ISO3 = BRA, FIN, NOR; UNSD area = 76, 246, 578; CSV from `download_unsd.bat`):
+
+```
+python scripts/validity_sdgindex.py ISO3                 # stability with cut-off 10; null model with cut-off 3
+python scripts/validity_sdgindex.py ISO3 --top-n 3       # stability with the Section 5 cut-off
+python scripts/raw_sdgindex.py database_2026_sdg_index.xlsx ISO3
+python scripts/raw_detrended.py database_2026_sdg_index.xlsx ISO3
+python scripts/unsd_undirected.py UNSD_AREA_2000.csv --end 2023 --drop-natures M E G
+python scripts/validity_iges.py UNSD_AREA_2000.csv AREA
+python scripts/iges_nofilter.py UNSD_AREA_2000.csv AREA
+python scripts/unsd_coverage.py UNSD_AREA_2000.csv
+```
+
+The direction table `data/UNSD/series_direction_proposed.csv` gained 38 series whose intended direction is unambiguous (mostly donor ODA flows, e-waste and municipal waste, vaccination, tuberculosis, occupational injuries, poverty), marked "added for Finland and Norway". Without them the Nordic UN networks keep only 20 (FIN) and 19 (NOR) targets.
+
+**Surrogates (% of cross-SDG pairs with p < 0.10, observed / surrogates).**
+
+| Source | BRA levels | FIN levels | NOR levels | BRA changes | FIN changes | NOR changes |
+|---|---|---|---|---|---|---|
+| SDG Index, normalised scores | 71 / 48 | 52 / 37 | 54 / 40 | 14 / 10 | 11 / 10 | 11 / 10 |
+| SDG Index, raw values | 80 / 50 | 62 / 43 | 55 / 45 | 20 / 10 | 15 / 10 | 19 / 10 |
+| UN series, 2010–2023, country-reported | 43 / 27 | 35 / 24 | 40 / 27 | 14 / 10 | 11 / 10 | 15 / 10 |
+| IGES/JRC procedure | 67 / 50 | 65 / 44 | 61 / 45 | 22 / 10 | 16 / 10 | 19 / 10 |
+
+Targets covered by the UN series: 34 (BRA), 33 (FIN), 33 (NOR); 38–39 per country would have a country-reported aggregate series if every series had a direction. SDR raw values passing the completeness rule: 50, 52, 51 of 101.
+
+**Indicator properties.** Median number of zero annual changes (of 25) in the normalised scores: 9 (BRA), 15 (FIN), 14 (NOR). Spearman between degree and time R² in the normalised network: 0.63, 0.84, 0.76. In all three countries the three bridges are among the ten deteriorating indicators with the most linear trends. The degree sequence fixes about 69% of arcs in Brazil (density 0.51) and about 60% in Finland and Norway (0.37, 0.38).
+
+**Null model (cut-off 3), bridges.** Mean Jaccard with the null: normalised 0.43 / 0.44 / 0.28; raw 0.41 / 0.42 / 0.58; IGES/JRC 0.59 / 0.55 / 0.53 (BRA / FIN / NOR). Two random choices of three deteriorating targets give 0.06–0.10 (0.13–0.30 in the smaller raw networks). Two of the 27 bridges exceed the null (FIN raw, NOR IGES/JRC).
+
+**Stability (cut-off 10), bridges.** Spearman 0.82 / 0.67 / 0.82; window 2010–2025 0.43 / 0.67 / 0.82; window 2015–2025 0.33 / 0.43 / 0.33; changes 0.25 / 0.18 / 0.54; BH 0.82 / 1 / 0.82. With cut-off 3, bridges between levels and changes have Jaccard 0 in all three countries.
+
+**IGES/JRC without significance filter.** Arcs added: 627 / 447 / 521; median |r| added 0.17 / 0.19 / 0.18 against 0.71 / 0.62 / 0.69; added trade-offs 372 / 224 / 246; bridges Jaccard 1 / 1 / 0.5.
+
+**Direction tests.** Lagged and conditional tests orient a single direction for 49% (BRA, FIN) and 47% (NOR) of significant pairs in the raw-value networks.
