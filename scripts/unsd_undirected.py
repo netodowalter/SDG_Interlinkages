@@ -9,6 +9,7 @@ Selection (2010-2025):
   * at most 6 missing years and no run of more than 3;
   * one series per target: fewest missing years, ties broken by series code; a series already used by
     an earlier target is not reused (the next candidate is taken);
+  * series in data/UNSD/series_excluded.csv (ordinal or binary) and --drop codes are skipped;
   * normative direction per series from data/UNSD/series_direction_proposed.csv (series without one
     are dropped and listed).
 Construction: CAGR filling as in IGES/JRC; Pearson on levels and on first differences, cross-SDG pairs,
@@ -74,7 +75,7 @@ def fill(values):
     return np.array(out, dtype=float)
 
 
-def select(path, directions):
+def select(path, directions, excluded=()):
     rows = list(csv.DictReader(open(path, encoding='utf-8-sig')))
     dims = [c for c in rows[0] if c.startswith('dimensions_')]
     data, meta = defaultdict(lambda: defaultdict(list)), {}
@@ -105,7 +106,7 @@ def select(path, directions):
     chosen, used, dropped = {}, set(), []
     for target in sorted(candidates, key=order):
         for missing, series, _, key, values in sorted(candidates[target]):
-            if series in used:
+            if series in used or series in excluded:
                 continue
             if series not in directions:
                 dropped.append(dict(target=target, series=series, reason='no normative direction'))
@@ -150,10 +151,12 @@ def main():
     parser.add_argument('csv')
     parser.add_argument('--surrogates', type=int, default=100)
     parser.add_argument('--out')
+    parser.add_argument('--drop', nargs='*', default=[], help='further series codes to exclude')
     args = parser.parse_args()
     directions = {r['series']: int(r['direction']) for r in
                   csv.DictReader(open(ROOT / 'data/UNSD/series_direction_proposed.csv', encoding='utf-8'))}
-    chosen, dropped = select(args.csv, directions)
+    excluded = {r['series'] for r in csv.DictReader(open(ROOT / 'data/UNSD/series_excluded.csv', encoding='utf-8'))}
+    chosen, dropped = select(args.csv, directions, excluded | set(args.drop))
     print(f'{len(chosen)} targets in {len({c["goal"] for c in chosen.values()})} SDGs; {len(dropped)} candidates dropped')
     label = {c: f"{c} {v['series']}" for c, v in chosen.items()}
     book = Workbook()

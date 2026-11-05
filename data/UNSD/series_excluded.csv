@@ -1,0 +1,3 @@
+series,reason
+ST_EEV_ACCTSA,ordinal score (values 2-4); no meaningful annual variation
+ER_CBD_PTYPGRFA,binary treaty participation; constant
