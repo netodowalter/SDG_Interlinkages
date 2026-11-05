@@ -2,6 +2,14 @@
 
 Explore directed networks of collaboration and neglect among Sustainable Development Goal (SDG) targets using IGES/JRC relationships and UNSD observations, or annual SDGIndex indicator scores.
 
+## Status (November 2026)
+
+Development of the package has stopped. The statistical tests reported in Section 7 of the methodological article ([`docs/SDG_Interlinkages_methodological_article.md`](docs/SDG_Interlinkages_methodological_article.md)) were run for Brazil, Finland and Norway with SDG Index normalised scores, SDR raw values, UN series and the IGES/JRC procedure. They show that correlations between the published national annual series cannot support valid inference about interlinkages, and that network analysis built on them cannot identify the roles: in levels, independent surrogate series pass the significance filter in 24% to 50% of pairs and roles follow each indicator's direction, degree and trend linearity; in annual changes, what remains is small and indistinguishable from artefacts of filling, carried values and bounded scales. Finland and Norway, among the countries with the best-rated statistical systems, show the same pattern.
+
+The performance-based reading of synergies and trade-offs remains a conceptual requirement for any interlinkage analysis. The package is kept as an open, documented implementation for verification and replication of these results, not as a tool for prioritising targets. Test scripts and results: [`docs/validity_sdgindex.md`](docs/validity_sdgindex.md) and the section [Validity tests](#validity-tests) below. Open items are in [`TODO.md`](TODO.md).
+
+## Overview
+
 The Gradio application and command-line interface use the same Python analysis service. Local SDGIndex inputs cover 169 countries and 14 regions or aggregates. Each execution exports workbooks, node and edge tables, and four network images; IGES/JRC runs add a link-share weighted workbook and four weighted images (`_pond`).
 
 ## Windows application
@@ -103,7 +111,7 @@ The desired direction and local linear slope determine whether each node moves f
 
 **SDGIndex: performance-time rankings (no semantic ambition).** For each connected indicator, use its latest finite score S and the existing 2000–2025 slope v (score points/year). Forward indicators have `years_to_target = max(0, 100-S)/v`; deteriorating indicators have `years_to_zero = max(0, S)/abs(v)`. Scores already at the relevant boundary have zero remaining years. Stable/undetermined trends have no finite time and are excluded from time rankings. Times are conditional linear extrapolations, not forecasts, with no fixed deadline. Excel retains numeric precision and displays ordinary decimal years to three places; Gradio does likewise.
 
-Rank within performance direction, using all connected indicators. Rankings require positive values. Each ranking has at most 10 entries (SDGIndex: exact ties resolved by stable node ID; IGES/JRC: ties at the tenth position retained). Intersections are not refilled.
+Rank within performance direction, using all connected indicators. Rankings require positive values. Each role lists at most three indicators, the three highest values of its own score, selected independently, so an indicator can hold more than one role (SDGIndex: exact ties resolved by stable node ID; IGES/JRC: ties at third place retained). The top 10 is used only for the two exclusion rankings below (top senders of trade-offs to deterioration, C, and top senders of synergy from deterioration, B). Intersections are not refilled.
 
 After performance-based classification, synergies link indicators moving in the same direction and trade-offs link indicators moving in opposite directions. The six roles in `sdg/engine/modules/roles.py` separate what reaches each indicator across that interface from what it passes on:
 
@@ -123,12 +131,12 @@ Links involving stable or undetermined indicators do not enter these measures.
 
 | Role | Selection |
 |---|---|
-| I-1 · Contributors | Top Colab, excluding top R and top senders of trade-offs to deterioration |
-| I-2 · Dependent contributors | Top R with φ ≥ 1: gains associated with losses elsewhere, passed forward |
-| I-3 · Isolated beneficiaries | Top R with φ < 1: gains associated with losses elsewhere, not passed forward |
-| D-1 · Exposed targets | Top Neglect, excluding top senders of synergy from deterioration, bridges and relays |
-| D-2 · Transmission bridges | Top `bridge_flow` |
-| D-3 · Deterioration relays | Top `relay_flow`, excluding bridges |
+| I-1 · Contributors | Three highest Colab among improving indicators, excluding the top 10 senders of trade-offs to deterioration (C) |
+| I-2 · Dependent contributors | Three highest R among improving indicators with φ ≥ 1: gains associated with losses elsewhere, passed forward |
+| I-3 · Isolated beneficiaries | Three highest R among improving indicators with φ < 1: gains associated with losses elsewhere, not passed forward |
+| D-1 · Exposed targets | Three highest Neglect among deteriorating indicators, excluding the top 10 senders of synergy from deterioration (B) |
+| D-2 · Transmission bridges | Three highest `bridge_flow` |
+| D-3 · Deterioration relays | Three highest `relay_flow` |
 
 Context characterises roles but does not filter them. Every selected indicator is exported with its years to target (improving) or years to zero (deteriorating) in SDGIndex, or its semantic ambitiousness in IGES/JRC, so priorities can be set within each role (for example, a transmission bridge close to zero is more urgent than one deteriorating slowly). The isolation threshold φ < 1 is absolute because in dense networks almost every receiver also sends substantial synergy, so a relative cut-off would label strong spreaders as isolated.
 
@@ -181,7 +189,22 @@ print(countries["BRA"], folder)
 python -m unittest discover -s tests
 ```
 
-Tests cover measure identity, indicator directionality, temporal reclassification boundaries, interface roles (including the worked example of the methodological article), and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
+Tests cover measure identity, indicator directionality, temporal reclassification boundaries, interface roles (including a synthetic worked example), and correlations against SciPy. The synthetic UNSD fixture supports offline IGES/JRC validation.
+
+## Validity tests
+
+The scripts below reproduce Section 7 of the methodological article (ISO3 = BRA, FIN, NOR; UNSD area = 76, 246, 578; `database_2026_sdg_index.xlsx` is the SDR 2026 database; UNSD CSVs from `download_unsd.bat`). Results go to `output/validity/` (not versioned) and are summarised in [`docs/validity_sdgindex.md`](docs/validity_sdgindex.md).
+
+| Script | Test |
+| --- | --- |
+| `scripts/validity_sdgindex.py ISO3 [--top-n N]` | SDG Index normalised scores: surrogates, degree- and direction-preserving null model, role stability across coefficient, window, basis and selection rule |
+| `scripts/raw_sdgindex.py DATABASE ISO3` | SDR raw values with completeness rule and CAGR filling; three progress-direction options |
+| `scripts/raw_detrended.py DATABASE ISO3` | SDR raw values in levels, annual changes and trend residuals |
+| `scripts/unsd_undirected.py CSV --end 2023 --drop-natures M E G` | UN series reported by the country, read without link direction |
+| `scripts/validity_iges.py CSV AREA` | IGES/JRC procedure in levels and annual changes |
+| `scripts/iges_nofilter.py CSV AREA` | IGES/JRC with and without the significance filter |
+| `scripts/unsd_coverage.py CSV` | UN targets covered with and without the normative-direction table |
+| `scripts/figure1_brazil.py` | Figure 1 of the article (Brazil's bridge and isolated beneficiary) |
 
 ### Experimental network view
 

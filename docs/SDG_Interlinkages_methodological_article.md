@@ -429,9 +429,11 @@ The IGES tool justifies the use of correlation by applying it to the sign and st
 
 The JRC initiative is commendable for recording interaction types, directions, methods and contexts, including cases in which direction cannot be established. Yet the differences between its compilation and the relationships presumed by the IGES tool, despite both drawing on the literature, show how the scope and choices of a review shape its results (Section 3.4).
 
-The High-Level Political Forum should withdraw this indication from the toolkit offered to countries preparing VNRs. A tool that can induce erroneous interpretations is especially problematic when interlinkage analysis is intended to guide prioritisation and accelerate progress towards the goals.
+The High-Level Political Forum should withdraw this indication from the toolkit offered to countries preparing VNRs.¹ A tool that can induce erroneous interpretations is especially problematic when interlinkage analysis is intended to guide prioritisation and accelerate progress towards the goals.
 
 The negative finding is itself useful: the tests identify a limitation of the available series and point to the need to identify, develop and collect indicators with greater granularity and meaningful variation. Such data would still require appropriate research designs and independent investigation of causal mechanisms.
+
+¹ High-Level Political Forum, VNR tools, search “interlinkages”: [https://hlpf.un.org/tools?search=interlinkages](https://hlpf.un.org/tools?search=interlinkages).
 
 The methodological finding also bears on a political question that cannot be reduced to an indicator or a network role. The Agenda aspires to leave no one behind, yet the reduction of the gap between developed and developing countries does not have the status of a guiding objective across the Agenda. In the author’s interpretation, this permits the trade-off of unequal development to persist. If past exploitation is condemned only as a historical moral wrong while the inequalities it produced continue to be enjoyed through unequal access to resources and well-being, present arrangements remain implicated in that past. The humanist promise of a global agenda must confront this contradiction if systemic synergy is to be more than an appeal.
 
