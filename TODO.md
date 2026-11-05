@@ -8,18 +8,21 @@ Items in the first section can be done with the data already in the package and 
 
 ### Validity of roles
 
-- [ ] **Null model.** Rewire links at random while keeping each node's performance direction and its numbers of sent and received links; recompute bridge and relay flows and role membership. Report whether observed bridges exceed the null distribution. Addresses the objection that, after reclassification, synergy ≈ "same direction" and trade-off ≈ "opposite directions", so roles might only reflect trend strength and degree.
-- [ ] **Phase-shuffled surrogate tests** (as in Ding et al. 2026): series that preserve each indicator's power spectrum and autocorrelation but destroy synchrony, to check that associations and orientations are not produced by shared trends. Complements the null model.
-- [ ] **Associations of changes, SDG Index.** Add an option to correlate first differences (or detrended scores) instead of levels. Trending series correlate strongly regardless of any relationship; the Brazil SDG Index network already links about half of all possible pairs (3,305 arcs, 81 indicators). About 25 annual changes per indicator are available.
-- [ ] **Stability across windows, SDG Index.** Compare roles for 2000–2025 and 2010–2025.
+Items marked done were run for Brazil (SDG Index) with `scripts/validity_sdgindex.py`; results in `docs/validity_sdgindex.md`, not yet in the article. Other countries: same script with another ISO3 code.
+
+
+- [x] **Null model.** Rewire links at random while keeping each node's performance direction and its numbers of sent and received links; recompute bridge and relay flows and role membership. Report whether observed bridges exceed the null distribution. Addresses the objection that, after reclassification, synergy ≈ "same direction" and trade-off ≈ "opposite directions", so roles might only reflect trend strength and degree.
+- [x] **Phase-shuffled surrogate tests** (as in Ding et al. 2026): series that preserve each indicator's power spectrum and autocorrelation but destroy synchrony, to check that associations and orientations are not produced by shared trends. Complements the null model.
+- [x] **Associations of changes, SDG Index.** Add an option to correlate first differences (or detrended scores) instead of levels. Trending series correlate strongly regardless of any relationship; the Brazil SDG Index network already links about half of all possible pairs (3,305 arcs, 81 indicators). About 25 annual changes per indicator are available.
+- [x] **Stability across windows, SDG Index.** Compare roles for 2000–2025 and 2010–2025 (2015–2025 also run).
 - [ ] **Pooled panels, SDG Index.** Pool comparable countries (income group, BRICS) to gain power for orientation tests, as an alternative to longer national series.
 
 ### Sensitivity outputs
 
-- [ ] Benjamini–Hochberg q-values as the active selection criterion (option).
-- [ ] Pearson vs Spearman role membership (SDG Index).
-- [ ] Alternative ranking cut-offs (top 5, top 15).
-- [ ] Isolation threshold: strict zero forward synergy vs φ < 1.
+- [x] Benjamini–Hochberg q-values as the active selection criterion (option).
+- [x] Pearson vs Spearman role membership (SDG Index).
+- [x] Alternative ranking cut-offs (top 5, top 15).
+- [x] Isolation threshold: strict zero forward synergy vs φ < 1.
 - [ ] Alternative rules for uncertain JRC directions (Table 1 of the article).
 - [ ] Alternative reclassification thresholds for discordant links, and exclusion of all discordant links.
 
@@ -41,7 +44,7 @@ Items in the first section can be done with the data already in the package and 
 
 ### Article
 
-- [ ] Report the results of the items above in Sections 6–7.
+- [ ] Report the results of the items above in Sections 6–7 (Brazil SDG Index validity and sensitivity: `docs/validity_sdgindex.md`).
 - [ ] Archive the release used in the article on Zenodo and cite its DOI; give the application a persistent address.
 - [ ] Verify bibliographic details and add DOIs for Pradhan et al. (2017), Miola et al. (2019), Nilsson et al. (2017), Issa, Mezher and El Fadel (2024), Di Lucia, Slade and Khan (2022).
 - [ ] Convert LaTeX equation blocks to Word equations in the `.docx` before submission.
