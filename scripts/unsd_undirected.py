@@ -75,7 +75,39 @@ def fill(values):
     return np.array(out, dtype=float)
 
 
-def select(path, directions, excluded=(), drop_natures=()):
+extra_meta = {}
+
+
+def ibge(path):
+    """IBGE series of the NT Dinte 77 workbook (sheets Fontes, Series_Coleta, Series_SentidoAlvo).
+
+    Returns (candidates by target, directions by series key). Series keys are 'IBGE:<indicator>'."""
+    from openpyxl import load_workbook
+    book = load_workbook(path, read_only=True, data_only=True)
+    rows = list(book['Fontes'].values)
+    sources = [dict(zip(rows[0], r)) for r in rows[1:] if r[0]]
+    data = list(book['Series_Coleta'].values)
+    head, body = data[0], data[1:]
+    sense = {r[0]: r[1] for r in list(book['Series_SentidoAlvo'].values)[1:]}
+    book.close()
+    candidates, directions = defaultdict(list), {}
+    for r in sources:
+        code = r['ODS.Indicador.Code']
+        if r['ODS.Indicador.Fonte'] != 'IBGE' or code not in head or sense.get(code) not in (1, -1):
+            continue
+        j = head.index(code)
+        values = {int(row[0]): float(row[j]) for row in body
+                  if isinstance(row[j], (int, float)) and int(row[0]) in YEARS}
+        missing, run = gaps(values)
+        if missing <= 6 and run <= 3 and len(values) >= 2:
+            key = 'IBGE:' + code
+            directions[key] = int(sense[code])
+            extra_meta[key] = dict(description=r['Indicador.Descricao'], units='')
+            candidates[r['ODS.Meta.Code']].append((missing, key, '', (key, ()), values))
+    return candidates, directions
+
+
+def select(path, directions, excluded=(), drop_natures=(), extra=None):
     rows = list(csv.DictReader(open(path, encoding='utf-8-sig')))
     dims = [c for c in rows[0] if c.startswith('dimensions_')]
     data, meta, natures = defaultdict(lambda: defaultdict(list)), {}, defaultdict(set)
@@ -107,19 +139,24 @@ def select(path, directions, excluded=(), drop_natures=()):
             if missing <= 6 and run <= 3 and len(values) >= 2:
                 for target in meta[k]['targets']:
                     candidates[target].append((missing, series, str(k[1]), k, values))
+    for target, items in (extra or {}).items():
+        candidates[target] += items
     chosen, used, dropped = {}, set(), []
     for target in sorted(candidates, key=order):
-        for missing, series, _, key, values in sorted(candidates[target]):
+        # fewest missing years; ties: IBGE before UNSD (rank 0 < 1), then series code
+        for missing, series, _, key, values in sorted(candidates[target], key=lambda c: (c[0], 0 if c[1].startswith('IBGE:') else 1, c[1], c[2])):
             if series in used or series in excluded:
                 continue
             if series not in directions:
                 dropped.append(dict(target=target, series=series, reason='no normative direction'))
                 continue
             used.add(series)
+            info = meta.get(key) or extra_meta[series]
             chosen[target] = dict(target=target, goal=target.split('.')[0], series=series, missing=missing,
+                                  source='IBGE' if series.startswith('IBGE:') else 'UNSD',
                                   dimensions=dict(key[1]), values=values, direction=directions[series],
-                                  description=meta[key]['description'], units=meta[key]['units'],
-                                  natures=', '.join(sorted(natures[key])))
+                                  description=info['description'], units=info['units'],
+                                  natures=', '.join(sorted(natures.get(key, ()))))
             break
     return chosen, dropped
 
@@ -157,12 +194,18 @@ def main():
     parser.add_argument('--surrogates', type=int, default=100)
     parser.add_argument('--out')
     parser.add_argument('--drop', nargs='*', default=[], help='further series codes to exclude')
+    parser.add_argument('--ibge', help='NT Dinte 77 workbook (rede_NT.xlsx): add its IBGE series as candidates')
     parser.add_argument('--drop-natures', nargs='*', default=[], help='skip series with any observation of these natures (e.g. M E G)')
     args = parser.parse_args()
     directions = {r['series']: int(r['direction']) for r in
                   csv.DictReader(open(ROOT / 'data/UNSD/series_direction_proposed.csv', encoding='utf-8'))}
     excluded = {r['series'] for r in csv.DictReader(open(ROOT / 'data/UNSD/series_excluded.csv', encoding='utf-8'))}
-    chosen, dropped = select(args.csv, directions, excluded | set(args.drop), args.drop_natures)
+    extra = None
+    if args.ibge:
+        extra, ibge_directions = ibge(args.ibge)
+        directions.update(ibge_directions)
+    chosen, dropped = select(args.csv, directions, excluded | set(args.drop), args.drop_natures, extra)
+    print(Counter(c['source'] for c in chosen.values()))
     print(f'{len(chosen)} targets in {len({c["goal"] for c in chosen.values()})} SDGs; {len(dropped)} candidates dropped')
     label = {c: f"{c} {v['series']}" for c, v in chosen.items()}
     book = Workbook()
