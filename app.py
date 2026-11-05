@@ -39,7 +39,7 @@ Select a row to see the indicator.""")
         indicators = gr.State([])
         indicator = gr.Textbox(label='Selected indicator', interactive=False)
         gr.Markdown("""### Highlights by performance direction
-Six roles from top 10 intersections. Improving: I-1 contributors, I-2 dependent contributors, I-3 isolated beneficiaries. Deteriorating: D-1 exposed targets, D-2 transmission bridges, D-3 deterioration relays. Context characterises each role without filtering it: years to target or to zero (SDGIndex), ambitiousness (IGES/JRC).""")
+Six roles from top 10 intersections; transmission bridges and deterioration relays list the three largest flows each, independently (an indicator may be both). Improving: I-1 contributors, I-2 dependent contributors, I-3 isolated beneficiaries. Deteriorating: D-1 exposed targets, D-2 transmission bridges, D-3 deterioration relays. Context characterises each role without filtering it: years to target or to zero (SDGIndex), ambitiousness (IGES/JRC).""")
         groups = gr.Dataframe(headers=highlight_headers, interactive=False)
         gallery = gr.Gallery(label='Networks', columns=3, height='auto')
         bundle = gr.File(label='Download all results as ZIP')

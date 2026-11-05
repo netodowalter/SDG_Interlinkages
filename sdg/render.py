@@ -28,6 +28,7 @@ BORDER_COLORS = ['#ffffff', '#f2c500', '#1f6fd1', '#888888', '#d71920', '#f08a00
 ROLE_LABELS = ['I-1 Contributors', 'I-2 Dependent contributors', 'I-3 Isolated beneficiaries',
                'D-1 Exposed targets', 'D-2 Transmission bridges', 'D-3 Deterioration relays']
 PLOT = (80, 215, 3120, 1760)
+BRIDGE, RELAY = 4, 5
 
 
 def components(ids, edges):
@@ -185,13 +186,17 @@ def legend(draw, dataset):
         yy = y+(j//3)*62
         draw.rectangle((x,yy,x+32,yy+32),fill=color,outline='#536067',width=2)
         draw.text((x+50,yy+2),label,font=font(24),fill='#334455')
-    draw.text((70,2070),'Black border: other indicators. I = improving, D = deteriorating. Borders mark the same six roles in every view.',font=font(23),fill='#465b63')
+    draw.text((70,2070),'Black border: other indicators. I = improving, D = deteriorating. Same six roles in every view; bridge and relay: outer red, inner orange.',font=font(23),fill='#465b63')
     draw.text((70,2110),'Link thickness: |r|. Links from deterioration use 35% opacity. Component spacing is optimized for readability.',font=font(23),fill='#465b63')
 
 
 def render_networks(folder, prefix, title, graph, groups, icons, suffix=''):
     nodes = {n['id']: n for n in graph['nodes']}
-    categories = {row[1]: i for i, g in enumerate(groups) for row in g['rows']}
+    categories = {}
+    for i, g in enumerate(groups):
+        for row in g['rows']:
+            categories.setdefault(row[1], i)  # D-2 precedes D-3: a node in both is drawn as a bridge
+    relays = {row[1] for g in groups if g.get('id') == 'deterioration_relays' for row in g['rows']}
     for mode, label in [('full', 'Improvement and deterioration'), ('synergy', 'Synergies'), ('trade-off', 'Trade-offs'), ('two_step_interface', 'Two-step interface')]:
         edges = [e for e in graph['edges'] if mode in ('full', 'two_step_interface') or e['interaction'] == mode]
         ids = sorted({e[k] for e in edges for k in ('source', 'target')})
@@ -247,6 +252,10 @@ def render_networks(folder, prefix, title, graph, groups, icons, suffix=''):
                 border = colors[tier] if 0 <= tier < len(colors) else 'black'
                 left,top = x-size//2,y-size//2
                 margin = 5 if tier>=0 else 1
+                if tier == BRIDGE and i in relays:
+                    # Both roles: bridge border outside, relay border inside.
+                    draw.rectangle((left-8,top-8,left+size+8,top+size+8),fill=border,outline='#536067')
+                    border, margin = colors[RELAY], 4
                 draw.rectangle((left-margin,top-margin,left+size+margin,top+size+margin),fill=border,outline='#536067')
                 target = node.get('target') or i
                 with Image.open(Path(icons)/f"{int(target.split('.')[0]):02}.png") as icon:

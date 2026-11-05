@@ -53,14 +53,18 @@ def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
                                   [(e['source'], e['target'], e['interaction'], e['weight']) for e in edges])
     for n in nodes:
         n.update(measures[n['id']])
-    field_rank, top = {}, {}
+    field_rank, top, order = {}, {}, {}
     for rank, field, direction, ascending, positive in RANK_FIELDS:
         ranking = positions(nodes, field, direction, ascending, positive)
         for n in nodes:
             n[rank] = ranking.get(n['id'])
         field_rank[field] = rank
         top[rank] = {i for i, position in ranking.items() if position <= (top_n or TOP_N)}
-    selected = select_roles(lambda field, direction: top[field_rank[field]],
+        order[rank] = ranking
+    def pick(field, direction, n=None):
+        rank = field_rank[field]
+        return top[rank] if n is None else {i for i, p in order[rank].items() if p <= n}
+    selected = select_roles(pick,
                             {i: n['forward_ratio'] for i, n in byid.items()}, isolation=isolation)
     groups = []
     for slug, title, metric, label, direction in ROLES:
@@ -70,7 +74,8 @@ def highlight_groups(nodes, edges, top_n=None, isolation='ratio'):
                  byid[i]['indicator'], byid[i]['description'], byid[i][time],
                  byid[i]['direction'], ''] for i in ordered]
         groups.append(dict(id=slug, title=title, metric=label, rows=rows,
-                           base='Intersection of top 10 rankings; ties resolved by node ID.'))
+                           base=('Three largest flows; ties resolved by node ID.' if slug in ('transmission_bridges', 'deterioration_relays')
+                                 else 'Intersection of top 10 rankings; ties resolved by node ID.')))
     return groups
 
 

@@ -17,7 +17,7 @@ EDGES = [('A', 'B', 'synergy', .8), ('A', 'C', 'synergy', .5), ('B', 'C', 'syner
          ('E', 'B', 'trade-off', .6), ('F', 'A', 'trade-off', .4), ('H', 'D', 'trade-off', .3),
          ('D', 'G', 'trade-off', .7), ('C', 'G', 'trade-off', .6), ('D', 'E', 'trade-off', .5)]
 EXPECTED = dict(contributors=set(), dependent_contributors={'E'}, isolated_beneficiaries={'G'},
-                exposed={'D'}, transmission_bridges={'A', 'B'}, deterioration_relays={'C'})
+                exposed={'D'}, transmission_bridges={'A', 'B'}, deterioration_relays={'B', 'C'})
 
 
 def colab_neglect():

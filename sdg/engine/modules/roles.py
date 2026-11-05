@@ -19,6 +19,10 @@ FORWARD, BACKWARD = 'forward', 'backward'
 # every receiver also sends substantial synergy.
 ISOLATION_RATIO = 1.0
 
+# Two-step roles list the largest flows only, ranked independently: a node may be both a
+# transmission bridge and a deterioration relay. The order within each list is the insight.
+TWO_STEP_TOP = 3
+
 # Edge-derived measures. Weights are absolute coefficients.
 MEASURES = (
     'tradeoff_received_from_backward',  # R: improving node, gains associated with losses upstream
@@ -54,10 +58,10 @@ RULES = {
                               'weight forward to improving nodes than they receive (phi < 1).',
     'exposed': 'Top Neglect among deteriorating nodes, excluding top senders of synergies from '
                'deterioration, transmission bridges and relays.',
-    'transmission_bridges': 'Top bridge flow: trade-off received from improving sources multiplied by '
+    'transmission_bridges': 'Three largest bridge flows: trade-off received from improving sources multiplied by '
                             'synergy sent to deteriorating nodes (all two-step paths improving → k → deteriorating).',
-    'deterioration_relays': 'Top relay flow: synergy received from deteriorating sources multiplied by synergy '
-                            'sent to deteriorating nodes, excluding transmission bridges.',
+    'deterioration_relays': 'Three largest relay flows: synergy received from deteriorating sources multiplied by '
+                            'synergy sent to deteriorating nodes, ranked independently of bridges (a node may be both).',
 }
 
 
@@ -161,8 +165,9 @@ def ponderate(node, shares):
 def select_roles(top, ratio, isolation='ratio'):
     """Return {role id: set of node ids}.
 
-    ``top(field, direction)`` returns the selected top set of positive values of
-    ``field`` among nodes with that performance direction. ``ratio`` maps node
+    ``top(field, direction, n)`` returns the top ``n`` positive values of ``field`` among
+    nodes with that performance direction (``n=None``: the procedure's default cut-off).
+    Bridges and relays take the ``TWO_STEP_TOP`` largest flows each, independently. ``ratio`` maps node
     id to forward_ratio (phi).
     Intersections are not refilled. ``isolation='zero'`` counts as isolated only receivers that
     pass no synergy forward (phi == 0), a stricter alternative to phi < 1.
@@ -172,8 +177,8 @@ def select_roles(top, ratio, isolation='ratio'):
     cut = (lambda r: r == 0) if isolation == 'zero' else (lambda r: r < ISOLATION_RATIO)
     isolated = {i for i in receivers if ratio[i] is not None and cut(ratio[i])}
     neglect, senders = top('neglect', BACKWARD), top('backward_synergy_sent', BACKWARD)
-    bridges = top('bridge_flow', BACKWARD)
-    relays = top('relay_flow', BACKWARD) - bridges
+    bridges = top('bridge_flow', BACKWARD, TWO_STEP_TOP)
+    relays = top('relay_flow', BACKWARD, TWO_STEP_TOP)
     return dict(
         contributors=colab - receivers - cost,
         dependent_contributors=receivers - isolated,
