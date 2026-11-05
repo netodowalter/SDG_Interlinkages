@@ -162,7 +162,14 @@ def surrogate_density(series, goal_of, replicates=200, seed=1, alpha=.1, method=
     codes = sorted(series)
     allowed = [(i, j) for i in range(len(codes)) for j in range(i + 1, len(codes))
                if goal_of[codes[i]] != goal_of[codes[j]]]
-    transform = np.diff if basis == 'changes' else (lambda v: v)
+    def detrend(v):
+        ok = np.isfinite(v)
+        out = np.full_like(v, np.nan)
+        if ok.sum() >= 3:
+            t = np.arange(len(v))[ok]
+            out[ok] = v[ok] - np.polyval(np.polyfit(t, v[ok], 1), t)
+        return out
+    transform = np.diff if basis == 'changes' else detrend if basis == 'detrended' else (lambda v: v)
     observed, total = _pass_share([transform(series[c]) for c in codes], allowed, alpha, method)
     shares = []
     for _ in range(replicates):

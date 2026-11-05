@@ -92,9 +92,22 @@ def fill(values):
     return np.array(out, dtype=float), kind
 
 
-def build(raw, scores, norm, mapping, option, **role_options):
+def detrend(v):
+    ok = np.isfinite(v)
+    out = np.full_like(v, np.nan)
+    if ok.sum() >= 3:
+        t = np.arange(len(v))[ok]
+        out[ok] = v[ok] - np.polyval(np.polyfit(t, v[ok], 1), t)
+    return out
+
+
+BASES = dict(levels=lambda v: v, changes=np.diff, detrended=detrend)
+
+
+def build(raw, scores, norm, mapping, option, basis='levels', **role_options):
     codes = sorted(raw)
     series = {c: raw[c]['filled'] for c in codes}
+    tested = {c: BASES[basis](series[c]) for c in codes}
     raw_trend = {c: fit([(y, v) for y, v in zip(YEARS, series[c]) if np.isfinite(v)], norm[c]) for c in codes}
     score_trend = {c: fit(list(scores[c].items()), 1) for c in codes}
     trends = {}
@@ -114,7 +127,7 @@ def build(raw, scores, norm, mapping, option, **role_options):
         ma, mb = mapping[a], mapping[b]
         if ma['goal'] == mb['goal'] or ma['target'] == mb['target']:
             continue
-        x, y = series[a], series[b]
+        x, y = tested[a], tested[b]
         r, p, n = contemporaneous(x, y, 'pearson')
         if r is None:
             continue
@@ -161,7 +174,7 @@ def build(raw, scores, norm, mapping, option, **role_options):
     for n in nodes:
         n.update(colab=metrics[n['id']]['collaboration'], neglect=metrics[n['id']]['neglect'])
     highlights = highlight_groups(nodes, edges, **role_options)
-    return dict(nodes=nodes, edges=edges, highlights=highlights, pairs=pairs, actions=actions, series=series,
+    return dict(nodes=nodes, edges=edges, highlights=highlights, pairs=pairs, actions=actions, series=series, tested=tested,
                 trends=trends)
 
 
