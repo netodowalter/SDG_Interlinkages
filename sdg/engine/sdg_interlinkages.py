@@ -153,7 +153,8 @@ def formula_cache(path):
     return result
 
 
-def run_pipeline(modules, folder, region, csv_path, output_parent):
+def run_pipeline(modules, folder, region, csv_path, output_parent, alpha=0.1):
+    """alpha: Pearson p-value cut-off for inventory pairs; 1.0 keeps every pair (IGES practice, sensitivity only)."""
     collection, prep, pearson, net, ranking = modules
     regions = prep.read_csv_groups(csv_path)
     if not regions or str(region['code']) not in regions:
@@ -185,7 +186,7 @@ def run_pipeline(modules, folder, region, csv_path, output_parent):
     directions, _ = net.load_directions(BASES/'iges_decisions.xlsx', BASES/'jrc_decisions.xlsx')
     norm = net.Normativity(BASES/'indicator_directionality.xlsx', ROOT/'series_directions.csv')
     audit_folder = folder/'auditoria'
-    counts = net.process_file(correlations, audit_folder, norm, directions, 0.1)
+    counts = net.process_file(correlations, audit_folder, norm, directions, alpha)
     final = correlations.with_name(correlations.stem+'_final.xlsx')
     print('[5/5] Rankings and four final data files...', flush=True)
     prep.cache_formulas(final, caches)

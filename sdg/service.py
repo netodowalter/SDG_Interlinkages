@@ -98,12 +98,12 @@ def sdg_run(folder, code, title, scope, method):
     render_networks(folder, prefix, title, graph, result['highlights'], DATA / 'icons')
 
 
-def iges_run(folder, code, title, csv_path, work, modules):
+def iges_run(folder, code, title, csv_path, work, modules, alpha=0.1):
     region = {'code': int(code), 'name': title}
     source = csv_path or iges.download_csv(modules[0], region, work / 'api.csv')
     pipeline_work = work / 'processing'
     pipeline_work.mkdir()
-    produced = iges.run_pipeline(modules, pipeline_work, region, source, work / 'result')
+    produced = iges.run_pipeline(modules, pipeline_work, region, source, work / 'result', alpha=alpha)
     shutil.copytree(produced, folder, dirs_exist_ok=True)
     full = next(folder.glob('*_full.xlsx'))
     ranking = modules[4]
@@ -128,7 +128,7 @@ def iges_run(folder, code, title, csv_path, work, modules):
                     highlight_groups(metrics, details, edges, pond=True), DATA / 'icons', suffix='_pond')
 
 
-def run_analysis(version, scope, code, *, method=None, csv_path=None, output_dir=None):
+def run_analysis(version, scope, code, *, method=None, csv_path=None, output_dir=None, alpha=0.1):
     'Run without input(). Return the complete execution folder. Suitable for a queued callback.'
     scope = normalize_scope(scope)
     method = "both" if method == "ambos" else method
@@ -155,7 +155,7 @@ def run_analysis(version, scope, code, *, method=None, csv_path=None, output_dir
         ready.mkdir()
         modules = iges.load_modules(work)
         if version == 'IGES_JRC':
-            iges_run(ready, code, areas[code], Path(csv_path) if csv_path else None, work, modules)
+            iges_run(ready, code, areas[code], Path(csv_path) if csv_path else None, work, modules, alpha)
         else:
             methods = ('pearson', 'spearman') if method in (None, 'both') else (method,)
             for selected in methods:
