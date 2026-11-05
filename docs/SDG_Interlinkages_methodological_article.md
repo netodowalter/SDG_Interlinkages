@@ -251,7 +251,7 @@ Every selected node is reported with its T₁₀₀ or T₀. These times charact
 
 The six roles form three symmetric pairs: two across the *I* ↔ *D* interface and one inside the two subsystems (Figure 1).
 
-![Figure 1 · six roles between and within the improving and deteriorating subsystems, illustrated with Brazil](figures/figure1_interface_roles.png)
+
 
 **Figure 1.** After classification, synergies remain within each defined performance group (*I* and *D*) and trade-offs cross between them. Illustration with Brazil's SDG Index network (normalised scores, 2000–2025, Pearson correlation in levels, p < 0.10, top 3 per role). Panel A (*I* → *D* interface): the top *Improvement senders* (9.c internet use, 1.2 poverty at $4.20/day, 1.1 poverty at $3.00/day) send trade-offs to the top *Deterioration receivers* (2.2 obesity, 8.8 labour rights, 2.4 human trophic level). Panel B (*D* → *I* interface): the top *Deterioration senders* (15.5 Red List Index, 12.4 production-based nitrogen emissions, 2.2 obesity) send trade-offs to the top *Improvement receivers* (7.1 clean cooking fuels, 4.6 literacy rate, 10.1 Gini index). Panel C (internal relays): the top *Improvement relays* (5.6 family planning, 4.6 literacy, 6.1 basic drinking water) concentrate synergies within *I*, while the top *Deterioration relays* (6.4 scarce water in imports, 8.8 labour rights, 15.5 Red List Index) concentrate synergies within *D*. The links are those the procedure estimates; Section 7 shows that such links cannot be taken as evidence of causal transmission.
 
@@ -406,11 +406,11 @@ The negative finding is itself useful: the tests identify a limitation of the av
 
 The methodological finding also bears on a political question that cannot be reduced to an indicator or a network role. If past exploitation is condemned only as a historical moral wrong while the inequalities it produced continue to be enjoyed through unequal access to resources and well-being, present arrangements remain implicated in that past. The humanist promise of a global agenda must confront this contradiction as a **defining target that informs all others; otherwise, systemic synergy will remain little more than an aspiration.**
 
-¹ High-Level Political Forum, VNR tools, search “interlinkages”: <https://hlpf.un.org/tools?search=interlinkages>.
+¹ High-Level Political Forum, VNR tools, search “interlinkages”: [https://hlpf.un.org/tools?search=interlinkages](https://www.google.com/search?q=https://hlpf.un.org/tools%3Fsearch%3Dinterlinkages).
 
 ## Data and code availability
 
-The implementation, operational inputs, regression tests and methodological documentation are available at [github.com/netodowalter/SDG\_Interlinkages](https://github.com/netodowalter/SDG_Interlinkages). The same Python service runs a Gradio application, a command-line interface and a Python API. Each run exports full and summary workbooks, node and edge tables, an *Adverse cases* record of excluded and reclassified links, an Interface\_measures sheet with every role measure, rank and context value, and network images, including the Two-step interface view. IGES/JRC runs also export the link-share weighted workbook and figures, identified by the suffix \_pond. Replication should record the repository revision, data release, geographic coverage, analysis period and analytical settings.
+The implementation, operational inputs, regression tests and methodological documentation are available at [github.com/netodowalter/SDG\_Interlinkages](https://www.google.com/search?q=https://github.com/netodowalter/SDG_Interlinkages). The same Python service runs a Gradio application, a command-line interface and a Python API. Each run exports full and summary workbooks, node and edge tables, an *Adverse cases* record of excluded and reclassified links, an Interface\_measures sheet with every role measure, rank and context value, and network images, including the Two-step interface view. IGES/JRC runs also export the link-share weighted workbook and figures, identified by the suffix \_pond. Replication should record the repository revision, data release, geographic coverage, analysis period and analytical settings.
 
 ## Appendix: Operational criteria
 
