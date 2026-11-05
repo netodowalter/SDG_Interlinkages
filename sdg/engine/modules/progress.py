@@ -151,7 +151,9 @@ def highlight_groups(metrics,details,edges=(),pond=False):
 def interface_rows(metrics,details,edges=(),pond=False):
     'One row per connected target: interface measures, ranks and assigned role.'
     nodes=interface_nodes(metrics,details,edges,pond)
-    role={r[1]:g['title'] for g in highlight_groups(metrics,details,edges,pond) for r in g['rows']}
+    role={}
+    for g in highlight_groups(metrics,details,edges,pond):
+        for r in g['rows']:role[r[1]]=role[r[1]]+'; '+g['title'] if r[1] in role else g['title']
     fields=('colab','neglect','tradeoff_received_from_backward','forward_synergy_sent','forward_ratio','tradeoff_sent_to_backward',
             'tradeoff_received_from_forward','synergy_received_from_backward','synergy_sent_to_backward','backward_synergy_sent','bridge_flow','relay_flow')
     rows=[]

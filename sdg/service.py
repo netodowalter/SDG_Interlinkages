@@ -72,7 +72,10 @@ def sdg_run(folder, code, title, scope, method):
     book = load_workbook(full, read_only=True, data_only=True)
     from performance_ranking import format_years, RANK_KEYS
     from roles import MEASURES
-    role = {row[1]: g['title'] for g in result['highlights'] for row in g['rows']}
+    role = {}
+    for g in result['highlights']:
+        for row in g['rows']:
+            role[row[1]] = role[row[1]] + '; ' + g['title'] if row[1] in role else g['title']
     summary = Workbook()
     summary.remove(summary.active)
     try:
