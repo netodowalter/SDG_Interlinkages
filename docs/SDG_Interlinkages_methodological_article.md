@@ -4,28 +4,29 @@ Walter Antonio Desiderá Neto · Draft, November 2026
 
 ## Abstract
 
-Synergies and trade-offs among Sustainable Development Goal (SDG) targets are usually inferred from the sign of associations between normatively oriented indicators. This article argues that such networks cannot be interpreted without the direction of observed performance. Two indicators that deteriorate together are positively associated, yet their reinforcement is not a contribution to the 2030 Agenda. The sign of association already separates improving from deteriorating targets, which is why synergy networks tend to form two clusters; what it cannot show is which cluster is which. The argument builds on an application to Brazil's 2024 Voluntary National Review, which used the approaches then available, the IGES tool and the JRC compilation, and, on examining target progress, raised the point that neither considers the direction of performance when classifying interlinkages (Desiderá Neto et al., 2025).
+Synergies and trade-offs among Sustainable Development Goal (SDG) targets are often inferred from the sign of associations between normatively oriented indicators. This article argues that such networks also require the direction of observed performance for their interpretation. Two indicators that deteriorate together may be positively associated, but their co-movement does not represent a contribution to the 2030 Agenda. In trending series, association signs tend to separate improving from deteriorating targets; they do not identify which group is improving. The argument builds on an application to Brazil’s 2024 Voluntary National Review (VNR), which used the IGES tool and the JRC compilation and identified performance direction as a missing element in the interpretation of interlinkages (Desiderá Neto et al., 2025).
 
-We propose a framework in which performance direction enters link classification, node metrics and role selection. Once links are classified this way, synergies connect targets moving in the same direction, and trade-offs become the only links crossing between an improving and a deteriorating subsystem. The contribution of network analysis would then lie at this interface. It could identify transmission bridges, deteriorating targets that receive trade-offs from improving targets and pass deterioration on through synergies, and isolated beneficiaries, improving targets that gain through trade-offs from deteriorating targets while passing forward less synergy than they receive. Neither role is visible to centrality measures or to target-by-target monitoring.
+We propose a framework that incorporates performance direction into link classification, network metrics and role selection. In the resulting network, synergies connect targets moving in the same direction, while trade-offs cross between improving and deteriorating subsystems. Its potential contribution lies at this interface: transmission bridges are deteriorating targets that receive trade-offs from improving targets and pass deterioration on through synergies; isolated beneficiaries are improving targets associated with losses elsewhere that pass forward less synergy than they receive. These positions raise questions that centrality measures and target-by-target monitoring alone cannot answer.
 
-The framework is implemented in an open repository with two procedures: literature-based IGES/JRC relationships with United Nations indicators, and annual SDG Index indicator scores. Statistical tests for Brazil, and for Finland and Norway, whose national statistical systems are among the best rated by the Statistical Performance Index, with SDG Index scores and raw values, UN series and the IGES/JRC procedure, show that persistence and trends produce most of the links, that roles follow each indicator's direction and the linearity of its trend, and that what remains once trend is removed is small and indistinguishable from artefacts of filling, carried values and bounded scales. With the indicators as currently published, correlation between national series cannot support valid inference about interlinkages, and network analysis built on it cannot identify roles. Tools without that validity should not be recommended to countries for their Voluntary National Reviews, and other indicators, with more granularity and variance, are needed.
+Two procedures implement the framework: one combines IGES/JRC inventories with United Nations indicators, and the other uses SDG Index component scores. Tests for Brazil, Finland and Norway yield similar results. Independent surrogate series frequently pass nominal significance tests in levels. Bridge rankings track trend linearity and degree, and the three highest-ranked bridges in levels share no members with the three highest-ranked bridges in annual changes in any country. These results limit what can be inferred from the published national series. The analysis supports incorporating performance direction into the interpretation of links, but the estimated roles do not provide a reliable basis for prioritising targets in Voluntary National Reviews. Investigating those roles requires indicators with greater granularity and meaningful variation.
 
 **Keywords:** Sustainable Development Goals; synergies; trade-offs; policy coherence; network analysis; transmission; monitoring and evaluation.
 
 ## 1 Introduction
 
-The indivisibility of the 2030 Agenda is a problem for both monitoring and public action. Progress is assessed target by target, yet the processes behind outcomes cross sectoral boundaries. An intervention may advance several objectives, meet constraints originating elsewhere, or improve one outcome at the expense of another. Network analysis has become a common way to represent these interdependencies (Issa, Mezher and El Fadel, 2024; Chaniotakis et al., 2024).
+The indivisibility of the 2030 Agenda presents a challenge for monitoring and public action. Progress is assessed target by target, yet the processes behind outcomes cross sectoral boundaries. An intervention may advance several objectives, encounter constraints originating elsewhere, or improve one outcome at the expense of another. Network analysis has become a common way to represent these interdependencies (Issa, Mezher and El Fadel, 2024; Chaniotakis et al., 2024).
 
 Its relevance depends on what its links mean. Synergies matter because mutually reinforcing improvements multiply the benefits of public action; trade-offs matter because gains in one domain may involve losses in another. Most quantitative applications operationalise these concepts through the sign of correlations between indicators oriented so that higher values are better (Pradhan et al., 2017; Zhou and Moinuddin, 2017). Orientation makes scales normatively comparable. It does not establish whether the observed trajectories are improving or deteriorating.
 
 This gap has two consequences, which structure the article.
 
-1. **Without performance direction, the network cannot be operationalised meaningfully, nor can its links be properly read.** A positive association between two deteriorating targets is labelled a synergy, and a target that drags its neighbours backwards is ranked as a leading contributor. Rankings built on such links answer a question nobody asked.
-2. **With performance direction, network analysis would gain a contribution of its own.** Classified links separate an improving subsystem from a deteriorating one and expose the trade-off arcs that connect them. Two roles at this interface would matter most for policy: **transmission bridges**, which carry the cost of others' gains into the deteriorating subsystem and propagate it, and **isolated beneficiaries**, whose improvement is associated with others' deterioration and is not passed on.
+1.  Without performance direction, links and rankings can be misinterpreted. A positive association between two deteriorating targets may be labelled a synergy, and a target associated with deterioration elsewhere may consequently be ranked as a leading contributor. Such rankings do not necessarily answer the policy question for which they are used.
 
-The argument builds on an application to Brazil's 2024 Voluntary National Review (VNR), documented in Ipea's Technical Note Dinte 77 (Desiderá Neto et al., 2025). The note applied the approaches recommended to countries at the time, the IGES tool and the JRC compilation, and proposed two network categories based on weighted degree. When target progress could be examined, it raised a point that neither the IGES tool nor the JRC compilation incorporates: the meaning of synergy and trade-off depends on whether the targets involved are improving or deteriorating. This article develops that finding into an operational framework, shows where its added value would lie, and tests whether the indicators currently available can support it. They cannot.
+2.  With performance direction, network analysis could make a distinct contribution. Classified edges separate an improving subsystem from a deteriorating one and identify the trade-off arcs that connect them. Two positions at this interface warrant particular attention: transmission bridges, which receive adverse associations from improving targets and pass deterioration on within the regressing subsystem; and isolated beneficiaries, whose improvement is associated with deterioration elsewhere and is passed on only to a limited extent.
 
-Section 2 reconstructs the VNR exercise and the finding that motivates this article. Section 3 positions the framework within the literature and examines the evidential basis of literature-derived networks. Section 4 sets out the analytical design. Section 5 defines the metrics and roles, with emphasis on the interface roles. Section 6 sets out why the roles would matter for policy. Section 7 reports the statistical tests. Section 8 discusses other uses of the open implementation and Section 9 the limits of the tests. Section 10 concludes.
+This study builds on an application to Brazil’s 2024 VNR, documented in Ipea’s Technical Note Dinte 77 (Desiderá Neto et al., 2025). The note applied the IGES and JRC approaches and proposed two network metrics based on weighted degree. Examination of target progress identified a limitation of interpreting links without the direction of performance. This article develops that insight into an operational framework, specifies its potential diagnostic value and tests whether available national indicator series can support its estimation. Tests for Brazil, Finland and Norway indicate that the series examined cannot support that use.
+
+The article is organised as follows. Section 2 reviews the Brazilian VNR case study and articulates its core methodological finding. Section 3 situates the framework within the broader literature and examines the empirical basis of literature-derived networks. Section 4 presents the analytical design and data-processing procedures. Section 5 defines the network metrics, two-step flows and target roles. Section 6 examines the policy relevance of the interface roles. Section 7 presents statistical diagnostic tests of the underlying indicator series. Section 8 outlines additional applications of the open-source pipeline, Section 9 addresses analytical limitations, and Section 10 concludes with policy recommendations.
 
 ## 2 Starting point: the Brazilian VNR exercise and its finding
 
@@ -33,15 +34,19 @@ Section 2 reconstructs the VNR exercise and the finding that motivates this arti
 
 Brazil's 2024 VNR replicated the IGES SDG Interlinkages Analysis and Visualisation Tool (Zhou and Moinuddin, 2017). The IGES relationships and their directions were kept unchanged. Indicator availability limited the network to 73 targets observed annually over 2010–2023, with gaps imputed by compound annual growth rates. Every assumed link was weighted and classified by its Pearson coefficient, regardless of strength, significance or the distribution of the series (Desiderá Neto et al., 2025).
 
-The complete network was too dense to read, so it was filtered into separate synergy and trade-off subnetworks. The synergy subnetwork showed two clusters, with targets 10.1, 9.4 and 8.5 apparently bridging the transmission of positive effects between them. Read in the usual way, the picture suggested two agendas progressing well, joined by a few targets whose role was to connect them, alongside a dense tangle of trade-offs that was hard to interpret. The trade-off subnetwork qualified that reading: the same targets, particularly 9.4, were also major receivers and senders of trade-offs. A role suggested by one subnetwork could be contradicted by the other. Section 4.4 suggests why such clusters arise.
+The complete network was excessively dense, requiring filtering into separate synergy and trade-off subnetworks. The synergy subnetwork revealed two distinct clusters, with targets 10.1, 9.4, and 8.5 ostensibly bridging the transmission of positive effects between them. Standard interpretations suggested two agendas progressing well, joined by a few structural connectors, alongside a dense tangle of trade-offs that proved difficult to interpret. However, the trade-off subnetwork qualified this reading: the same targets, particularly 9.4, were also major receivers and senders of trade-offs. A role suggested by one subnetwork was contradicted by the other. Section 4.4 explains how these clusters arise.
 
 That observation motivated two metrics built from weighted in- and out-degree in each subnetwork:
 
-```latex
-\mathrm{SL.Out}_i = \mathrm{CGP.Out.S}_i - \mathrm{CGP.Out.T}_i, \qquad \mathrm{TL.In}_i = \mathrm{CGP.In.T}_i - \mathrm{CGP.In.S}_i
-```
+$$
+\mathrm{SL.Out}_i = \mathrm{CGP.Out.S}_i - \mathrm{CGP.Out.T}_i
+$$
 
-Targets with positive SL.Out were labelled *transversal collaboration* ("helping without hindering"); targets with positive TL.In were labelled *transversal neglect* ("hindered without being helped"). A weighting factor based on each node's share of links was added, to flag targets whose centrality might reflect uneven research coverage rather than interdependence.
+$$
+\mathrm{TL.In}_i = \mathrm{CGP.In.T}_i - \mathrm{CGP.In.S}_i
+$$
+
+Targets with positive SL.Out were classified as *transversal collaboration* ("helping without hindering"); targets with positive TL.In were classified as *transversal neglect* ("hindered without being helped"). A weighting factor based on each node's share of links was introduced to control for target centrality driven by uneven research coverage rather than genuine interdependence.
 
 ### 2.2 What the examination of progress revealed
 
@@ -49,23 +54,23 @@ When target-level progress data became available, the note examined what the cat
 
 The reverse also held. A target with high TL.In but improving performance could not be described as neglected. It was more plausibly pursued through individualised strategies, indifferent to the rest of the plan, such that deterioration elsewhere contributed to its own progress. The note read this as a possible sign of concentrated misallocation of scarce resources (Desiderá Neto et al., 2025).
 
-The note drew two conclusions. First, positive performance is not an intrinsic attribute of synergy: with links classified by the sign of association alone, as in the available methods, network positions cannot be read as contribution or neglect. Second, performance has three dimensions that must be kept apart: **stage** (distance to the target), **direction** (approaching or moving away) and **pace** (speed of change). Its literature search found studies that consider the stage of achievement as a limit on a target's capacity to transmit synergies. It found none that examined how the *direction* of performance changes the meaning of synergy and trade-off. The point had been made as a conceptual typology by the authors of the IGES tool (Zhou and Moinuddin, 2021) and by Su, Krol and Hogeboom (2022), in publications outside the tool's documentation (Section 3.2).
+The note drew two conclusions. First, positive performance is not an intrinsic attribute of synergy: when links are classified by association sign alone, network positions cannot automatically be interpreted as contribution or neglect. Second, performance has three distinct dimensions: stage (distance to target), direction (approaching or moving away) and pace (rate of change). The note’s literature search found studies considering stage as a condition for transmitting synergies, but none examining how performance direction changes the meaning of synergy and trade-off. The issue had also been raised in conceptual typologies by Zhou and Moinuddin (2021) and Su, Krol and Hogeboom (2022), outside the IGES tool documentation (Section 3.2).
 
 ### 2.3 From diagnosis to framework
 
 This was the note's central contribution. The IGES tool and the JRC compilation were the interlinkage approaches suggested to countries preparing VNRs, and neither incorporates the direction of target performance into the classification of interlinkages. By applying them in full, reporting openly what their metrics could and could not support, and identifying performance as the missing element, the note took the first step towards the framework presented here. The present framework carries that step through every stage of the analysis. The changes are summarised below; Sections 4 and 5 justify each one.
 
-| Element | NT Dinte 77 (2025) | Present framework |
-| --- | --- | --- |
-| Link evidence | IGES links, all retained regardless of significance | IGES/JRC evidence rules with p ≤ 0.10, or SDG Index associations with p < 0.10 and temporal orientation |
-| Series preparation | One indicator per target, CAGR imputation | Coverage-based series selection, bounded CAGR imputation, consolidation of shared series |
-| Link classification | Sign of the oriented correlation | Sign of the oriented correlation, then checked against both nodes' trajectories; weak discordant links excluded, others reclassified |
-| Contribution metric | SL.Out = out-synergy − out-trade-off | Colab, same formula, read only among improving nodes |
-| Exposure metric | TL.In = in-trade-off − in-synergy | Neglect = in-trade-off **+** in-synergy from deteriorating sources, read only among deteriorating nodes |
-| Interface measures | None | Trade-off received and sent across the interface, synergy passed on, bridge and relay flows, forward ratio φ |
-| Roles | Two categories | Six roles defined by performance direction, including the two interface roles |
-| Context | None | Semantic ambitiousness (IGES/JRC) or conditional time to boundary (SDG Index), reported for every role |
-| Coverage bias | Link-share weighting factor | Same factor, IGES/JRC only, produced as a parallel weighted version with a rank comparison (Section 5.6) |
+| **Element**         | **NT Dinte 77 (2025)**                              | **Present framework**                                                                                                                |
+|---------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| Link evidence       | IGES links, all retained regardless of significance | IGES/JRC evidence rules with p ≤ 0.10, or SDG Index associations with p \< 0.10 and temporal orientation                             |
+| Series preparation  | One indicator per target, CAGR imputation           | Coverage-based series selection, bounded CAGR imputation, consolidation of shared series                                             |
+| Link classification | Sign of the oriented correlation                    | Sign of the oriented correlation, then checked against both nodes' trajectories; weak discordant links excluded, others reclassified |
+| Contribution metric | SL.Out = out-synergy − out-trade-off                | Colab, same formula, read only among improving nodes                                                                                 |
+| Exposure metric     | TL.In = in-trade-off − in-synergy                   | Neglect = in-trade-off **+** in-synergy from deteriorating sources, read only among deteriorating nodes                              |
+| Interface measures  | None                                                | Trade-off received and sent across the interface, synergy passed on, bridge and relay flows, forward ratio φ                         |
+| Roles               | Two categories                                      | Six roles defined by performance direction, including the two interface roles                                                        |
+| Context             | None                                                | Semantic ambitiousness (IGES/JRC) or conditional time to boundary (SDG Index), reported for every role                               |
+| Coverage bias       | Link-share weighting factor                         | Same factor, IGES/JRC only, produced as a parallel weighted version with a rank comparison (Section 5.6)                             |
 
 The change in the exposure metric is the clearest consequence of incorporating performance. TL.In *subtracted* incoming synergies on the assumption that any synergy is help. Neglect *adds* incoming synergies from deteriorating sources, because reinforcement from a deteriorating neighbour is a source of pressure, not support.
 
@@ -77,17 +82,19 @@ The link-share weighting factor is retained for the IGES/JRC procedure, where li
 
 Reviews group methods for inferring SDG interlinkages into qualitative, literature-review and quantitative traditions (Chaniotakis et al., 2024). Qualitative scoring, such as the seven-point scale of Nilsson et al. (2017), captures context but lacks explicit criteria for each score. Literature compilations, such as the JRC inventory (Miola et al., 2019; Fronza et al., 2023), accumulate findings across studies but describe relationships that may not hold uniformly across settings. Quantitative studies correlate indicator series: Pradhan et al. (2017) define synergies and trade-offs from the sign of correlations between oriented indicators, and Kroll, Warchold and Pradhan (2019) examine how these classifications shift over time.
 
-These approaches share a premise: once indicators are oriented so that higher is better, a positive association means mutual support. This premise holds only when both indicators improve. When both deteriorate, the same coefficient describes reinforcement of deterioration. Studies that follow classifications over time ask whether a relationship changes sign, not whether the outcomes it links are moving towards or away from their targets.
+These approaches commonly treat a positive association between oriented indicators as mutual support. Yet a positive coefficient can also describe co-movement between deteriorating indicators. A change in the sign of an association over time is distinct from a change in whether the outcomes themselves are improving or deteriorating.
 
 ### 3.2 Recognition of the problem and additive approaches
 
-The premise has been questioned. In a review of the effects of the COVID-19 crisis on the SDGs in Asia, the authors of the IGES tool distinguished four configurations according to whether a causal and an affected target are progressing or regressing: synergy, trade-off, "development drag" and "coupled deterioration" (Zhou and Moinuddin, 2021). Su, Krol and Hogeboom (2022) noted that two deteriorating indicators produce a positive coefficient and are therefore labelled a synergy. A recent review of quantitative interlinkage studies treats this as a widespread fallacy, recommends moving beyond the synergy–trade-off labels, and concludes that a research gap remains in operationalising such enhanced interpretations (Sota and Venghaus, 2026). NT Dinte 77 reached the same point independently, by applying the IGES tool, whose procedure does not incorporate performance.
+This premise has been questioned. In a review of the effects of COVID-19 on the SDGs in Asia, the authors of the IGES tool distinguished four configurations according to whether a causal and an affected target are progressing or regressing: synergy, trade-off, “development drag” and “coupled deterioration” (Zhou and Moinuddin, 2021). Su, Krol and Hogeboom (2022) noted that indicators deteriorating together can be positively correlated and therefore labelled a synergy. In applying the IGES tool to Brazil, NT Dinte 77 identified the operational consequence of this ambiguity for interpreting collaboration and neglect (Desiderá Neto et al., 2025). The subsequent review by Sota and Venghaus (2026) reinforces the note’s diagnosis and documents the problem across quantitative studies.
 
-Other studies combine performance and networks additively. Issa and El Fadel (2026) add an urgency score, built from normalised achievement, a world benchmark and the trend, to an influence score derived from centrality and from links classified by sign and normative direction. Ah-Pine and Ah-Pine (2026) select indicators that are both underperforming, by level, and central in a cross-sectional network. Yuan et al. (2026) report the progress of goals alongside a correlation-based classification of their interactions. In all three, performance enters as a separate criterion and the meaning of links stays sign-based, so a target that deteriorates within a deteriorating cluster scores as both urgent and positively influential: a lever to stimulate.
+Other studies combine performance and network measures as separate criteria. Issa and El Fadel (2026) combine urgency and influence scores, while Ah-Pine and Nasho Ah-Pine (2026) select indicators that are both underperforming and central. Yuan et al. (2026, Eq. 19 and Figs. 8–9) compare 11 goals across 19 Chinese urban agglomerations using six observation years between 2012 and 2022. They correlate goal rankings across agglomerations using scores averaged over the six years and repeat the spatial comparison for each year. They find 31 positive and 24 negative coefficients among 55 pairs in the averaged data, and an increase from 15 pairs classified as synergistic in 2012 to 17 in 2022. These results identify geographic covariation and changes in its pattern. A positive spatial coefficient can arise when places ranking high on one goal also rank high on another, even if both goals deteriorate over time in a given place. Their separate assessment of progress therefore answers a different question from whether a particular edge connects two improving targets.
 
 Attention to indirect effects is also growing. Xiao, Liu and Ren (2023) extend direct synergies and trade-offs to indirect ones transmitted through intermediate targets, finding that synergies account for most of the total influence once indirect paths are counted. Without performance, however, a chain of synergies may be propagating deterioration. Causal orientation does not change this: Ding et al. (2026) orient links among goals with convergent cross mapping but classify them by the sign of correlation, reading a positive sign as joint improvement, and find that 82% of the relations are synergies. Reviews also point to directionality, causal mechanisms and transboundary effects as understudied (Khot, Warchold and Pradhan, 2026). Their "temporal dynamics" concerns whether an interaction changes over time (Kroll, Warchold and Pradhan, 2019), which differs from whether the linked targets are improving or deteriorating.
 
-This article responds to the gap identified by Sota and Venghaus. It keeps the synergy and trade-off labels as descriptions of the form of an association, qualifies them by the trajectories of the linked targets, and carries that qualification through link classification, metrics, two-step transmission measures and role selection, in an open implementation.
+In their subsequent review, Sota and Venghaus (2026, Table 1 and the section on correlation analysis) distinguish four configurations of source and recipient performance, drawing on Zhou and Moinuddin (2021). Their review explains why reorienting an indicator cannot distinguish joint improvement from coupled deterioration, why a strength threshold leaves that ambiguity unresolved, and how duplicate indicators and interpolation complicate comparisons. They recommend tracing mechanisms and comparing methods on the same data. Building on the diagnosis in NT Dinte 77, this article carries the distinction through edge classification, weighted measures and two-step roles and tests whether the available series can support those roles.
+
+Khot, Warchold and Pradhan (2026, Sections 4–5) find in a review of 272 articles that goal-level studies predominate, while interactions within goals, across borders and in low-income countries receive less attention. This bears directly on literature-derived networks: a high degree can partly reflect which targets and settings researchers have studied. The review maps methods and their co-occurrence and explicitly leaves their comparative effectiveness and robustness untested. It supplies a reason to examine coverage and mechanisms, while the empirical validity of the resulting network remains an open question.
 
 ### 3.3 The limits of centrality
 
@@ -97,19 +104,19 @@ Decision-makers also value simplicity and direct applicability over methodologic
 
 ### 3.4 Evidential basis of literature-derived networks
 
-The IGES tool combines relationships drawn from a union of reference sources with country-specific indicator correlations (Zhou and Moinuddin, 2017). The JRC compilation records interaction types, directions, methods and contexts, including cases where direction cannot be established (Fronza et al., 2023). The literature supplies the existence and orientation of candidate relationships; local correlations supply their strength. Correlations do not independently establish direction. Uneven research coverage may also make well-studied targets appear more connected (Desiderá Neto et al., 2025); the IGES/JRC procedure therefore also produces a link-share weighted version (Section 5.6). Inventories also omit links created by policy rather than by mechanisms studied in the literature (Section 8).
+The IGES tool combines relationships drawn from a union of reference sources with country-specific indicator correlations (Zhou and Moinuddin, 2017). The JRC compilation records interaction types, directions, methods and contexts, including cases where direction cannot be established (Fronza et al., 2023). The literature supplies the existence and orientation of candidate relationships; local correlations supply their strength and sign. Correlations do not independently establish direction. Uneven research coverage may also make well-studied targets appear more connected (Desiderá Neto et al., 2025); the IGES/JRC procedure therefore also produces a link-share weighted version (Section 5.6). Inventories also omit links created by policy rather than by mechanisms studied in the literature (Section 8).
 
 Comparing the two inventories shows how sensitive the network is to construction choices. The consolidated comparison contains 8,751 IGES records and 5,701 JRC records, with 3,133 matches: 35.80% of the former and 54.96% of the latter.
 
 **Table 1.** Directional agreement among matched IGES and JRC records
 
-| Directional evidence | Records | Share of matched records | Treatment in the network |
-| --- | --- | --- | --- |
-| Uncertain in the JRC evidence | 1,286 | 41.05% | Both directions retained, unless IGES codes clear one-sided evidence in the reverse direction |
-| Complete agreement | 1,171 | 37.38% | Retained as coded |
-| Partial agreement | 597 | 19.06% | Both directions retained |
-| Opposite unidirectional orientations | 79 | 2.52% | Both directions retained; conflicting evidence recorded |
-| Total | 3,133 | 100.00% |  |
+| **Directional evidence**             | **Records** | **Share of matched records** | **Treatment in the network**                                                                  |
+|--------------------------------------|-------------|------------------------------|-----------------------------------------------------------------------------------------------|
+| Uncertain in the JRC evidence        | 1,286       | 41.05%                       | Both directions retained, unless IGES codes clear one-sided evidence in the reverse direction |
+| Complete agreement                   | 1,171       | 37.38%                       | Retained as coded                                                                             |
+| Partial agreement                    | 597         | 19.06%                       | Both directions retained                                                                      |
+| Opposite unidirectional orientations | 79          | 2.52%                        | Both directions retained; conflicting evidence recorded                                       |
+| Total                                | 3,133       | 100.00%                      |                                                                                               |
 
 *Note:* Complete agreement denotes the same single direction or bidirectionality in both inventories; partial agreement denotes a single direction in one and bidirectionality in the other. Percentages are rounded independently. Counts refer to relationship records, not unique unordered target pairs. The consolidated comparison permits verification of totals but does not independently reproduce the matching of the underlying inventories. Source: Zhou and Moinuddin (2017); Fronza et al. (2023).
 
@@ -123,9 +130,9 @@ Each direction of a pair is evaluated separately. Clear JRC evidence for a direc
 
 **IGES/JRC procedure.** Candidate target relationships come from the IGES inventory, assessed against JRC evidence on direction (Table 1). Observations are collected from the UNSD SDG database by geographic code (M49), for a country or region. For each target, the series with the greatest number of distinct original numeric years during 2000–2025 is selected, with ties broken by IGES order. Eligible gaps are filled by series-specific compound annual growth rates computed from positive endpoint pairs, with bounds applied to generated values. Series shared by several targets enter the calculations through one representative target, so identical observations are not counted as independent evidence of interdependence. Eligible pairs receive Pearson coefficients and are retained at p ≤ 0.10.
 
-**SDG Index procedure.** The SDG Index (Sachs et al., 2026) is distinct from the official UN framework. It combines indicators from several sources on a normalised 0–100 scale, where 100 is an operational benchmark rather than full attainment of a UN target. The procedure uses annual component scores rather than goal or overall scores, for 169 countries and 14 regions or aggregates. An editorial mapping links 101 components to SDG targets. Pairs within the same goal or target are excluded before testing. Retained pairs need at least eight matched observations, a nonzero coefficient (Pearson, Spearman or both) and nominal p < 0.10. Benjamini–Hochberg q-values are kept for sensitivity analysis.
+**SDG Index procedure.** The SDG Index (Sachs et al., 2026) is distinct from the official UN framework. It combines indicators from several sources on a normalised 0–100 scale, where 100 is an operational benchmark rather than full attainment of a UN target. The procedure uses annual component scores rather than goal or overall scores, for 169 countries and 14 regions or aggregates. An editorial mapping links 101 components to SDG targets. Pairs within the same goal or target are excluded before testing. Retained pairs need at least eight matched observations, a nonzero coefficient (Pearson, Spearman or both) and nominal p \< 0.10. Benjamini–Hochberg q-values are kept for sensitivity analysis.
 
-In the SDG Index procedure, orientation is exploratory. A direction is supported when both a lagged association and a conditional association, controlling for the recipient's previous value, reach p < 0.10. A single arc is kept when only one direction is supported. Two arcs are kept when both directions are supported or neither can be distinguished, and the two situations are recorded separately.
+In the SDG Index procedure, orientation is exploratory. A direction is supported when both a lagged association and a conditional association, controlling for the recipient's previous value, reach p \< 0.10. A single arc is kept when only one direction is supported. Two arcs are kept when both directions are supported or neither can be distinguished, and the two situations are recorded separately.
 
 ### 4.2 Performance direction
 
@@ -133,9 +140,9 @@ Improvement means movement towards the desired outcome; deterioration means move
 
 For each series, a linear trend is fitted over the analytical period and its slope multiplied by the desired direction *d*: +1 when an increase is favourable, −1 when a decrease is favourable. SDG Index scores already ascend normatively, so *d* = +1.
 
-```latex
+$$
 x_i(t) = \alpha_i + \beta_i t + \varepsilon_i(t), \qquad \beta_i^{*} = d_i \beta_i, \qquad d_i \in \{-1, +1\}
-```
+$$
 
 Positive and negative adjusted slopes indicate improvement and deterioration. A numerically negligible fitted change is classified as stable, and fewer than three distinct years as undetermined. The trend R² measures how closely observations follow the fitted trajectory; it says nothing about the causal validity of any relationship.
 
@@ -143,16 +150,16 @@ Positive and negative adjusted slopes indicate improvement and deterioration. A 
 
 Initial link types come from the sign of the oriented association. Each retained link is then checked against the trajectories of its two nodes. A link is *discordant* when its initial type conflicts with those trajectories: for example, a positive oriented association between an improving and a deteriorating node.
 
-Let *m* be the smaller of the two trend R² values and |r| the absolute association. A discordant link is excluded if *m* < 0.10, or if *m* < 0.20 and |r| < 0.40. Weak trends cannot carry a reclassification, and weak associations cannot withstand one. Other discordant links between nodes with defined directions are reclassified to match the trajectories. The original coefficient and initial type are preserved in an *Adverse cases* record; link weights use |r|. Links involving stable or undetermined nodes keep their initial type.
+Let *m* be the smaller of the two trend R² values and \|r\| the absolute association. A discordant link is excluded if *m* \< 0.10, or if *m* \< 0.20 and \|r\| \< 0.40. Weak trends cannot carry a reclassification, and weak associations cannot withstand one. Other discordant links between nodes with defined directions are reclassified to match the trajectories. The original coefficient and initial type are preserved in an *Adverse cases* record; link weights use \|r\|. Links involving stable or undetermined nodes keep their initial type.
 
 **Table 2.** Retained links by the trajectories of their nodes
 
-| Source | Recipient | Type | Interpretation (hypothesis) |
-| --- | --- | --- | --- |
-| Improving | Improving | Synergy | Reinforcement of improvement |
-| Deteriorating | Deteriorating | Synergy | Reinforcement of deterioration |
-| Improving | Deteriorating | Trade-off | The source's gains are associated with the recipient's losses |
-| Deteriorating | Improving | Trade-off | The recipient's gains are associated with, and may be sustained by, the source's losses |
+| **Source**    | **Recipient** | **Type**  | **Interpretation (hypothesis)**                                                         |
+|---------------|---------------|-----------|-----------------------------------------------------------------------------------------|
+| Improving     | Improving     | Synergy   | Reinforcement of improvement                                                            |
+| Deteriorating | Deteriorating | Synergy   | Reinforcement of deterioration                                                          |
+| Improving     | Deteriorating | Trade-off | The source's gains are associated with the recipient's losses                           |
+| Deteriorating | Improving     | Trade-off | The recipient's gains are associated with, and may be sustained by, the source's losses |
 
 *Note:* Interpretations are hypotheses about relationships, not estimated causal effects. Arcs keep their literature-based or temporal evidential status. The four rows correspond to the configurations of Zhou and Moinuddin (2021): synergy, coupled deterioration, trade-off and development drag.
 
@@ -166,16 +173,19 @@ In practice, the sign of the oriented association already produces most of this 
 
 The IGES classification thus already separates the two groups, and the clusters themselves were an early sign that performance was at work in the network. What the classification does not do is say which cluster is which, so reinforcement of deterioration is read as collaboration. The contribution of performance direction therefore lies less in reclassifying links than in giving them their meaning and in locating the interface between the two clusters.
 
-This changes the reading of the clusters and of what connects them. In a sign-based synergy network, a few targets with strong links to both clusters appear to bridge two agendas that are progressing, which suggests that the task is to strengthen communication between them. Force-directed layouts reinforce this impression: when a target has strong links on both sides, they pull the two clusters together, and the separation produced by the sign becomes hard to see. Once performance is considered, the clusters are an improving and a deteriorating subsystem, and synergies do not cross between them. The two subsystems communicate only through trade-offs, which is also why trade-off networks are always dense and tangled: they consist of the links between the two groups. Apparent synergy bridges between clusters must therefore rest on links discordant with the trajectories or on targets without a defined direction. The connection between the clusters is not something to stimulate. It is where unwanted transmission passes, and where it should be interrupted.
+This changes the interpretation of the clusters and their connections. In a sign-based synergy network, targets linked to both clusters may appear to bridge two agendas that are progressing. Force-directed layouts can reinforce this impression. Once performance is considered and discordant links are treated under the rules above, synergies remain within each defined performance group and trade-offs connect them. Apparent synergy bridges across groups therefore depend on discordant links or nodes without a defined direction. The interface becomes a place to investigate possible adverse transmission, rather than a connection to strengthen automatically.
 
 Whether produced by the data or completed by reclassification, this split is not a finding in itself. A concentration of synergies within groups of the same direction cannot be offered as evidence that those groups are causal systems. The information the network adds over a simple list of improving and deteriorating targets lies elsewhere:
 
 - **which** pairs are linked at all, as established by literature evidence or statistical filters;
+
 - **the orientation** of each link, from literature or temporal tests;
+
 - **the strength** of each link;
+
 - **the structure of the interface**: which nodes receive the trade-off arcs that cross between subsystems, and what they do with them.
 
-The last item is where network analysis contributes something that target-by-target monitoring cannot. A list of deteriorating targets does not show which of them absorb the cost of gains elsewhere and pass it on. A list of improving targets does not show which of them improve at the expense of others while sending nothing forward.
+The last item is where network analysis could add to target-by-target monitoring. A list of deteriorating targets cannot show which targets may absorb the costs of gains elsewhere and pass them on. A list of improving targets cannot show which gains may be associated with losses elsewhere while little synergy is passed forward. These interpretations require independent investigation of the underlying relationships.
 
 ## 5 Metrics and network roles
 
@@ -185,15 +195,15 @@ With links classified by performance, each metric is read only within the perfor
 
 **Collaboration** keeps the form of the SL.Out metric of NT Dinte 77 but is read only among improving nodes, where outgoing synergies reach other improving nodes and outgoing trade-offs reach deteriorating ones:
 
-```latex
+$$
 \mathrm{Colab}(i) = \sum_{j:\,\text{synergy}} w(i,j) - \sum_{j:\,\text{trade-off}} w(i,j), \qquad i \in I
-```
+$$
 
 **Neglect** replaces TL.In and is read only among deteriorating nodes. Incoming trade-offs come from improving sources; incoming synergies from deteriorating sources are added, not subtracted:
 
-```latex
+$$
 \mathrm{Neglect}(k) = \sum_{i:\,\text{trade-off}} w(i,k) + \sum_{j \in D:\,\text{synergy}} w(j,k), \qquad k \in D
-```
+$$
 
 Neither name implies intent. "Neglect" denotes a concentration of adverse incoming relationships, not deliberate institutional neglect or insufficient spending. Neither metric estimates the marginal return to an intervention.
 
@@ -201,37 +211,37 @@ Neither name implies intent. "Neglect" denotes a concentration of adverse incomi
 
 Aggregate scores hide where adverse pressure comes from. Neglect mixes pressure from the improving subsystem (trade-offs) with pressure from within the deteriorating one (synergies). The framework therefore separates the components that describe traffic across the interface:
 
-| Measure | Defined for | Meaning |
-| --- | --- | --- |
-| T⁺(k) | k ∈ D | Incoming trade-off weight from improving sources: the cost of others' gains arriving at k |
-| S⁻(k) | k ∈ D | Incoming synergy weight from deteriorating sources |
-| B(k) | k ∈ D | Outgoing synergy weight to deteriorating nodes: what k passes on |
-| R(i) | i ∈ I | Incoming trade-off weight from deteriorating sources: gains associated with others' losses |
-| Sₒ(i) | i ∈ I | Outgoing synergy weight to improving nodes: what i passes forward |
-| C(i) | i ∈ I | Outgoing trade-off weight to deteriorating nodes: the cost of i's gains downstream |
+| **Measure** | **Defined for** | **Meaning**                                                                                |
+|-------------|-----------------|--------------------------------------------------------------------------------------------|
+| T⁺(k)       | k ∈ D           | Incoming trade-off weight from improving sources: the cost of others' gains arriving at k  |
+| S⁻(k)       | k ∈ D           | Incoming synergy weight from deteriorating sources                                         |
+| B(k)        | k ∈ D           | Outgoing synergy weight to deteriorating nodes: what k passes on                           |
+| R(i)        | i ∈ I           | Incoming trade-off weight from deteriorating sources: gains associated with others' losses |
+| Sₒ(i)       | i ∈ I           | Outgoing synergy weight to improving nodes: what i passes forward                          |
+| C(i)        | i ∈ I           | Outgoing trade-off weight to deteriorating nodes: the cost of i's gains downstream         |
 
 Only links between nodes with defined directions enter these measures; links from stable or undetermined nodes do not.
 
 Two-step flows follow directly. The total weight of all paths that enter a deteriorating node *k* as a trade-off from an improving node and leave as a synergy to a deteriorating node is the product of the two sums:
 
-```latex
+$$
 \mathrm{Bridge}(k) = \sum_{i \in I} \sum_{j \in D} w(i,k)\,w(k,j) = T^{+}(k) \times B(k)
-```
+$$
 
-The analogous flow within the deteriorating subsystem, Relay(k) = S⁻(k) × B(k), describes deterioration received from and passed to other deteriorating nodes. For improving nodes, the forward ratio φ(i) = Sₒ(i) / R(i) indicates how much of what a node gains from others' losses is matched by synergies it passes on. A value of zero means nothing is passed forward; the framework treats φ < 1, passing forward less than is received, as isolation.
+The analogous flow within the deteriorating subsystem, Relay(k) = S⁻(k) × B(k), describes deterioration received from and passed to other deteriorating nodes. For improving nodes, the forward ratio φ(i) = Sₒ(i) / R(i) indicates how much of what a node gains from others' losses is matched by synergies it passes on. A value of zero means nothing is passed forward; the framework treats φ \< 1, passing forward less than is received, as isolation.
 
 ### 5.3 Six roles
 
-Each role is selected by its own score within the relevant performance group and lists only the three highest-ranked nodes with positive values. Roles are selected independently, so a node can hold more than one: a target can be both a contributor and a dependent contributor, or both a transmission bridge and a deterioration relay. The order within each list carries the information that matters for investigation, the first more than the third, and a cut-off of three keeps the lists short enough to read as priorities. Lower-ranked cases are not brought in to fill a role.
+Each role is selected by its own score within the relevant performance group and lists only the three highest-ranked nodes with positive values. Roles are selected independently, so a node can hold more than one: a target can be both a contributor and a dependent contributor, or both a transmission bridge and a deterioration relay. The order within each list indicates relative priority for investigation, with the first-ranked case taking precedence over the third. A cut-off of three produces a concise list of priorities. Lower-ranked cases are not brought in to fill a role.
 
-| Role | Group | Selection | Question it raises |
-| --- | --- | --- | --- |
-| **I-1 Contributor** | Improving | Three highest Colab, not top C | How can these beneficial interactions be sustained or extended? |
-| **I-2 Dependent contributor** | Improving | Three highest R among nodes with φ ≥ 1 | Do the gains that this node spreads depend on losses elsewhere? |
-| **I-3 Isolated beneficiary** | Improving | Three highest R among nodes with φ < 1 | Is this improvement sustained by deterioration elsewhere and kept rather than shared? |
-| **D-1 Exposed target** | Deteriorating | Three highest Neglect, not top B | Where does the pressure come from, and can it be contained? |
-| **D-2 Transmission bridge** | Deteriorating | Three highest Bridge(k) | Does the cost of others' gains enter the deteriorating subsystem here and spread? |
-| **D-3 Deterioration relay** | Deteriorating | Three highest Relay(k) | Is deterioration reproduced here and passed on? |
+| **Role**                      | **Group**     | **Selection**                           | **Question it raises**                                                                |
+|-------------------------------|---------------|-----------------------------------------|---------------------------------------------------------------------------------------|
+| **I-1 Contributor**           | Improving     | Three highest Colab, not top C          | How can these beneficial interactions be sustained or extended?                       |
+| **I-2 Dependent contributor** | Improving     | Three highest R among nodes with φ ≥ 1  | Do the gains that this node spreads depend on losses elsewhere?                       |
+| **I-3 Isolated beneficiary**  | Improving     | Three highest R among nodes with φ \< 1 | Is this improvement sustained by deterioration elsewhere and kept rather than shared? |
+| **D-1 Exposed target**        | Deteriorating | Three highest Neglect, not top B        | Where does the pressure come from, and can it be contained?                           |
+| **D-2 Transmission bridge**   | Deteriorating | Three highest Bridge(k)                 | Does the cost of others' gains enter the deteriorating subsystem here and spread?     |
+| **D-3 Deterioration relay**   | Deteriorating | Three highest Relay(k)                  | Is deterioration reproduced here and passed on?                                       |
 
 A node that holds two roles answers two questions at once. A contributor that is also a dependent contributor spreads gains that rest in part on losses elsewhere; a bridge that is also a relay is where the cost of others' gains enters the deteriorating subsystem and where deterioration is reproduced. I-2 and I-3 cannot coincide, since they split receivers by φ. Two exclusions remain, because they concern rankings that are not roles. Contributors exclude the top senders of costs (C): a target whose gains are associated with losses downstream is the origin of what bridges propagate, and should not be labelled a contributor without qualification. Exposed targets exclude the top senders of deterioration (B), which pass pressure on rather than only receive it. The roles are not a ranking of the intrinsic worth of targets, and not every relevant target falls into one. They separate questions that a single centrality measure would conflate, while the full network stays available for scrutiny.
 
@@ -243,9 +253,13 @@ In the IGES/JRC procedure, the context is **semantic ambitiousness**: the streng
 
 In the SDG Index procedure, the common scale allows a measure of **stage and pace** together. Using the latest score *S* and the fitted slope:
 
-```latex
-T_{100} = \frac{\max(0,\,100 - S)}{\beta}, \;\; \beta > 0; \qquad T_{0} = \frac{\max(0,\,S)}{|\beta|}, \;\; \beta < 0
-```
+$$
+T_{100} = \frac{\max(0,\,100 - S)}{\beta}, \;\; \beta > 0
+$$
+
+$$
+T_{0} = \frac{\max(0,\,S)}{|\beta|}, \;\; \beta < 0
+$$
 
 Every selected node is reported with its T₁₀₀ or T₀. These times rank urgency within each role: a transmission bridge close to the lower boundary is more urgent than one deteriorating slowly. These are conditional extrapolations at the fitted pace, not forecasts. A long T₀ means slow deterioration relative to the remaining score, not demonstrated resilience to shocks.
 
@@ -253,13 +267,13 @@ Every selected node is reported with its T₁₀₀ or T₀. These times rank ur
 
 Two roles carry the contribution that only a network can make, and they mirror each other across the interface (Figure 1).
 
-![Figure 1 · interface roles between the improving and deteriorating subsystems](figures/figure1_interface_roles.png)
+![Figure 1 · interface roles between the improving and deteriorating subsystems, illustrated with Brazil](figures/figure1_interface_roles.png)
 
-**Figure 1.** After classification, synergies stay within each subsystem and trade-offs cross between them. A transmission bridge receives the cost of gains upstream and spreads it; an isolated beneficiary receives gains associated with losses elsewhere and passes nothing on.
+**Figure 1.** After classification, synergies remain within each defined performance group and trade-offs cross between them. A transmission bridge receives a trade-off and passes on synergy; an isolated beneficiary passes forward less synergy than the trade-off weight it receives. Illustration with Brazil's SDG Index network (normalised scores, 2000–2025, Pearson correlation in levels, p < 0.10). Panel A: 2.2 obesity, the second-ranked transmission bridge, receives trade-offs from gains in drinking water, sanitation and internet use and passes deterioration on to labour rights, administrative proceedings and perceived corruption. Panel B: 8.5 unemployment, the first-ranked isolated beneficiary, receives trade-offs from emissions and pollution embodied in imports and passes forward less than half of that weight (φ = 0.42). Only the strongest arcs of each kind are shown. The links are those the procedure estimates; Section 7 shows that such links cannot be taken as evidence of transmission.
 
 A **transmission bridge** (D-2) is a deteriorating target that receives trade-offs from improving targets and passes deterioration on through synergies. It is where the cost of gains elsewhere enters the deteriorating subsystem and spreads. Selecting it by Bridge(k), rather than by total Neglect, matters: a node can receive little pressure overall yet be the main point of entry and propagation. Conversely, a node with high Neglect may receive and pass on deterioration entirely within the deteriorating subsystem, which makes it a relay, not a bridge.
 
-An **isolated beneficiary** (I-3) is an improving target that receives trade-offs from deteriorating targets and passes forward less synergy than it receives (φ < 1). Its improvement is associated with losses elsewhere and largely stays where it is. This is the configuration that NT Dinte 77 interpreted as individualised strategies and possible concentrated misallocation. It differs from a dependent contributor (I-2), which also gains from others' losses but passes forward at least as much as it receives (φ ≥ 1). Isolation is defined by the balance at the node rather than by rank, because in dense networks almost every receiver also sends substantial synergy.
+An **isolated beneficiary** (I-3) is an improving target that receives trade-offs from deteriorating targets and passes forward less synergy than it receives (φ \< 1). Its improvement is associated with losses elsewhere and largely stays where it is. This is the configuration that NT Dinte 77 interpreted as individualised strategies and possible concentrated misallocation. It differs from a dependent contributor (I-2), which also gains from others' losses but passes forward at least as much as it receives (φ ≥ 1). Isolation is defined by the balance at the node rather than by rank, because in dense networks almost every receiver also sends substantial synergy.
 
 The two roles define the most specific policy questions in the framework. At a bridge, the question is whether interrupting the transmission would prevent wider deterioration without sacrificing the upstream gains. At an isolated beneficiary, the question is whether the gains could be maintained with fewer losses elsewhere, or redistributed so that they reach other targets.
 
@@ -269,9 +283,9 @@ The repository computes all six roles and exports every interface measure, rank 
 
 In literature-derived networks, a target can rank highly because many studies record its links rather than because those links are strong. NT Dinte 77 proposed a factor to flag this: each target's share of the links it sends or receives.
 
-```latex
+$$
 P_i = \frac{L_i}{\sum_{j=1}^{n} L_j}
-```
+$$
 
 The IGES/JRC procedure always produces a weighted version alongside the original, with its own workbook and figures. Sent measures (Colab, synergy and trade-off sent) are divided by the sent share, received measures (Neglect, trade-off and synergy received) by the received share, and bridge and relay flows by both; φ is unchanged. Roles, node sizes and Two-step positions are recomputed from the weighted measures. Shares are expressed relative to the mean (Pᵢ × n), so a target with the mean number of links keeps its value; this rescaling does not change any ranking.
 
@@ -287,22 +301,22 @@ If interface roles could be estimated validly, they would change the unit of att
 
 **At a dependent contributor**, the trade-off would be sharper, because the node's gains also benefit other improving targets. Policy would have to weigh the losses upstream against the improvements the node spreads downstream.
 
-No intervention would follow automatically from a node's position. The sequence the roles presuppose is: network analysis identifies configurations; substantive inquiry examines mechanisms; intervention design formulates feasible adjustments; evaluation tests their effects. The first step carries the weight of the others. It requires that the links and roles reflect relationships between targets rather than properties of the series used to measure them. Section 7 tests whether that requirement can be met with the indicators currently available.
+No policy intervention should follow mechanically from network centrality. A diagnostic workflow would use network positions to identify candidates for investigation, examine possible mechanisms with domain-specific evidence, design policy responses and evaluate their effects. Its usefulness depends on whether the estimated links provide a credible basis for investigation. Section 7 tests this prerequisite using currently available SDG data.
 
 ## 7 Statistical tests
 
-The roles of Section 5 are only as good as the links they are built on. This section asks whether correlations between national indicator series, as they are published today, can support those links. It applies the framework to Brazil with four sources and two procedures, repeats the analysis for Finland and Norway, and subjects every network to the same tests. The concern throughout is the SDG Index, whose normalised indicator scores are the most complete national series available and the easiest to misread as measurements of change.
+We examine whether correlations between published national indicator series can support the links needed to estimate the roles defined in Section 5. The same diagnostics are applied to four data specifications in Brazil, Finland and Norway.
 
 ### 7.1 Data and designs
 
-Finland and Norway were chosen because their national statistical systems are among the best rated by the World Bank's Statistical Performance Index (Dang et al., 2023), which the SDG Index reports under target 17.18. Norway has the highest score in the value used by the 2026 edition (94.1 in 2024, first of 187 countries). Finland was among the five highest every year from 2016 to 2023, first in 2020, and over 2016–2024 shares with Sweden the highest mean score. Brazil ranks 54th in 2024. If the results for Brazil reflected the weakness of one statistical system, they should not hold for these two countries. Four sources were used for each country:
+Finland and Norway were chosen because their national statistical systems are among the best rated by the World Bank's Statistical Performance Index (Dang et al., 2023), which the SDG Index reports under target 17.18. Norway has the highest score in the value used by the 2026 edition (94.1 in 2024, first of 187 countries). Finland was among the five highest every year from 2016 to 2023, first in 2020, and over 2016–2024 shares with Sweden the highest mean score. Brazil ranks 54th in 2024. The comparison tests whether the Brazilian pattern also occurs in countries with highly rated statistical systems. The national index measures statistical capacity broadly and does not certify the quality of any particular series. Four specifications were examined in each country:
 
 - **SDG Index, normalised scores.** The 101 indicator scores supplied by the Sustainable Development Report for each country, 2000–2025, as used by the SDG Index procedure (Section 4.1).
 - **SDG Index, raw values.** The raw indicator values of the SDR 2026 database. Only indicators with at most six missing years in 2000–2025, and no run of more than three, were kept: 50 of the 101 for Brazil, 52 for Finland and 51 for Norway. Gaps were filled with the IGES/JRC compound-growth rule, and the normative sign of each indicator was taken from the SDR codebook.
 - **UN series.** One aggregate series per target from the UN SDG Global Database, 2010–2023, under the same completeness rule, keeping only observations reported by the country (excluding modelled, estimated and global-monitoring values). Ordinal and binary series were excluded. Normative directions were assigned to the series without an official one: first to those used for Brazil, then to 38 further series, mostly donor flows, waste, vaccination and occupational injuries, whose intended direction is unambiguous. The result covers 34 targets for Brazil and 33 each for Finland and Norway.
 - **IGES/JRC procedure.** The package's IGES/JRC procedure run unchanged on UNSD data for each country: inventory pairs, compound-growth filling, Pearson correlation, p < 0.10, classification by normative direction and performance.
 
-Each network was built twice: with correlations between levels, as in all procedures discussed in Section 3, and with correlations between year-on-year changes, which remove the common trend. Two tests were applied to every network. Phase-shuffled surrogates replace each series by an independent series with the same power spectrum and autocorrelation (Ding et al., 2026); the share of pairs that pass the significance filter among surrogates is the share produced by persistence alone, with no relationship between targets. A null model rewires the network at random while keeping each node's performance direction, its numbers of sent and received links and the weights; roles that reappear in the rewired networks owe nothing to who is linked to whom. Role stability was also compared across correlation coefficients, time windows and selection rules. The null model used the cut-off of three per role adopted in Section 5; the stability tests used a cut-off of ten, which is more favourable to stability.
+Each network was built twice: with correlations between levels, as in the national time-series applications discussed above, and with correlations between year-on-year changes, which reduce the influence of smooth trends. Two tests were applied to every network. Phase-shuffled surrogates replace each series by an independent series with the same power spectrum and autocorrelation (Ding et al., 2026); the share of pairs that pass the significance filter among surrogates is the share produced by persistence alone, with no relationship between targets. A null model rewires the network at random while keeping each node's performance direction, its numbers of sent and received links and the weights; roles that reappear in the rewired networks owe nothing to who is linked to whom. Role stability was also compared across correlation coefficients, time windows and selection rules. The null model used the cut-off of three per role adopted in Section 5; the stability tests used a cut-off of ten, which is more favourable to stability.
 
 ### 7.2 Persistence produces most of the links
 
@@ -323,13 +337,13 @@ Each network was built twice: with correlations between levels, as in all proced
 |  | Finland | 61 | 65% | 44% | 16% | 10% |
 |  | Norway | 60 | 61% | 45% | 19% | 10% |
 
-In levels, series with no relationship to one another pass the filter in 24% to 50% of pairs, against a nominal 10%. Between half and four fifths of the observed links are therefore what the persistence of the series alone would produce. Finland and Norway have lower observed shares than Brazil, but their surrogates still pass the filter in 24% to 45% of pairs. Tightening the threshold does not remove the problem. For Brazil's SDG Index scores, independent surrogates pass p < 0.01 in 26% of pairs and p < 0.001 in 14%, roughly 140 times the nominal rate. Spearman's coefficient behaves like Pearson's (47.5% of surrogate pairs pass p < 0.10), because two monotonic series are always ranked alike. The problem lies in a significance test that treats annual observations of trending series as independent, not in the linearity of the coefficient or in the level of the threshold.
+In levels, series with no relationship to one another pass the filter in 24% to 50% of pairs, against a nominal 10%. Across specifications, surrogate pass rates are roughly one-half to four-fifths as large as the observed rates. This comparison quantifies the scale of the persistence problem without identifying which individual links are spurious. Finland and Norway have lower observed shares than Brazil, but their surrogates still pass the filter in 24% to 45% of pairs. Tightening the threshold does not remove the problem. For Brazil's SDG Index scores, independent surrogates pass p < 0.01 in 26% of pairs and p < 0.001 in 14%, roughly 140 times the nominal rate. Spearman's coefficient behaves like Pearson's (47.5% of surrogate pairs pass p < 0.10), because two monotonic series are always ranked alike. The problem lies in a significance test that treats annual observations of trending series as independent, not in the linearity of the coefficient or in the level of the threshold.
 
-In changes, surrogates return to the nominal rate, and what remains is co-movement: 4 to 12 percentage points above chance in Brazil, and no more in Finland and Norway (1 to 9 points). At most a few dozen genuine associations are mixed among the hundreds that pass, with no way of telling which they are. The largest excess, in the IGES/JRC procedure, is partly produced by its own filling rule: within a stretch filled at a constant compound rate, annual changes are almost constant, and two filled stretches covering the same years correlate by construction.
+In changes, surrogates return to the nominal rate, and what remains is co-movement: 4 to 12 percentage points above chance in Brazil, and no more in Finland and Norway (1 to 9 points). This excess does not establish how many retained pairs reflect substantive relationships. The largest excess, in the IGES/JRC procedure, may partly reflect the filling rule: interpolation over common intervals can induce similar patterns of annual change.
 
 ### 7.3 Roles follow degree and direction
 
-In the SDG Index network, the degree sequence alone fixes about 70% of the arcs in Brazil and about 60% in Finland and Norway: at densities of 0.51, 0.37 and 0.38, no rewiring moves more than 31% to 40% of them. The number of links of each indicator correlates with the linearity of its own trend (Spearman 0.63 between degree and time R² in Brazil, 0.84 in Finland and 0.76 in Norway), and in all three countries the three transmission bridges are among the ten deteriorating indicators with the most linear trends. In the rewired networks, the bridges reappear far more often than chance would allow. Mean Jaccard similarity with the observed set is 0.43 (Brazil), 0.44 (Finland) and 0.28 (Norway) with normalised scores, 0.41, 0.42 and 0.58 with raw values, and 0.59, 0.55 and 0.53 in the IGES/JRC procedure, against 0.06 to 0.10 for two random choices of three among the deteriorating targets (0.13 to 0.30 in the smaller raw-value networks). Only two of the 27 bridges, one in Finland's raw-value network and one in Norway's IGES/JRC network, have a bridge flow above the null distribution. A bridge, in these data, is a deteriorating indicator with a strong linear trend and many links. Some contributors and dependent contributors exceed the null, but they change with the window, the coefficient and the basis.
+In the SDG Index network, the degree sequence alone fixes about 70% of the arcs in Brazil and about 60% in Finland and Norway: at densities of 0.51, 0.37 and 0.38, no rewiring moves more than 31% to 40% of them. The number of links of each indicator correlates with the linearity of its own trend (Spearman 0.63 between degree and time R² in Brazil, 0.84 in Finland and 0.76 in Norway), and in all three countries the three transmission bridges are among the ten deteriorating indicators with the most linear trends. In the rewired networks, the bridges reappear far more often than chance would allow. Mean Jaccard similarity with the observed set is 0.43 (Brazil), 0.44 (Finland) and 0.28 (Norway) with normalised scores, 0.41, 0.42 and 0.58 with raw values, and 0.59, 0.55 and 0.53 in the IGES/JRC procedure, against 0.06 to 0.10 for two random choices of three among the deteriorating targets (0.13 to 0.30 in the smaller raw-value networks). Only two of the 27 bridges, one in Finland's raw-value network and one in Norway's IGES/JRC network, have a bridge flow above the null distribution. In these data, bridge status largely reflects deterioration, a strong linear trend and high degree. Some contributors and dependent contributors exceed the null, but they change with the window, the coefficient and the basis.
 
 **Table 4.** Similarity of role membership with the main specification (SDG Index, normalised scores; cut-off of ten per role; Jaccard, 1 = identical).
 
@@ -351,7 +365,7 @@ In the SDG Index network, the degree sequence alone fixes about 70% of the arcs 
 |  | Finland | 0.82 | 0.67 | 0.75 | 0.82 | 1 | 0.82 |
 |  | Norway | 0.82 | 0.82 | 0.25 | 0.89 | 0.82 | 0.82 |
 
-Roles on the deteriorating side, bridges above all, are more stable across specifications than those on the improving side only because they track direction and degree, which change little between specifications. With the cut-off of three, similarity falls further: between levels and changes it is zero for bridges in all three countries. When trend is removed, the order of the bridges changes as well: in Brazil, between levels and changes, the rank correlation of bridge flow among the raw-value bridges is 0.20, not significant. The Benjamini–Hochberg correction changes almost nothing, because nearly every pair is already highly significant in levels.
+Roles on the deteriorating side, bridges above all, are more stable across specifications than those on the improving side in a pattern consistent with their dependence on direction and degree, which change little between specifications. With the cut-off of three, similarity falls further: between levels and changes it is zero for bridges in all three countries. When trend is removed, the order of the bridges changes as well: in Brazil, between levels and changes, the rank correlation of bridge flow among the raw-value bridges is 0.20, not significant. The Benjamini–Hochberg correction changes almost nothing, because nearly every pair is already highly significant in levels.
 
 ### 7.4 Properties of the indicators
 
@@ -365,13 +379,15 @@ Several properties of the indicators, rather than of the method, account for the
 
 ### 7.5 Significance, direction and inventories
 
-The IGES tool accepts any correlation coefficient, whatever its significance (Zhou and Moinuddin, 2017). Removing the filter in the package's IGES/JRC procedure for Brazil adds 627 arcs (from 1,486 to 2,113), with a median |r| of 0.17 against 0.71 among the significant ones; 372 of them become trade-offs. In Finland and Norway it adds 447 and 521 arcs, with median |r| of 0.19 and 0.18 against 0.62 and 0.69, of which 224 and 246 become trade-offs. Their sign carries no information, since a coefficient that cannot be distinguished from zero cannot be called positive or negative. Bridges change little (Jaccard 1 in Brazil and Finland, 0.5 in Norway), because the strong links, which pass the filter easily, determine them. The absence of a filter is indefensible, but its presence does not rescue the method: the links that pass are the ones Section 7.2 shows to be largely persistence.
+The IGES tool accepts any correlation coefficient, whatever its significance (Zhou and Moinuddin, 2017). Removing the filter in the package's IGES/JRC procedure for Brazil adds 627 arcs (from 1,486 to 2,113), with a median |r| of 0.17 against 0.71 among the significant ones; 372 of them become trade-offs. In Finland and Norway it adds 447 and 521 arcs, with median |r| of 0.19 and 0.18 against 0.62 and 0.69, of which 224 and 246 become trade-offs. The signs of these additional estimates provide insufficient evidence for classifying the underlying associations. Bridges change little (Jaccard 1 in Brazil and Finland, 0.5 in Norway), because the strong links, which pass the filter easily, determine them. Omitting a significance filter is methodologically unjustified, and applying one is insufficient to establish validity: the links that pass are the ones Section 7.2 shows to be largely persistence.
 
-The direction of links fares no better. Lagged and conditional tests orient in a single direction fewer than half of the significant pairs in the raw-value networks (49% in Brazil and Finland, 47% in Norway), and those tests rest on the same trending series. Without direction, the framework loses the distinction between origin and destination that gives bridges and contributors their meaning. Read without direction, ranking pairs by the trade-off degree of each end and the strength of the tie, the networks single out targets that the directed roles leave out, either because the lagged tests mark them as origins of cost or because they split their trade-offs between received and sent; and the highest-ranked pairs are nearly tied in levels. Inventories do not solve the problem either. They restrict which pairs are examined, but the IGES/JRC networks show the same persistence and the same dependence of roles on degree and direction.
+The orientation of links presents further difficulties. Lagged and conditional tests orient in a single direction fewer than half of the significant pairs in the raw-value networks (49% in Brazil and Finland, 47% in Norway), and those tests rest on the same trending series. Without direction, the framework loses the distinction between origin and destination that gives bridges and contributors their meaning. Read without direction, ranking pairs by the trade-off degree of each end and the strength of the tie, the networks single out targets that the directed roles leave out, either because the lagged tests mark them as origins of cost or because they split their trade-offs between received and sent; and the highest-ranked pairs are nearly tied in levels. Inventories do not solve the problem either. They restrict which pairs are examined, but the IGES/JRC networks show the same persistence and the same dependence of roles on degree and direction.
 
 ### 7.6 What the tests allow
 
-With the indicators as they are published and available today, in Brazil as in the two countries whose statistical systems are among the best rated, correlation between national annual series cannot support valid inference about interlinkages between SDG targets, and network analysis built on such correlations cannot identify roles. In levels, the links are mostly trend and persistence, and the roles follow from each indicator's direction and the linearity of its trend; in changes, the signal is small, mixed with chance and indistinguishable from the artefacts of filling, carried values and bounded scales. This holds for sign-based classification and for the performance-based classification proposed here, for literature-restricted and data-driven pair selection, with and without significance filters, and with Pearson or Spearman coefficients. The performance-based reading of synergies and trade-offs remains a conceptual requirement for any interlinkage analysis. What the tests rule out is estimating it from correlations between the series currently available.
+Across Brazil, Finland and Norway, correlations between the published national series examined here provide insufficient evidence to infer interlinkages or assign policy roles. In levels, trends and persistence can generate many links even under independence. In annual changes, the modest excess over the surrogate pass rate is difficult to distinguish from effects of filling, carried values and bounded scales at the level of an individual pair. The result recurs across literature-restricted and data-driven specifications. The two bridge flows exceeding the rewiring benchmark merit separate investigation, but that test alone cannot establish a transmission mechanism.
+
+The literature addresses different parts of this problem. Sota and Venghaus (2026) reinforce the diagnosis reported in NT Dinte 77 (Desiderá Neto et al., 2025) by documenting the risk of treating coupled deterioration as beneficial across a wider literature. Khot, Warchold and Pradhan (2026) identify the need for stronger evidence on direction and mechanisms. Yuan et al. (2026) use geographic variation, so their coefficients do not rely on correlating two trending national series. Spatial ranks, however, do not establish the direction of transmission between targets. None of the three studies demonstrates a procedure that recovers reliable directed roles from short, persistent national indicator series. The distinction between improving and deteriorating targets therefore remains necessary even where the data are inadequate to estimate the roles.
 
 ## 8 Other uses of the open implementation
 
@@ -385,61 +401,62 @@ The implementation remains useful beyond the roles, above all as an instrument o
 
 **Policy-intended links.** Brazil's Pluriannual Plan (PPA) 2024–2027 required those formulating each programme to state which SDG targets it contributes to. Mapping each programme's central target to the targets its formulators indicated yields a network of the links that policy expects to create. All technical programmes have been classified by SDG, from their components, justification, objectives and expected results, using a BERT-based SDG classification model (ods-brasil-bahia). These intended links do not depend on correlations between indicator series. They can be compared with the literature inventories now and, once indicators with more granularity and variance are available, with the associations those indicators show. The aim is to inform hypotheses to be considered in drafting the PPA 2028–2031.
 
-**Other countries and regions.** The same procedures and tests run for 169 countries and 14 regions or aggregates in the SDG Index, and for UNSD countries and regions in the IGES/JRC procedure. Section 7 applies the tests to Finland and Norway, with the same results as for Brazil; applied to other countries, they can show how general those results are. The indicator properties behind them, carried values, bounds, interpolation and modelling, are features of the global databases rather than of one country.
+**Other countries and regions.** The same procedures and tests run for 169 countries and 14 regions or aggregates in the SDG Index, and for UNSD countries and regions in the IGES/JRC procedure. Section 7 applies the tests to Finland and Norway, where the broad pattern recurs; applied to other countries, they can show how general those results are. The indicator properties behind them, carried values, bounds, interpolation and modelling, are features of the global databases rather than of one country.
 
 **Transmission between countries.** Overlaying national networks could in principle help investigate whether performance in one country is associated with trade-offs in another, for instance through trade. Such a design would face the limits shown in Section 7 and would require bilateral data with more variance than national annual series.
 
 ## 9 Limitations
 
-The tests of Section 7 have limits of their own.
+The tests reported in Section 7 are subject to several limitations.
 
 - **Three countries.** The tests were run for Brazil, Finland and Norway. Other countries may differ, although the properties that drive the results are features of the global databases, and Finland and Norway are among the countries with the best-rated statistical systems.
+
 - **Choices in the tests.** The completeness rules, the selection of one series per target, the exclusion of modelled, ordinal and binary series, and the normative directions assigned to UN series without an official one, first for Brazil's series and then for 38 further series, are choices; others are possible. The null model used a cut-off of three per role, as in Section 5, and the stability tests a cut-off of ten.
+
 - **Power of the null model.** In dense networks the degree sequence leaves little room for rewiring, so the null model cannot move most arcs. This limits its power to separate structure from degree, and is itself part of the finding: at these densities there is little structure left to separate.
+
 - **Corrections not applied.** Significance was not corrected for autocorrelation, and no predictive test was run. At current lengths, corrections remove most significance, and splitting the series for prediction leaves too few observations; both would weaken the remaining associations further.
 
-None of these limits favours the use of correlation between the available series: each either restricts the scope of the tests to the data examined or would weaken the remaining associations further.
+These limitations delimit the inference rather than establish that other countries or alternative data would necessarily yield the same results. Across the three countries examined, they do not provide a basis for treating the resulting correlation networks as reliable evidence of interlinkages.
 
 ## 10 Conclusion
 
-The commitment to leave no one behind expresses the mission of the 2030 Agenda as one of global synergy: progress is meant to be shared, not achieved by some at the expense of others.
+The commitment to leave no one behind expresses the 2030 Agenda’s aspiration to global synergy: progress should be shared rather than achieved by some at the expense of others.
 
-The prestige of actors from developed countries has made the field permissive towards deep methodological fragilities, to the point that tools without any validity for inferring interlinkages or prioritising targets are officially recommended by the United Nations. This is one reflection, among several, of the trade-off that the Agenda ends up incorporating as a premise because it does not take as its central objective the gap that separates developed from developing countries in many dimensions.
+The prestige of actors from developed countries has, in the author’s interpretation, contributed to a permissive attitude towards serious methodological weaknesses, allowing tools that lack validity for inferring interlinkages or prioritising targets to be recommended to countries under United Nations guidance. This methodological concern also points to a broader political argument: the Agenda does not place the gap between developed and developing countries at the centre of its objectives and thereby risks incorporating the trade-off of unequal development into its own premises.
 
-The IGES tool justifies its use of correlation by restricting it to the sign and strength of relationships whose existence is assumed from the literature (Zhou and Moinuddin, 2017). Without significance, not even the sign means anything: a coefficient that cannot be distinguished from zero is neither positive nor negative, and the tool accepts any coefficient. With significance, Section 7 shows that the sign of correlations between these series reflects trend and persistence.
+The IGES tool justifies the use of correlation by applying it to the sign and strength of relationships assumed to exist on the basis of the literature (Zhou and Moinuddin, 2017). When a coefficient is not distinguishable from zero, its observed sign alone is insufficient evidence of the direction of the underlying association. Adding a significance filter does not settle the problem: the tests in all three countries indicate that correlations in these series are strongly affected by trends and persistence.
 
-The JRC initiative is commendable. It records interaction types, directions, methods and contexts, including the cases where direction cannot be established. But the difference between its compilation and what the IGES tool presumes, both drawn from searches of the same literature (Section 3.4), is revealing of how much what enters a review defines its results.
+The JRC initiative is commendable for recording interaction types, directions, methods and contexts, including cases in which direction cannot be established. Yet the differences between its compilation and the relationships presumed by the IGES tool, despite both drawing on the literature, show how the scope and choices of a review shape its results (Section 3.4).
 
-The High-Level Political Forum cannot keep this indication in the toolkit it offers countries for preparing their Voluntary National Reviews. It induces error, and this is unacceptable because the interlinkage agenda is conceived as a path to support prioritisation and to accelerate the achievement of the goals.
+The High-Level Political Forum should withdraw this indication from the toolkit offered to countries preparing VNRs. A tool that can induce erroneous interpretations is especially problematic when interlinkage analysis is intended to guide prioritisation and accelerate progress towards the goals.
 
-The finding that the available series do not allow the application of network analysis is valid, and it produces a recommendation: to know synergies and trade-offs, other indicators, with more granularity and variance, need to be identified, created and collected.
+The negative finding is itself useful: the tests identify a limitation of the available series and point to the need to identify, develop and collect indicators with greater granularity and meaningful variation. Such data would still require appropriate research designs and independent investigation of causal mechanisms.
 
-At the same time, with the end date approaching, it is impossible not to stress that the fundamental interlinkage of the Agenda needs no goal, target, data, indicator, network, metrics or roles to be pointed out. That interlinkage is the maintenance of the trade-off of unequal development, without the status of a guiding goal for the whole Agenda, in an Agenda that intends to leave no one behind. If past exploitation is only condemned morally in the present, the inequality it produced, enjoyed in the present through unequal access to resources and well-being, will go on evidencing effective complicity with the past. The fallacy of the humanist appeal must be eliminated before any synergy can be expected from a global agenda.
+The methodological finding also bears on a political question that cannot be reduced to an indicator or a network role. The Agenda aspires to leave no one behind, yet the reduction of the gap between developed and developing countries does not have the status of a guiding objective across the Agenda. In the author’s interpretation, this permits the trade-off of unequal development to persist. If past exploitation is condemned only as a historical moral wrong while the inequalities it produced continue to be enjoyed through unequal access to resources and well-being, present arrangements remain implicated in that past. The humanist promise of a global agenda must confront this contradiction if systemic synergy is to be more than an appeal.
 
 ## Data and code availability
 
-The implementation, operational inputs, regression tests and methodological documentation are available at [github.com/netodowalter/SDG\_Interlinkages](https://github.com/netodowalter/SDG_Interlinkages). The same Python service runs a Gradio application, a command-line interface and a Python API. Each run exports full and summary workbooks, node and edge tables, an *Adverse cases* record of excluded and reclassified links, an Interface\_measures sheet with every role measure, rank and context value, and network images, including the Two-step interface view. IGES/JRC runs also export the link-share weighted workbook and figures, identified by the suffix \_pond. Replication should record the repository revision, data release, geographic coverage, analysis period and analytical settings.
-
-**\[Author check: archive the release used in this article on Zenodo and cite its DOI here. The hosted application currently runs at ods-interlinkages-global.wdneto.chatgpt.site; a persistent address is preferable for a journal article.\]**
+The implementation, operational inputs, regression tests and methodological documentation are available at [github.com/netodowalter/SDG_Interlinkages](https://github.com/netodowalter/SDG_Interlinkages). The same Python service runs a Gradio application, a command-line interface and a Python API. Each run exports full and summary workbooks, node and edge tables, an *Adverse cases* record of excluded and reclassified links, an Interface_measures sheet with every role measure, rank and context value, and network images, including the Two-step interface view. IGES/JRC runs also export the link-share weighted workbook and figures, identified by the suffix \_pond. Replication should record the repository revision, data release, geographic coverage, analysis period and analytical settings.
 
 ## Appendix: Operational criteria
 
-| Element | IGES/JRC procedure | SDG Index procedure |
-| --- | --- | --- |
-| Analytical period | 2000–2025 | 2000–2025 |
-| Series selection | Most distinct original numeric years; ties by IGES order | Component scores as supplied |
-| Gap filling | CAGR from positive endpoint pairs (constant zero for two zero endpoints); bounds on generated values | None (supplied series may contain carried or interpolated values) |
-| Shared series | One representative target | Distinct indicators mapped to one target keep distinct node IDs |
-| Pair exclusions | — | Same goal or same target |
-| Association | Pearson, p ≤ 0.10 | Pearson and/or Spearman, ≥ 8 matched observations, nonzero r, p < 0.10 |
-| Orientation | IGES/JRC evidence rules, each direction evaluated separately (Section 3.4) | Lagged and conditional tests, both p < 0.10; otherwise two arcs |
-| Trend | Linear, ≥ 3 distinct years; negligible change = stable | Same |
-| Reclassification | Exclude discordant link if min R² < 0.10, or min R² < 0.20 and \|r\| < 0.40; otherwise reclassify | Same |
-| Rankings | Top 10 positive values within direction, exact ties at position 10 included | Top 10 positive values within direction, ties resolved by stable node ID |
-| Interface measures | Links between nodes with defined directions only | Same |
-| Isolation | φ < 1 among top receivers R | Same |
-| Context | Semantic ambitiousness, reported for every role | Years to target or to zero, reported for every role |
-| Precedence | One role per node; D-2 over D-3 and D-1 | Same |
+| **Element**        | **IGES/JRC procedure**                                                                               | **SDG Index procedure**                                                  |
+|--------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| Analytical period  | 2000–2025                                                                                            | 2000–2025                                                                |
+| Series selection   | Most distinct original numeric years; ties by IGES order                                             | Component scores as supplied                                             |
+| Gap filling        | CAGR from positive endpoint pairs (constant zero for two zero endpoints); bounds on generated values | None (supplied series may contain carried or interpolated values)        |
+| Shared series      | One representative target                                                                            | Distinct indicators mapped to one target keep distinct node IDs          |
+| Pair exclusions    | —                                                                                                    | Same goal or same target                                                 |
+| Association        | Pearson, p ≤ 0.10                                                                                    | Pearson and/or Spearman, ≥ 8 matched observations, nonzero r, p \< 0.10  |
+| Orientation        | IGES/JRC evidence rules, each direction evaluated separately (Section 3.4)                           | Lagged and conditional tests, both p \< 0.10; otherwise two arcs         |
+| Trend              | Linear, ≥ 3 distinct years; negligible change = stable                                               | Same                                                                     |
+| Reclassification   | Exclude discordant link if min R² \< 0.10, or min R² \< 0.20 and \|r\| \< 0.40; otherwise reclassify | Same                                                                     |
+| Rankings           | Top 10 positive values within direction, exact ties at position 10 included                          | Top 10 positive values within direction, ties resolved by stable node ID |
+| Interface measures | Links between nodes with defined directions only                                                     | Same                                                                     |
+| Isolation          | φ \< 1 among top receivers R                                                                         | Same                                                                     |
+| Context            | Semantic ambitiousness, reported for every role                                                      | Years to target or to zero, reported for every role                      |
+| Role overlap       | Roles are selected independently; a node may hold more than one role (Section 5.3).                  | Same                                                                     |
 
 Intersections are not refilled with lower-ranked cases. Conditional times are in decimal years; a score at the relevant boundary has zero remaining time, and stable or undetermined trajectories have none. Benjamini–Hochberg q-values are computed but are not the active selection criterion.
 
@@ -491,7 +508,7 @@ United Nations. (2026b). *The Sustainable Development Goals Report 2026: Technic
 
 Xiao, H., Liu, Y., & Ren, J. (2023). Synergies and trade-offs across sustainable development goals: A novel method incorporating indirect interactions analysis. *Sustainable Development*, 31, 1135–1148. https://doi.org/10.1002/sd.2446
 
-Yuan, Z., Gao, X., Liu, X., Feng, Y., & Zhang, L. (2026). Progress, trade-offs, and synergies of sustainable development goals in China's urban agglomerations. *Humanities and Social Sciences Communications*. https://doi.org/10.1057/s41599-026-07960-z
+Yuan, Z., Gao, X., Liu, X., Feng, Y., & Zhang, L. (2026). Progress, trade-offs, and synergies of sustainable development goals in China's urban agglomerations. *Humanities and Social Sciences Communications*, 13, 1680. https://doi.org/10.1057/s41599-026-07960-z
 
 Zhou, X., & Moinuddin, M. (2017). *Sustainable Development Goals interlinkages and network analysis: A practical tool for SDG integration and policy coherence*. IGES Research Report RR1602. Institute for Global Environmental Strategies. https://www.iges.or.jp/en/pub/sustainable-development-goals-interlinkages/en
 
