@@ -66,6 +66,9 @@ def main():
     parser.add_argument('--countries', nargs='+', default=['FI:FIN:Finland', 'BG:BGR:Bulgaria'])
     parser.add_argument('--start', type=int, default=2005)
     parser.add_argument('--end', type=int, default=2024)
+    parser.add_argument('--one-per-target', action='store_true',
+                        help='keep, for each target, only the indicator with the largest variance of its 0-100 score '
+                             'in the window (per country); writes to countries_one_per_target/')
     args = parser.parse_args()
     years = list(range(args.start, args.end + 1))
     rs.YEARS = years
@@ -82,7 +85,7 @@ def main():
                             ambition=None, eurostat=entry['file'], sign=entry['sign']))
     (BASE / 'mapping_eurostat.json').write_text(json.dumps(mapping, indent=2, ensure_ascii=False), encoding='utf-8')
 
-    out_dir = BASE / 'countries'
+    out_dir = BASE / ('countries_one_per_target' if args.one_per_target else 'countries')
     out_dir.mkdir(exist_ok=True)
     for spec in args.countries:
         geo, iso3, name = spec.split(':')
@@ -119,6 +122,24 @@ def main():
                                 description=entry['description'], indicator_score=round(score, 6)))
                 raw_rows.append(dict(indicator=code, eurostat=entry['file'], year=y, value=v,
                                      observed=y in values, flag=flags.get(y)))
+        scores = {}
+        for r in obs:
+            scores.setdefault(r['indicator'], []).append(r['indicator_score'])
+        variance = {c: float(np.var(v)) for c, v in scores.items()}
+        for row in coverage:
+            if row['kept']:
+                row['score_variance'] = variance[row['indicator']]
+        if args.one_per_target:
+            best = {}
+            for row in coverage:
+                if row['kept'] and (row['target'] not in best or row['score_variance'] > best[row['target']]['score_variance']):
+                    best[row['target']] = row
+            for row in coverage:
+                if row['kept'] and best[row['target']] is not row:
+                    row.update(kept=False, reason=f"one per target: lower score variance than {best[row['target']]['eurostat']}")
+            keep = {r['indicator'] for r in best.values()}
+            obs = [r for r in obs if r['indicator'] in keep]
+            raw_rows = [r for r in raw_rows if r['indicator'] in keep]
         book = Workbook()
         book.remove(book.active)
         for title, rows in [('Component_observations', obs), ('Raw_values', raw_rows), ('Coverage', coverage)]:
@@ -136,7 +157,9 @@ def main():
                      ('Completeness', 'At most 6 missing years in the window and no run of more than 3 (as scripts/raw_sdgindex.py)'),
                      ('Gaps', 'IGES/JRC CAGR rule: interpolation between neighbours, extrapolation from the first or last two points'),
                      ('Scores', '0–100 min-max over all Eurostat observations of the series, oriented so that 100 is best; linear, no clipping'),
-                     ('Targets', 'Editorial association (data/Eurostat/selection.json)')]:
+                     ('Targets', 'Editorial association (data/Eurostat/selection.json)'),
+                     ('Selection', 'One indicator per target: largest variance of the 0–100 score in the window'
+                      if args.one_per_target else 'All indicators passing the completeness rule')]:
             readme.append(item)
         path = out_dir / f'{iso3}_{name}.xlsx'
         book.save(path)

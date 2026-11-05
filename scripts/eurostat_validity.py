@@ -70,8 +70,9 @@ def main():
     parser.add_argument('--replicates', type=int, default=500)
     parser.add_argument('--surrogates', type=int, default=200)
     parser.add_argument('--out')
+    parser.add_argument('--inputs', default='countries', help='folder under data/Eurostat with the country workbooks')
     args = parser.parse_args()
-    source = next((EU / 'countries').glob(f'{args.country}_*.xlsx'))
+    source = next((EU / args.inputs).glob(f'{args.country}_*.xlsx'))
     with tempfile.TemporaryDirectory() as tmp:
         vs.DATA = Path(tmp)
         shutil.copy(EU / 'mapping_eurostat.json', vs.DATA / 'mapping.json')
@@ -101,7 +102,7 @@ def main():
         surrogates = [surrogate_density(main_res['series'], goal_of, replicates=args.surrogates, basis=b)
                       for b in ('levels', 'changes', 'detrended')]
         diag = diagnostics(main_res, args.start)
-    out = Path(args.out or ROOT / 'output' / 'validity' / f'{args.country}_eurostat_validity_top{args.top_n}.xlsx')
+    out = Path(args.out or ROOT / 'output' / 'validity' / f'{args.country}_eurostat_{args.inputs}_validity_top{args.top_n}.xlsx')
     out.parent.mkdir(parents=True, exist_ok=True)
     book = Workbook()
     book.remove(book.active)

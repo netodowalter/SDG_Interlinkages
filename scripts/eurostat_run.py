@@ -24,16 +24,16 @@ from sdg import service  # noqa: E402
 EU = ROOT / 'data' / 'Eurostat'
 
 
-def data_root(tmp):
+def data_root(tmp, inputs):
     root = Path(tmp) / 'data'
     (root / 'SDGIndex').mkdir(parents=True)
-    files = sorted((EU / 'countries').glob('*.xlsx'))
+    files = sorted(inputs.glob('*.xlsx'))
     records = [dict(code=f.stem.split('_', 1)[0], title=f.stem.split('_', 1)[1].replace('_', ' '),
                     url=f'/sdgindex/countries/{f.name}') for f in files]
     (root / 'SDGIndex' / 'countries.json').write_text(json.dumps(records), encoding='utf-8')
     (root / 'SDGIndex' / 'catalog.json').write_text('[]', encoding='utf-8')
     shutil.copy(EU / 'mapping_eurostat.json', root / 'SDGIndex' / 'mapping.json')
-    (root / 'SDGIndex' / 'countries').symlink_to(EU / 'countries')
+    (root / 'SDGIndex' / 'countries').symlink_to(inputs)
     for name in ('icons', 'areas.json', 'iges_comparison_regions.json'):
         (root / name).symlink_to(ROOT / 'data' / name)
     return root
@@ -46,14 +46,15 @@ def main():
     parser.add_argument('--end', type=int, default=2024)
     parser.add_argument('--method', default='both', choices=('pearson', 'spearman', 'both'))
     parser.add_argument('--output', default=str(ROOT / 'output' / 'Eurostat'))
+    parser.add_argument('--inputs', default='countries', help='folder under data/Eurostat with the country workbooks')
     args = parser.parse_args()
     original = sdgindex_country.analyze
     sdgindex_country.analyze = functools.partial(original, start=args.start, end=args.end)
     with tempfile.TemporaryDirectory() as tmp:
-        service.DATA = data_root(tmp)
+        service.DATA = data_root(tmp, EU / args.inputs)
         for code in args.countries:
             folder = service.run_analysis('SDGIndex', 'country', code, method=args.method, output_dir=args.output)
-            archive = shutil.make_archive(str(folder.parent / f'{code}_Eurostat_{args.start}_{args.end}_{folder.name}'),
+            archive = shutil.make_archive(str(folder.parent / f'{code}_Eurostat_{args.inputs}_{args.start}_{args.end}_{folder.name}'),
                                           'zip', folder)
             print(folder)
             print(archive)
