@@ -1,0 +1,942 @@
+[
+  {
+    "indicator": "n_sdg1_eu0110",
+    "target": "1.2",
+    "goal": 1,
+    "description": "People at risk of poverty or social exclusion (% of population)",
+    "rule": "Eurostat sdg_01_10 {\"age\": \"TOTAL\", \"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_01_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg1_eu0120",
+    "target": "1.2",
+    "goal": 1,
+    "description": "People at risk of income poverty after social transfers (%)",
+    "rule": "Eurostat sdg_01_20 {\"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_01_20",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg1_eu0131",
+    "target": "1.2",
+    "goal": 1,
+    "description": "Severe material and social deprivation rate (%)",
+    "rule": "Eurostat sdg_01_31 {\"age\": \"TOTAL\", \"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_01_31",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg1_eu0140",
+    "target": "1.2",
+    "goal": 1,
+    "description": "People living in households with very low work intensity (% of population under 65)",
+    "rule": "Eurostat sdg_01_40 {\"age\": \"Y_LT65\", \"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_01_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg1_eu0141",
+    "target": "1.2",
+    "goal": 1,
+    "description": "In-work at-risk-of-poverty rate (%)",
+    "rule": "Eurostat sdg_01_41 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_01_41",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg1_eu0150",
+    "target": "1.4",
+    "goal": 1,
+    "description": "Housing cost overburden rate (%)",
+    "rule": "Eurostat sdg_01_50 {\"rskpovth\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_01_50",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg2_eu0210",
+    "target": "2.2",
+    "goal": 2,
+    "description": "Obesity rate, BMI >= 30 (%)",
+    "rule": "Eurostat sdg_02_10 {\"bmi\": \"BMI_GE30\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_02_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg2_eu0220",
+    "target": "2.3",
+    "goal": 2,
+    "description": "Agricultural factor income per annual work unit (EUR 2020 prices)",
+    "rule": "Eurostat sdg_02_20 {\"unit\": \"CLV20_EUR_AWU\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_02_20",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg2_eu0230",
+    "target": "2.a",
+    "goal": 2,
+    "description": "Government support to agricultural R&D (EUR per inhabitant)",
+    "rule": "Eurostat sdg_02_30 {\"unit\": \"EUR_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_02_30",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg2_eu0240",
+    "target": "2.4",
+    "goal": 2,
+    "description": "Area under organic farming (% of utilised agricultural area)",
+    "rule": "Eurostat sdg_02_40 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_02_40",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg2_eu0253",
+    "target": "2.4",
+    "goal": 2,
+    "description": "Harmonised risk indicator for pesticides (index 2015-2017 = 100)",
+    "rule": "Eurostat sdg_02_53 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_02_53",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg2_eu0260",
+    "target": "2.4",
+    "goal": 2,
+    "description": "Ammonia emissions from agriculture (kg per ha of UAA)",
+    "rule": "Eurostat sdg_02_60 {\"unit\": \"KG_HA\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_02_60",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg3_eu0311",
+    "target": "3.4",
+    "goal": 3,
+    "description": "Healthy life years at birth (years)",
+    "rule": "Eurostat sdg_03_11 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_11",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg3_eu0312",
+    "target": "3.d",
+    "goal": 3,
+    "description": "Life expectancy at birth (years)",
+    "rule": "Eurostat sdg_03_12 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_12",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg3_eu0320",
+    "target": "3.8",
+    "goal": 3,
+    "description": "Share of people with good or very good perceived health (%)",
+    "rule": "Eurostat sdg_03_20 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_20",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg3_eu0330",
+    "target": "3.a",
+    "goal": 3,
+    "description": "Smoking prevalence, 15 years or over (%)",
+    "rule": "Eurostat sdg_03_30 {\"age\": \"Y_GE15\", \"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_30",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg3_eu0341",
+    "target": "3.3",
+    "goal": 3,
+    "description": "Standardised death rate due to tuberculosis, HIV and hepatitis (per 100 000)",
+    "rule": "Eurostat sdg_03_41 {\"icd10\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_41",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg3_eu0342",
+    "target": "3.4",
+    "goal": 3,
+    "description": "Standardised avoidable mortality (per 100 000)",
+    "rule": "Eurostat sdg_03_42 {\"mortalit\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_42",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg3_eu0360",
+    "target": "3.8",
+    "goal": 3,
+    "description": "Self-reported unmet need for medical care (%)",
+    "rule": "Eurostat sdg_03_60 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_60",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg3_eu0370",
+    "target": "3.b",
+    "goal": 3,
+    "description": "Total consumption of antibiotics (per 1 000 inhabitants per day)",
+    "rule": "Eurostat sdg_03_70 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_03_70",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg4_eu0410",
+    "target": "4.1",
+    "goal": 4,
+    "description": "Early leavers from education and training, 18-24 (%)",
+    "rule": "Eurostat sdg_04_10 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_04_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg4_eu0420",
+    "target": "4.3",
+    "goal": 4,
+    "description": "Tertiary educational attainment, 25-34 (%)",
+    "rule": "Eurostat sdg_04_20 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_04_20",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg4_eu0431",
+    "target": "4.2",
+    "goal": 4,
+    "description": "Participation in early childhood education (%)",
+    "rule": "Eurostat sdg_04_31 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_04_31",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg4_eu0440",
+    "target": "4.6",
+    "goal": 4,
+    "description": "Underachievement in reading, 15-year-olds (%)",
+    "rule": "Eurostat sdg_04_40 {\"field\": \"READ\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_04_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg4_eu0460",
+    "target": "4.4",
+    "goal": 4,
+    "description": "Adult participation in learning, 25-64 (%)",
+    "rule": "Eurostat sdg_04_60 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_04_60",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg4_eu0470",
+    "target": "4.4",
+    "goal": 4,
+    "description": "Adults with at least basic digital skills (%)",
+    "rule": "Eurostat sdg_04_70 {\"ind_type\": \"IND_TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_04_70",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg5_eu0520",
+    "target": "5.1",
+    "goal": 5,
+    "description": "Gender pay gap in unadjusted form (%)",
+    "rule": "Eurostat sdg_05_20 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_05_20",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg5_eu0530",
+    "target": "5.5",
+    "goal": 5,
+    "description": "Gender employment gap, 20-64 (percentage points)",
+    "rule": "Eurostat sdg_05_30 {\"wstatus\": \"EMP\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_05_30",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg5_eu0540",
+    "target": "5.4",
+    "goal": 5,
+    "description": "People outside the labour force due to caring responsibilities, 20-64 (% of population)",
+    "rule": "Eurostat sdg_05_40 {\"sex\": \"T\", \"unit\": \"PC_POP\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_05_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg5_eu0550",
+    "target": "5.5",
+    "goal": 5,
+    "description": "Seats held by women in national parliaments (%)",
+    "rule": "Eurostat sdg_05_50 {\"org_inst\": \"PARL_NAT\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_05_50",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg5_eu0561",
+    "target": "5.5",
+    "goal": 5,
+    "description": "Positions held by women in senior management, board members (%)",
+    "rule": "Eurostat sdg_05_61 {\"prof_pos\": \"NEXEC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_05_61",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg6_eu0610",
+    "target": "6.2",
+    "goal": 6,
+    "description": "Population without bath, shower or indoor flushing toilet (%)",
+    "rule": "Eurostat sdg_06_10 {\"rskpovth\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_06_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg6_eu0620",
+    "target": "6.3",
+    "goal": 6,
+    "description": "Population connected to at least secondary wastewater treatment (%)",
+    "rule": "Eurostat sdg_06_20 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_06_20",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg6_eu0630",
+    "target": "6.3",
+    "goal": 6,
+    "description": "Biochemical oxygen demand in rivers (mg O2/l)",
+    "rule": "Eurostat sdg_06_30 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_06_30",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg6_eu0640",
+    "target": "6.3",
+    "goal": 6,
+    "description": "Nitrate in groundwater (mg NO3/l)",
+    "rule": "Eurostat sdg_06_40 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_06_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg6_eu0650",
+    "target": "6.3",
+    "goal": 6,
+    "description": "Phosphate in rivers (mg PO4/l)",
+    "rule": "Eurostat sdg_06_50 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_06_50",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg6_eu0660",
+    "target": "6.4",
+    "goal": 6,
+    "description": "Water exploitation index plus, WEI+ (%)",
+    "rule": "Eurostat sdg_06_60 {\"statinfo\": \"VAL_A\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_06_60",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg7_eu0710",
+    "target": "7.3",
+    "goal": 7,
+    "description": "Primary energy consumption (toe per capita)",
+    "rule": "Eurostat sdg_07_10 {\"unit\": \"TOE_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg7_eu0711",
+    "target": "7.3",
+    "goal": 7,
+    "description": "Final energy consumption (toe per capita)",
+    "rule": "Eurostat sdg_07_11 {\"unit\": \"TOE_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_11",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg7_eu0720",
+    "target": "7.3",
+    "goal": 7,
+    "description": "Final energy consumption in households per capita (kgoe)",
+    "rule": "Eurostat sdg_07_20 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_20",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg7_eu0730",
+    "target": "7.3",
+    "goal": 7,
+    "description": "Energy productivity (EUR per kgoe)",
+    "rule": "Eurostat sdg_07_30 {\"unit\": \"EUR_KGOE\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_30",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg7_eu0740",
+    "target": "7.2",
+    "goal": 7,
+    "description": "Share of renewable energy in gross final energy consumption (%)",
+    "rule": "Eurostat sdg_07_40 {\"nrg_bal\": \"REN\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_40",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg7_eu0750",
+    "target": "7.1",
+    "goal": 7,
+    "description": "Energy import dependency (% of imports in total energy consumption)",
+    "rule": "Eurostat sdg_07_50 {\"siec\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_50",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg7_eu0760",
+    "target": "7.1",
+    "goal": 7,
+    "description": "Population unable to keep home adequately warm (%)",
+    "rule": "Eurostat sdg_07_60 {\"rskpovth\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_07_60",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg8_eu0810",
+    "target": "8.1",
+    "goal": 8,
+    "description": "Real GDP per capita (EUR 2020 prices)",
+    "rule": "Eurostat sdg_08_10 {\"unit\": \"CLV20_EUR_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_08_10",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg8_eu0811",
+    "target": "8.2",
+    "goal": 8,
+    "description": "Investment share of GDP, total (%)",
+    "rule": "Eurostat sdg_08_11 {\"indic\": \"INV_TOT\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_08_11",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg8_eu0820",
+    "target": "8.6",
+    "goal": 8,
+    "description": "Young people neither in employment nor in education and training, 15-29 (%)",
+    "rule": "Eurostat sdg_08_20 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_08_20",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg8_eu0830",
+    "target": "8.5",
+    "goal": 8,
+    "description": "Employment rate, 20-64 (%)",
+    "rule": "Eurostat sdg_08_30 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_08_30",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg8_eu0840",
+    "target": "8.5",
+    "goal": 8,
+    "description": "Long-term unemployment rate (% of active population)",
+    "rule": "Eurostat sdg_08_40 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_08_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg8_eu0860",
+    "target": "8.8",
+    "goal": 8,
+    "description": "Fatal accidents at work (per 100 000 workers)",
+    "rule": "Eurostat sdg_08_60 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_08_60",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg9_eu0910",
+    "target": "9.5",
+    "goal": 9,
+    "description": "Gross domestic expenditure on R&D (% of GDP)",
+    "rule": "Eurostat sdg_09_10 {\"sectperf\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_09_10",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg9_eu0930",
+    "target": "9.5",
+    "goal": 9,
+    "description": "R&D personnel (% of active population, FTE)",
+    "rule": "Eurostat sdg_09_30 {\"sectperf\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_09_30",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg9_eu0940",
+    "target": "9.b",
+    "goal": 9,
+    "description": "Patent applications to the EPO (per million inhabitants)",
+    "rule": "Eurostat sdg_09_40 {\"coop_ptn\": \"APPL\", \"unit\": \"P_MHAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_09_40",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg9_eu0950",
+    "target": "9.1",
+    "goal": 9,
+    "description": "Share of buses and trains in inland passenger transport (%)",
+    "rule": "Eurostat sdg_09_50 {\"vehicle\": \"TRN_BUS_TOT_AVD\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_09_50",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg9_eu0960",
+    "target": "9.4",
+    "goal": 9,
+    "description": "Share of rail and inland waterways in inland freight transport (%)",
+    "rule": "Eurostat sdg_09_60 {\"tra_mode\": \"RAIL_IWW_AVD\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_09_60",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg9_eu0970",
+    "target": "9.4",
+    "goal": 9,
+    "description": "Air emission intensity of industry, PM2.5 (g per EUR of GVA)",
+    "rule": "Eurostat sdg_09_70 {\"airpol\": \"PM2_5\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_09_70",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg10_eu1030",
+    "target": "10.2",
+    "goal": 10,
+    "description": "Relative median at-risk-of-poverty gap (%)",
+    "rule": "Eurostat sdg_10_30 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_10_30",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg10_eu1041",
+    "target": "10.1",
+    "goal": 10,
+    "description": "Income quintile share ratio S80/S20",
+    "rule": "Eurostat sdg_10_41 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_10_41",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg10_eu1050",
+    "target": "10.1",
+    "goal": 10,
+    "description": "Income share of the bottom 40% of the population (%)",
+    "rule": "Eurostat sdg_10_50 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_10_50",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg11_eu1111",
+    "target": "11.1",
+    "goal": 11,
+    "description": "Severe housing deprivation rate (%)",
+    "rule": "Eurostat sdg_11_11 {\"rskpovth\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_11_11",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg11_eu1120",
+    "target": "11.6",
+    "goal": 11,
+    "description": "Population living in households suffering from noise (%)",
+    "rule": "Eurostat sdg_11_20 {\"rskpovth\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_11_20",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg11_eu1132",
+    "target": "11.3",
+    "goal": 11,
+    "description": "Soil sealing, sealed area per capita (m2)",
+    "rule": "Eurostat sdg_11_32 {\"unit\": \"M2_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_11_32",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg11_eu1140",
+    "target": "11.2",
+    "goal": 11,
+    "description": "Road traffic deaths (per 100 000 persons)",
+    "rule": "Eurostat sdg_11_40 {\"tra_infr\": \"TOTAL\", \"unit\": \"RT\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_11_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg11_eu1152",
+    "target": "11.6",
+    "goal": 11,
+    "description": "Premature deaths due to exposure to PM2.5 (per 100 000)",
+    "rule": "Eurostat sdg_11_52 {\"unit\": \"RT\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_11_52",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg11_eu1160",
+    "target": "11.6",
+    "goal": 11,
+    "description": "Recycling rate of municipal waste (%)",
+    "rule": "Eurostat sdg_11_60 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_11_60",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg12_eu1221",
+    "target": "12.2",
+    "goal": 12,
+    "description": "Material footprint, raw material consumption (t per capita)",
+    "rule": "Eurostat sdg_12_21 {\"unit\": \"T_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_12_21",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg12_eu1231",
+    "target": "12.1",
+    "goal": 12,
+    "description": "Consumption footprint (single weighted score, planetary boundary)",
+    "rule": "Eurostat sdg_12_31 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_12_31",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg12_eu1241",
+    "target": "12.5",
+    "goal": 12,
+    "description": "Circular material use rate (%)",
+    "rule": "Eurostat sdg_12_41 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_12_41",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg12_eu1251",
+    "target": "12.5",
+    "goal": 12,
+    "description": "Generation of waste excluding major mineral wastes (kg per capita)",
+    "rule": "Eurostat sdg_12_51 {\"hazard\": \"HAZ_NHAZ\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_12_51",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg12_eu1261",
+    "target": "12.a",
+    "goal": 12,
+    "description": "Gross value added in environmental goods and services sector (% of GDP)",
+    "rule": "Eurostat sdg_12_61 {\"unit\": \"PC_GDP\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_12_61",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg13_eu1310",
+    "target": "13.2",
+    "goal": 13,
+    "description": "Net greenhouse gas emissions (t CO2e per capita)",
+    "rule": "Eurostat sdg_13_10 {\"src_crf\": \"TOTXMEMO\", \"unit\": \"T_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_13_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg13_eu1321",
+    "target": "13.2",
+    "goal": 13,
+    "description": "Net greenhouse gas emissions of the LULUCF sector (t CO2e per capita)",
+    "rule": "Eurostat sdg_13_21 {\"unit\": \"T_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_13_21",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg13_eu1331",
+    "target": "13.2",
+    "goal": 13,
+    "description": "Average CO2 emissions per km from new passenger cars (g)",
+    "rule": "Eurostat sdg_13_31 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_13_31",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg13_eu1340",
+    "target": "13.1",
+    "goal": 13,
+    "description": "Climate-related economic losses (EUR per capita, constant prices)",
+    "rule": "Eurostat sdg_13_40 {\"statinfo\": \"VAL_A\", \"unit\": \"EUR_HAB_KP\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_13_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg13_eu1350",
+    "target": "13.a",
+    "goal": 13,
+    "description": "Contribution to the international USD 100bn climate finance commitment (EUR million)",
+    "rule": "Eurostat sdg_13_50 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_13_50",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg13_eu1370a",
+    "target": "13.a",
+    "goal": 13,
+    "description": "Share of green bonds in total issuance (%)",
+    "rule": "Eurostat sdg_13_70a {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_13_70a",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg14_eu1410",
+    "target": "14.5",
+    "goal": 14,
+    "description": "Marine protected areas (% of marine waters)",
+    "rule": "Eurostat sdg_14_10 {\"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_14_10",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg14_eu1440",
+    "target": "14.1",
+    "goal": 14,
+    "description": "Coastal bathing sites with excellent water quality (%)",
+    "rule": "Eurostat sdg_14_40 {\"aquaenv\": \"CST\", \"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_14_40",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg14_eu1460",
+    "target": "14.1",
+    "goal": 14,
+    "description": "Marine waters affected by eutrophication (%)",
+    "rule": "Eurostat sdg_14_60 {\"statinfo\": \"VAL_A\", \"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_14_60",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg15_eu1511",
+    "target": "15.1",
+    "goal": 15,
+    "description": "Share of forest area (%)",
+    "rule": "Eurostat sdg_15_11 {\"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_15_11",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg15_eu1520",
+    "target": "15.1",
+    "goal": 15,
+    "description": "Terrestrial protected areas (% of land area)",
+    "rule": "Eurostat sdg_15_20 {\"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_15_20",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg15_eu1542",
+    "target": "15.3",
+    "goal": 15,
+    "description": "Drought impact on ecosystems (% of area)",
+    "rule": "Eurostat sdg_15_42 {\"statinfo\": \"VAL_A\", \"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_15_42",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg15_eu1550",
+    "target": "15.3",
+    "goal": 15,
+    "description": "Estimated severe soil erosion by water (% of area)",
+    "rule": "Eurostat sdg_15_50 {\"unit\": \"PC\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_15_50",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg16_eu1610",
+    "target": "16.1",
+    "goal": 16,
+    "description": "Standardised death rate due to homicide (per 100 000)",
+    "rule": "Eurostat sdg_16_10 {\"sex\": \"T\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_16_10",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg16_eu1620",
+    "target": "16.1",
+    "goal": 16,
+    "description": "Population reporting crime, violence or vandalism in their area (%)",
+    "rule": "Eurostat sdg_16_20 {\"rskpovth\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_16_20",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg16_eu1630",
+    "target": "16.3",
+    "goal": 16,
+    "description": "General government expenditure on law courts (EUR per inhabitant)",
+    "rule": "Eurostat sdg_16_30 {\"unit\": \"EUR_HAB\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_16_30",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg16_eu1640",
+    "target": "16.6",
+    "goal": 16,
+    "description": "Perceived independence of the justice system: very or fairly good (%)",
+    "rule": "Eurostat sdg_16_40 {\"lev_perc\": \"VG_FG\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_16_40",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg16_eu1650",
+    "target": "16.5",
+    "goal": 16,
+    "description": "Corruption Perceptions Index (score)",
+    "rule": "Eurostat sdg_16_50 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_16_50",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg17_eu1710",
+    "target": "17.2",
+    "goal": 17,
+    "description": "Official development assistance (% of GNI)",
+    "rule": "Eurostat sdg_17_10 {\"partner\": \"ODA\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_17_10",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg17_eu1720",
+    "target": "17.3",
+    "goal": 17,
+    "description": "Financing to developing countries, total (EUR million, constant prices)",
+    "rule": "Eurostat sdg_17_20 {\"fin_source\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_17_20",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg17_eu1731",
+    "target": "17.11",
+    "goal": 17,
+    "description": "Imports from developing countries (EUR million)",
+    "rule": "Eurostat sdg_17_31 {\"partner\": \"ODA\", \"unit\": \"MIO_EUR\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_17_31",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg17_eu1740",
+    "target": "17.13",
+    "goal": 17,
+    "description": "General government gross debt (% of GDP)",
+    "rule": "Eurostat sdg_17_40 {\"unit\": \"PC_GDP\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_17_40",
+    "sign": -1
+  },
+  {
+    "indicator": "n_sdg17_eu1750",
+    "target": "17.1",
+    "goal": 17,
+    "description": "Share of environmental taxes in total tax revenues (%)",
+    "rule": "Eurostat sdg_17_50 {}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_17_50",
+    "sign": 1
+  },
+  {
+    "indicator": "n_sdg17_eu1760",
+    "target": "17.6",
+    "goal": 17,
+    "description": "Households with very high capacity fixed internet connection (%)",
+    "rule": "Eurostat sdg_17_60 {\"terrtypo\": \"TOTAL\"}; editorial target association.",
+    "ambition": null,
+    "eurostat": "sdg_17_60",
+    "sign": 1
+  }
+]
