@@ -33,7 +33,7 @@ def main():
         print('Listing indicators…', flush=True)
         save_json(listing, fetch(BASE + '/Indicator/List'))
     codes = sorted({item['code'] for item in json.loads(listing.read_text(encoding='utf-8'))},
-                   key=lambda c: [int(p) if p.isdigit() else p for p in c.split('.')])
+                   key=lambda c: [(0, int(p), '') if p.isdigit() else (1, 0, p) for p in c.split('.')])
     print(f'{len(codes)} indicators.', flush=True)
 
     rows, seen, columns = [], set(), {}
