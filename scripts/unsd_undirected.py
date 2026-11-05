@@ -117,7 +117,7 @@ def select(path, directions, excluded=(), drop_natures=(), extra=None):
             continue
         key = (r['series'], tuple((d[11:], r[d]) for d in dims if r[d]))
         data[key][int(y)].append(v)
-        if 2010 <= y <= 2025:
+        if y in YEARS:
             natures[key].add(r.get('attributes_Nature', ''))
         targets = json.loads(r['target']) if r['target'].startswith('[') else [r['target']]
         meta[key] = dict(series=r['series'], description=r['seriesDescription'], units=r['attributes_Units'],
@@ -194,9 +194,11 @@ def main():
     parser.add_argument('--surrogates', type=int, default=100)
     parser.add_argument('--out')
     parser.add_argument('--drop', nargs='*', default=[], help='further series codes to exclude')
+    parser.add_argument('--end', type=int, default=2025, help='last year of the window (start 2010)')
     parser.add_argument('--ibge', help='NT Dinte 77 workbook (rede_NT.xlsx): add its IBGE series as candidates')
     parser.add_argument('--drop-natures', nargs='*', default=[], help='skip series with any observation of these natures (e.g. M E G)')
     args = parser.parse_args()
+    YEARS[:] = range(2010, args.end + 1)
     directions = {r['series']: int(r['direction']) for r in
                   csv.DictReader(open(ROOT / 'data/UNSD/series_direction_proposed.csv', encoding='utf-8'))}
     excluded = {r['series'] for r in csv.DictReader(open(ROOT / 'data/UNSD/series_excluded.csv', encoding='utf-8'))}
