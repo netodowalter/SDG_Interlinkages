@@ -75,16 +75,18 @@ def fill(values):
     return np.array(out, dtype=float)
 
 
-def select(path, directions, excluded=()):
+def select(path, directions, excluded=(), drop_natures=()):
     rows = list(csv.DictReader(open(path, encoding='utf-8-sig')))
     dims = [c for c in rows[0] if c.startswith('dimensions_')]
-    data, meta = defaultdict(lambda: defaultdict(list)), {}
+    data, meta, natures = defaultdict(lambda: defaultdict(list)), {}, defaultdict(set)
     for r in rows:
         y, v = number(r['timePeriodStart']), number(r['value'])
         if y is None or v is None:
             continue
         key = (r['series'], tuple((d[11:], r[d]) for d in dims if r[d]))
         data[key][int(y)].append(v)
+        if 2010 <= y <= 2025:
+            natures[key].add(r.get('attributes_Nature', ''))
         targets = json.loads(r['target']) if r['target'].startswith('[') else [r['target']]
         meta[key] = dict(series=r['series'], description=r['seriesDescription'], units=r['attributes_Units'],
                          targets=targets)
@@ -98,6 +100,8 @@ def select(path, directions, excluded=()):
         if not agg and len({dict(k[1]).get('Age', '') for k in ok}) == 1:
             agg = ok
         for k in agg:
+            if natures[k] & set(drop_natures):
+                continue
             values = {y: float(np.mean(v)) for y, v in data[k].items() if y in YEARS}
             missing, run = gaps(values)
             if missing <= 6 and run <= 3 and len(values) >= 2:
@@ -114,7 +118,8 @@ def select(path, directions, excluded=()):
             used.add(series)
             chosen[target] = dict(target=target, goal=target.split('.')[0], series=series, missing=missing,
                                   dimensions=dict(key[1]), values=values, direction=directions[series],
-                                  description=meta[key]['description'], units=meta[key]['units'])
+                                  description=meta[key]['description'], units=meta[key]['units'],
+                                  natures=', '.join(sorted(natures[key])))
             break
     return chosen, dropped
 
@@ -152,11 +157,12 @@ def main():
     parser.add_argument('--surrogates', type=int, default=100)
     parser.add_argument('--out')
     parser.add_argument('--drop', nargs='*', default=[], help='further series codes to exclude')
+    parser.add_argument('--drop-natures', nargs='*', default=[], help='skip series with any observation of these natures (e.g. M E G)')
     args = parser.parse_args()
     directions = {r['series']: int(r['direction']) for r in
                   csv.DictReader(open(ROOT / 'data/UNSD/series_direction_proposed.csv', encoding='utf-8'))}
     excluded = {r['series'] for r in csv.DictReader(open(ROOT / 'data/UNSD/series_excluded.csv', encoding='utf-8'))}
-    chosen, dropped = select(args.csv, directions, excluded | set(args.drop))
+    chosen, dropped = select(args.csv, directions, excluded | set(args.drop), args.drop_natures)
     print(f'{len(chosen)} targets in {len({c["goal"] for c in chosen.values()})} SDGs; {len(dropped)} candidates dropped')
     label = {c: f"{c} {v['series']}" for c, v in chosen.items()}
     book = Workbook()
